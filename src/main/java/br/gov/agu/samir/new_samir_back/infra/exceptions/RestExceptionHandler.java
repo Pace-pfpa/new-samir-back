@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.infra.exceptions;
 
 import br.gov.agu.samir.new_samir_back.exceptions.ResourceAlreadyExistException;
-import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFound;
+import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,8 +24,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(error.getStatus()).body(error);
     }
 
-    @ExceptionHandler(ResourceNotFound.class)
-    public ResponseEntity<StandardError> resourceNotFoundException(ResourceNotFound exception, HttpServletRequest request){
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<StandardError> resourceNotFoundException(ResourceNotFoundException exception, HttpServletRequest request){
         StandardError error = StandardError.builder()
                 .error("Resource not found")
                 .path(request.getContextPath())
