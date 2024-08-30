@@ -1,10 +1,7 @@
 package br.gov.agu.samir.new_samir_back.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +12,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class SalarioMinimoModel {
 
     @Id

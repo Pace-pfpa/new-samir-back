@@ -7,6 +7,9 @@ import br.gov.agu.samir.new_samir_back.models.SalarioMinimoModel;
 import br.gov.agu.samir.new_samir_back.repository.SalarioMinimoRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
+
+
 @Service
 public class SalarioMinimoService {
 
@@ -14,7 +17,8 @@ public class SalarioMinimoService {
 
     private final SalarioMinimoMapper mapper;
 
-    public SalarioMinimoService(SalarioMinimoRepository repository, SalarioMinimoMapper mapper) {
+
+    public SalarioMinimoService(SalarioMinimoRepository repository, SalarioMinimoMapper mapper, DateTimeFormatter formatter) {
         this.repository = repository;
         this.mapper = mapper;
     }
@@ -30,17 +34,22 @@ public class SalarioMinimoService {
         return mapper.modelToResponseDTO(model);
     }
 
-    public SalarioMinimoResponseDTO getSalarioMinimoByAno(Integer ano) {
-        SalarioMinimoModel model = repository.findSalarioMinimoModelByData_Year(ano).orElseThrow(RuntimeException::new);
+    public SalarioMinimoResponseDTO getSalarioMinimoByAno(int mes, int ano) {
+        SalarioMinimoModel model = repository.findByMesAndAno(mes,ano);
         return mapper.modelToResponseDTO(model);
     }
 
     public SalarioMinimoResponseDTO updateSalarioMinimo(Long id, SalarioMinimoRequestDTO requestDTO) {
         SalarioMinimoModel model = repository.findById(id).orElseThrow(RuntimeException::new);
-        model.setData(requestDTO.getData());
-        model.setValor(requestDTO.getValor());
-        repository.save(model);
-        return mapper.modelToResponseDTO(model);
+
+        SalarioMinimoModel modelUpdated = SalarioMinimoModel.builder()
+                .id(model.getId())
+                .data(requestDTO.getData() != null ? requestDTO.getData() : model.getData()) // Se valor do request vier diferente de null atualiza valor se não mantem valor antigo
+                .valor(requestDTO.getValor() != null ? requestDTO.getValor() : model.getValor())
+                .build();
+
+        repository.save(modelUpdated);
+        return mapper.modelToResponseDTO(modelUpdated);
     }
 
     public void deleteSalarioMinimo(Long id) {
