@@ -29,8 +29,8 @@ public class SalarioMinimoController {
     }
 
     @GetMapping
-    public ResponseEntity<SalarioMinimoResponseDTO> getSalarioMinimoByAno(@RequestParam Integer ano) {
-        SalarioMinimoResponseDTO responseDTO = service.getSalarioMinimoByAno(ano);
+    public ResponseEntity<SalarioMinimoResponseDTO> getSalarioMinimoByAno(@RequestParam int mes, @RequestParam int ano) {
+        SalarioMinimoResponseDTO responseDTO = service.getSalarioMinimoByAno(mes,ano);
         return ResponseEntity.ok(responseDTO);
     }
 
