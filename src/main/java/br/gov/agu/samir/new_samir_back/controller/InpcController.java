@@ -1,56 +1,56 @@
 package br.gov.agu.samir.new_samir_back.controller;
 
-import br.gov.agu.samir.new_samir_back.dtos.SelicRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.SelicResponseDTO;
-import br.gov.agu.samir.new_samir_back.service.SelicService;
+import br.gov.agu.samir.new_samir_back.dtos.InpcRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.InpcResponseDTO;
+import br.gov.agu.samir.new_samir_back.service.InpcService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/selic")
-public class SelicController {
+@RequestMapping("/Inpc")
+public class InpcController {
 
-    private final SelicService service;
+    private final InpcService service;
 
-    public SelicController(SelicService service) {
+    public InpcController(InpcService service) {
         this.service = service;
     }
 
     @PostMapping
-    public ResponseEntity<SelicResponseDTO> salvarSelic(@RequestBody SelicRequestDTO requestDTO) {
-        SelicResponseDTO responseDTO = service.salvarSelic(requestDTO);
+    public ResponseEntity<InpcResponseDTO> salvarInpc(@RequestBody InpcRequestDTO requestDTO) {
+        InpcResponseDTO responseDTO = service.salvarInpc(requestDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping
-    public ResponseEntity<List<SelicResponseDTO>> buscarTodasSelic() {
-        List<SelicResponseDTO> listResponse = service.buscarTodasSelic();
+    public ResponseEntity<List<InpcResponseDTO>> buscarTodasInpc() {
+        List<InpcResponseDTO> listResponse = service.buscarTodasInpc();
         return ResponseEntity.ok(listResponse);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SelicResponseDTO> buscarPorId(@PathVariable Long id) {
-        SelicResponseDTO responseDTO = service.buscarPorId(id);
+    public ResponseEntity<InpcResponseDTO> buscarPorId(@PathVariable Long id) {
+        InpcResponseDTO responseDTO = service.buscarPorId(id);
         return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping("buscarPorData")
-    public ResponseEntity<SelicResponseDTO> buscarPorData(@RequestParam int mes, @RequestParam int ano) {
-        SelicResponseDTO responseDTO = service.buscarPorData(mes,ano);
+    public ResponseEntity<InpcResponseDTO> buscarPorData(@RequestParam int mes, @RequestParam int ano) {
+        InpcResponseDTO responseDTO = service.buscarPorData(mes,ano);
         return ResponseEntity.ok(responseDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SelicResponseDTO> atualizarSelic(@PathVariable Long id, @RequestBody SelicRequestDTO requestDTO) {
-        SelicResponseDTO responseDTO = service.atualizarSelic(id, requestDTO);
+    public ResponseEntity<InpcResponseDTO> atualizarInpc(@PathVariable Long id, @RequestBody InpcRequestDTO requestDTO) {
+        InpcResponseDTO responseDTO = service.atualizarInpc(id, requestDTO);
         return ResponseEntity.ok(responseDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarSelic(@PathVariable Long id) {
-        service.deletarSelic(id);
+    public ResponseEntity<Void> deletarInpc(@PathVariable Long id) {
+        service.deletarInpc(id);
         return ResponseEntity.noContent().build();
     }
 }
