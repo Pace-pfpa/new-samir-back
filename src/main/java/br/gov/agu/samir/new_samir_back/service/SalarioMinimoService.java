@@ -2,6 +2,7 @@ package br.gov.agu.samir.new_samir_back.service;
 
 import br.gov.agu.samir.new_samir_back.dtos.SalarioMinimoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.SalarioMinimoResponseDTO;
+import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFoundException;
 import br.gov.agu.samir.new_samir_back.mapper.SalarioMinimoMapper;
 import br.gov.agu.samir.new_samir_back.models.SalarioMinimoModel;
 import br.gov.agu.samir.new_samir_back.repository.SalarioMinimoRepository;
@@ -30,7 +31,8 @@ public class SalarioMinimoService {
     }
 
     public SalarioMinimoResponseDTO getSalarioMinimoById(Long id) {
-        SalarioMinimoModel model = repository.findById(id).orElseThrow(RuntimeException::new);
+        SalarioMinimoModel model = repository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("não foi encontrado um salario minimo com id: "+ id));
         return mapper.modelToResponseDTO(model);
     }
 
@@ -40,7 +42,7 @@ public class SalarioMinimoService {
     }
 
     public SalarioMinimoResponseDTO updateSalarioMinimo(Long id, SalarioMinimoRequestDTO requestDTO) {
-        SalarioMinimoModel model = repository.findById(id).orElseThrow(RuntimeException::new);
+        SalarioMinimoModel model = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("não foi encontrado um salario minimo com id: "+ id));
 
         SalarioMinimoModel modelUpdated = SalarioMinimoModel.builder()
                 .id(model.getId())
