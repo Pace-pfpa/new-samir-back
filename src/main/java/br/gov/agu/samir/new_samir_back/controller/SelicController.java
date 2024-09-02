@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -55,6 +56,12 @@ public class SelicController {
     public ResponseEntity<SelicResponseDTO> buscarPorData(@RequestParam int mes, @RequestParam int ano) {
         SelicResponseDTO responseDTO = service.buscarPorData(mes,ano);
         return ResponseEntity.ok(responseDTO);
+    }
+
+    @GetMapping("buscarPorDataIntervalo")
+    public ResponseEntity<List<SelicResponseDTO>> buscarPorDataIntervalor(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim) {
+        List<SelicResponseDTO> listResponse = service.buscarPorDataIntervalo(dataInicio, dataFim);
+        return ResponseEntity.ok(listResponse);
     }
 
     @PutMapping("/{id}")

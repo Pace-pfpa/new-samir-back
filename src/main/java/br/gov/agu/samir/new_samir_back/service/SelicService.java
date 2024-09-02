@@ -8,6 +8,7 @@ import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.SelicRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -64,5 +65,10 @@ public class SelicService {
         List<SelicModel> listModel = listResquestDTO.stream().map(selicRequestDTO -> mapper.mapToModel(selicRequestDTO)).toList();
         repository.saveAll(listModel);
         return "dados importados com sucesso";
+    }
+
+    public List<SelicResponseDTO> buscarPorDataIntervalo(LocalDate dataInicio, LocalDate dataFim) {
+        List<SelicModel> listModel = repository.findAllByDataBetween(dataInicio, dataFim);
+        return listModel.stream().map(selicModel -> mapper.mapModelToResponseDTO(selicModel)).toList();
     }
 }
