@@ -16,7 +16,7 @@ import java.time.LocalDate;
 public class SelicModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDate data;

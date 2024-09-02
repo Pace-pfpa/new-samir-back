@@ -33,6 +33,12 @@ public class SelicController {
         return ResponseEntity.created(URI.create("/selic/" + responseDTO.getId())).body(responseDTO);
     }
 
+    @PostMapping("importar-dados")
+    public ResponseEntity<String> importarDadosSelic(@RequestBody List<SelicRequestDTO> listResquestDTO) {
+        String respose = service.importarDadosSelic(listResquestDTO);
+        return ResponseEntity.ok(respose);
+    }
+
     @GetMapping
     public ResponseEntity<List<SelicResponseDTO>> buscarTodasSelic() {
         List<SelicResponseDTO> listResponse = service.buscarTodasSelic();

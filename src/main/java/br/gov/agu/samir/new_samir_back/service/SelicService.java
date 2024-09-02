@@ -59,4 +59,10 @@ public class SelicService {
         SelicModel model = repository.findByMesAndAno(mes, ano).orElseThrow(() -> new ResourceNotFoundException("não foi encontrado uma taxa selic com o mês e ano informado"));
         return mapper.mapModelToResponseDTO(model);
     }
+
+    public String importarDadosSelic(List<SelicRequestDTO> listResquestDTO) {
+        List<SelicModel> listModel = listResquestDTO.stream().map(selicRequestDTO -> mapper.mapToModel(selicRequestDTO)).toList();
+        repository.saveAll(listModel);
+        return "dados importados com sucesso";
+    }
 }
