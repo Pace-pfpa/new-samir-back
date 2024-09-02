@@ -8,6 +8,7 @@ import br.gov.agu.samir.new_samir_back.models.InpcModel;
 import br.gov.agu.samir.new_samir_back.repository.InpcRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -38,6 +39,11 @@ public class InpcService {
         return mapper.mapModelToResponseDTO(model);
     }
 
+    public List<InpcResponseDTO> buscarPorDataIntervalo(LocalDate dataInicio, LocalDate dataFim) {
+        List<InpcModel> listModel = repository.findAllByDataBetween(dataInicio, dataFim);
+        return listModel.stream().map(InpcModel -> mapper.mapModelToResponseDTO(InpcModel)).toList();
+    }
+
     public InpcResponseDTO atualizarInpc(Long id, InpcRequestDTO requestDTO) {
         InpcModel model = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("não foi encontrado uma taxa Inpc com o id informado"));
 
@@ -58,5 +64,12 @@ public class InpcService {
     public InpcResponseDTO buscarPorData(int mes, int ano) {
         InpcModel model = repository.findByMesAndAno(mes, ano).orElseThrow(() -> new ResourceNotFoundException("não foi encontrado uma taxa Inpc com o mês e ano informado"));
         return mapper.mapModelToResponseDTO(model);
+    }
+
+
+    public String importarDadosInpc(List<InpcRequestDTO> listResquestDTO) {
+        List<InpcModel> listModel = listResquestDTO.stream().map(InpcRequestDTO -> mapper.mapToModel(InpcRequestDTO)).toList();
+        repository.saveAll(listModel);
+        return "dados importados com sucesso";
     }
 }

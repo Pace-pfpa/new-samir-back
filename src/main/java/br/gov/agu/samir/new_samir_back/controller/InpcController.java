@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
-@RequestMapping("/Inpc")
+@RequestMapping("/inpc")
 public class InpcController {
 
     private final InpcService service;
@@ -31,6 +33,12 @@ public class InpcController {
     public ResponseEntity<InpcResponseDTO> salvarInpc(@RequestBody InpcRequestDTO requestDTO) {
         InpcResponseDTO responseDTO = service.salvarInpc(requestDTO);
         return ResponseEntity.created(URI.create("/Inpc/" + responseDTO.getId())).body(responseDTO);
+    }
+
+    @PostMapping("importar-dados")
+    public ResponseEntity<String> importarDadosInpc(@RequestBody List<InpcRequestDTO> listResquestDTO) {
+        String response = service.importarDadosInpc(listResquestDTO);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
@@ -49,6 +57,12 @@ public class InpcController {
     public ResponseEntity<InpcResponseDTO> buscarPorData(@RequestParam int mes, @RequestParam int ano) {
         InpcResponseDTO responseDTO = service.buscarPorData(mes,ano);
         return ResponseEntity.ok(responseDTO);
+    }
+
+    @GetMapping("/buscarPorDataIntervalo")
+    public ResponseEntity<List<InpcResponseDTO>> buscarPorDataIntervalo(@RequestParam LocalDate dataInicio, @RequestParam LocalDate dataFim) {
+        List<InpcResponseDTO> listResponse = service.buscarPorDataIntervalo(dataInicio, dataFim);
+        return ResponseEntity.ok(listResponse);
     }
 
     @PutMapping("/{id}")
