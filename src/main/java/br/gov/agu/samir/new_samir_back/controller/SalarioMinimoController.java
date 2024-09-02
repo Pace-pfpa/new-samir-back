@@ -4,7 +4,17 @@ import br.gov.agu.samir.new_samir_back.dtos.SalarioMinimoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.SalarioMinimoResponseDTO;
 import br.gov.agu.samir.new_samir_back.service.SalarioMinimoService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/salario-minimo")
@@ -19,7 +29,7 @@ public class SalarioMinimoController {
     @PostMapping
     public ResponseEntity<SalarioMinimoResponseDTO> saveSalarioMinimo(@RequestBody SalarioMinimoRequestDTO requestDTO) {
         SalarioMinimoResponseDTO responseDTO = service.salvarSalarioMinimo(requestDTO);
-        return  ResponseEntity.ok(responseDTO);
+        return  ResponseEntity.created(URI.create("/salario-minimo/" + responseDTO.getId())).body(responseDTO);
     }
 
     @GetMapping("/{id}")
