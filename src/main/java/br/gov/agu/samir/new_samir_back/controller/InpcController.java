@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/inpc")
