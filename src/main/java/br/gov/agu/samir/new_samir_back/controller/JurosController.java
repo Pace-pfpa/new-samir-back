@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/Juros")
+@RequestMapping("/juros")
 public class JurosController {
 
     private final JurosService service;
