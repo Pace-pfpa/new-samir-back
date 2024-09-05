@@ -24,8 +24,8 @@ public class MyCommandLineRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        BigDecimal valorCorrecaoIPCAE = factory.getCalculo("IPCAEeSELIC").calcularIndexadorCorrecaoMonetaria(11, 2021);
-        BigDecimal valorCorrecaoINPC = factory.getCalculo("INPCeSELIC").calcularIndexadorCorrecaoMonetaria(11, 2021);
+        BigDecimal valorCorrecaoIPCAE = factory.getCalculo("IPCAEeSELIC").calcularIndexadorCorrecaoMonetaria(LocalDate.of(2020,3,1));
+        BigDecimal valorCorrecaoINPC = factory.getCalculo("INPCeSELIC").calcularIndexadorCorrecaoMonetaria(LocalDate.of(2020,3,1));
         BigDecimal valorJuros = calculo.calcularJuros(LocalDate.of(2020,7,1));
         System.out.println("Valor dos juros: " + valorJuros);
         System.out.println("Valor da correção SELIC + INPC: " + valorCorrecaoINPC);

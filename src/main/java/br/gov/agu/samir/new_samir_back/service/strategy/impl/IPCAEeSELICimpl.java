@@ -24,21 +24,20 @@ public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
     }
 
     @Override
-    public BigDecimal calcularIndexadorCorrecaoMonetaria(int mes, int ano) {
-        LocalDate dataInicioBusca = LocalDate.of(ano, mes, 1);
+    public BigDecimal calcularIndexadorCorrecaoMonetaria(LocalDate dataAlvo) {
         LocalDate dataFinalBusca = LocalDate.now().minusMonths(2).withDayOfMonth(1);
         LocalDate dataLimiteSelic = LocalDate.of(2021,11,1);
         BigDecimal valorCorrecao = new BigDecimal("1");
 
-        if(dataInicioBusca.isAfter(dataLimiteSelic)){
-            List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataInicioBusca,dataFinalBusca);
+        if(dataAlvo.isAfter(dataLimiteSelic)){
+            List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo,dataFinalBusca);
             for (SelicModel selic : listSelic) {
                 BigDecimal valorSelic = selic.getValor().divide(new BigDecimal("100"));
                 valorCorrecao = valorCorrecao.add(valorSelic);
             }
         }else {
             valorCorrecao = calcularSelicTotal(dataFinalBusca);
-            List<IpcaeModel> listIpcae = ipcaeRepository.findAllByDataBetween(dataInicioBusca, LocalDate.of(2021,11,1));
+            List<IpcaeModel> listIpcae = ipcaeRepository.findAllByDataBetween(dataAlvo, LocalDate.of(2021,11,1));
             for (IpcaeModel ipcae : listIpcae) {
                 BigDecimal valorIpcae = ipcae.getValor().divide(new BigDecimal("100"));
                 valorIpcae = valorIpcae.add(new BigDecimal("1"));
@@ -49,8 +48,8 @@ public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
     }
 
     private BigDecimal calcularSelicTotal(LocalDate dataAtual){
-        BigDecimal valorCorrecao = new BigDecimal("1");
-        List<SelicModel> selicList = selicRepository.findAllByDataBetween(LocalDate.of(2021,12,1),dataAtual);
+        BigDecimal valorCorrecao = BigDecimal.ONE;
+        List<SelicModel> selicList = selicRepository.findAllByDataBetween(LocalDate.of(2021,12,1),LocalDate.now().minusMonths(2));
         for (SelicModel selic : selicList) {
             BigDecimal valorSelic = selic.getValor().divide(BigDecimal.valueOf(100));
             valorCorrecao = valorCorrecao.add(valorSelic);
