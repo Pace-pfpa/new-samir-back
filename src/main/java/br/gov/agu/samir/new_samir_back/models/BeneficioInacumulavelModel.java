@@ -3,23 +3,18 @@ package br.gov.agu.samir.new_samir_back.models;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Entity
-@Table(name = "tb_beneficio")
+@Table(name = "tb_beneficio_inacumulavel")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class BeneficioModel {
+public class BeneficioInacumulavelModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nome;
-
-    private Boolean diff;
-
-    private Boolean decimoTerceiro;
 }
