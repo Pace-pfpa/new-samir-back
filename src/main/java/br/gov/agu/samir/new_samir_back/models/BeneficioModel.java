@@ -1,7 +1,10 @@
 package br.gov.agu.samir.new_samir_back.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 
 @Entity
@@ -22,4 +25,11 @@ public class BeneficioModel {
     private Boolean diff;
 
     private Boolean decimoTerceiro;
+
+    @ManyToMany
+    @JoinTable(name = "tb_beneficio_inacumulavel",
+            joinColumns = @JoinColumn(name = "beneficio_id"),
+            inverseJoinColumns = @JoinColumn(name = "inacumulavel_id"))
+    @JsonManagedReference
+    private List<BeneficioInacumulavelModel> beneficiosInacumulaveis;
 }
