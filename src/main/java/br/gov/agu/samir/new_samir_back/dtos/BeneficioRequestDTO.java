@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BenefioRequestDTO {
+public class BeneficioRequestDTO {
     private String nome;
     private Boolean diff;
     private Boolean decimoTerceiro;

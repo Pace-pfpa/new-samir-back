@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BeneficioInaculavelRequestDTO {
+public class BeneficioInacumulavelRequestDTO {
 
     private String nome;
 

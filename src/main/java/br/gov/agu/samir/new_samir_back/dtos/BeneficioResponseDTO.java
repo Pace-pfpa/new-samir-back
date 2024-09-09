@@ -14,5 +14,5 @@ public class BeneficioResponseDTO {
     private String nome;
     private Boolean diff;
     private Boolean decimoTerceiro;
-    private List<BeneficioInacumulavelResponseDTO> beneficiosInacumulaveis;
+        private List<BeneficioInacumulavelResponseDTO> beneficiosInacumulaveis;
 }
