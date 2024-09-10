@@ -6,43 +6,63 @@ import br.gov.agu.samir.new_samir_back.dtos.BeneficioRequestDTO;
 import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFoundException;
 import br.gov.agu.samir.new_samir_back.mapper.BeneficioInacumulavelMapper;
 import br.gov.agu.samir.new_samir_back.models.BeneficioInacumulavelModel;
+import br.gov.agu.samir.new_samir_back.models.BeneficioModel;
 import br.gov.agu.samir.new_samir_back.repository.BeneficioInacumulavelRepository;
+import br.gov.agu.samir.new_samir_back.repository.BeneficioRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class BeneficioInacumulavelService {
 
     private final BeneficioInacumulavelMapper mapper;
 
-    private final BeneficioInacumulavelRepository repository;
+    private final BeneficioInacumulavelRepository InacumulavelRepository;
 
-    public BeneficioInacumulavelService(BeneficioInacumulavelMapper mapper, BeneficioInacumulavelRepository repository) {
+    private final BeneficioRepository beneficioRepository;
+
+    public BeneficioInacumulavelService(BeneficioInacumulavelMapper mapper, BeneficioInacumulavelRepository inacumulavelRepository, BeneficioRepository beneficioRepository) {
         this.mapper = mapper;
-        this.repository = repository;
+        InacumulavelRepository = inacumulavelRepository;
+        this.beneficioRepository = beneficioRepository;
     }
 
     public BeneficioInacumulavelResponseDTO salvarBeneficioInacumulavel(BeneficioInacumulavelRequestDTO requestDTO) {
         BeneficioInacumulavelModel model = mapper.toModel(requestDTO);
-        repository.save(model);
-        return mapper.toResponseDTO(model);
+        List<BeneficioModel> beneficios = beneficioRepository.findAllById(requestDTO.getBeneficios());
+        model.setBeneficios(beneficios);
+        BeneficioInacumulavelModel savedModel = InacumulavelRepository.save(model);
+
+        BeneficioInacumulavelResponseDTO responseDTO = mapper.toResponseDTO(savedModel);
+        responseDTO.setBeneficios(mapper.toBeneficioResponseList(beneficios));
+
+
+        return responseDTO;
     }
+
 
     public BeneficioInacumulavelResponseDTO buscarBeneficioInacumulavelPorId(Long id) {
-        BeneficioInacumulavelModel model = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Beneficio não encontrado"));
-        return mapper.toResponseDTO(model);
+        BeneficioInacumulavelModel model = InacumulavelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Benefício inacumulável não encontrado"));
+        BeneficioInacumulavelResponseDTO responseDTO = mapper.toResponseDTO(model);
+        responseDTO.setBeneficios(mapper.toBeneficioResponseList(model.getBeneficios()));
+        return responseDTO;
     }
 
-
     public BeneficioInacumulavelResponseDTO atualizarBeneficioInacumulavel(Long id, BeneficioInacumulavelRequestDTO requestDTO) {
-        BeneficioInacumulavelModel model = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Beneficio não encontrado"));
-        BeneficioInacumulavelModel updatedModel = BeneficioInacumulavelModel.builder()
-                .id(model.getId())
-                .nome(requestDTO.getNome() != null ? requestDTO.getNome() : model.getNome())
-                .build();
-        return mapper.toResponseDTO(updatedModel);
+        BeneficioInacumulavelModel model = InacumulavelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Benefício inacumulável não encontrado"));
+        model.setNome(requestDTO.getNome());
+        List<BeneficioModel> beneficios = beneficioRepository.findAllById(requestDTO.getBeneficios());
+        model.setBeneficios(beneficios);
+        BeneficioInacumulavelModel savedModel = InacumulavelRepository.save(model);
+        BeneficioInacumulavelResponseDTO responseDTO = mapper.toResponseDTO(savedModel);
+        responseDTO.setBeneficios(mapper.toBeneficioResponseList(beneficios));
+        return responseDTO;
     }
 
     public void deletarBeneficioInacumulavel(Long id) {
-        repository.deleteById(id);
+        InacumulavelRepository.deleteById(id);
     }
 }
