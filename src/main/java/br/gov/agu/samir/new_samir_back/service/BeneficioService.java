@@ -1,5 +1,6 @@
 package br.gov.agu.samir.new_samir_back.service;
 
+import br.gov.agu.samir.new_samir_back.dtos.BeneficioInacumulavelResponseDTO;
 import br.gov.agu.samir.new_samir_back.dtos.BeneficioRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.BeneficioResponseDTO;
 import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFoundException;
@@ -50,21 +51,22 @@ public class BeneficioService {
     }
 
 
-    public BeneficioResponseDTO atualizarBeneficio(Long id, BeneficioRequestDTO requestDTO) {
+    public String atualizarBeneficio(Long id, BeneficioRequestDTO requestDTO) {
         BeneficioModel model = beneficioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Beneficio não encontrado"));
-
 
         List<BeneficioInacumulavelModel> beneficioInacumulavelModels = inacumulavelRepository.findAllById(requestDTO.getBeneficiosInacumulaveisIds());
 
-        BeneficioResponseDTO responseDTO = BeneficioResponseDTO.builder().
+        BeneficioModel modelUpdated = BeneficioModel.builder().
                 id(model.getId())
-                .diff(requestDTO.getDiff() != null ? requestDTO.getDiff() : model.getDiff())
+                .dif(requestDTO.getDif() != null ? requestDTO.getDif() : model.getDif())
                 .decimoTerceiro(requestDTO.getDecimoTerceiro() != null ? requestDTO.getDecimoTerceiro() : model.getDecimoTerceiro())
                 .nome(requestDTO.getNome() != null ? requestDTO.getNome() : model.getNome())
-                .beneficiosInacumulaveis(requestDTO.getBeneficiosInacumulaveisIds() != null ? mapper.toListResponseInacumulavelDTO(inacumulavelRepository.findAllById(requestDTO.getBeneficiosInacumulaveisIds())) : mapper.toListResponseInacumulavelDTO(model.getBeneficiosInacumulaveis()))
+                .beneficiosInacumulaveis(requestDTO.getBeneficiosInacumulaveisIds() != null ? beneficioInacumulavelModels : model.getBeneficiosInacumulaveis())
                 .build();
 
-        return responseDTO;
+        beneficioRepository.save(modelUpdated);
+
+        return "Beneficio atualizado com sucesso!";
     }
 
     public void deletarBeneficio(Long id) {

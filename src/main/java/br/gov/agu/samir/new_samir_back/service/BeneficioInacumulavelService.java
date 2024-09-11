@@ -35,8 +35,6 @@ public class BeneficioInacumulavelService {
         BeneficioInacumulavelModel savedModel = InacumulavelRepository.save(model);
 
         BeneficioInacumulavelResponseDTO responseDTO = mapper.toResponseDTO(savedModel);
-        responseDTO.setBeneficios(mapper.toBeneficioResponseList(beneficios));
-
 
         return responseDTO;
     }
@@ -46,20 +44,19 @@ public class BeneficioInacumulavelService {
         BeneficioInacumulavelModel model = InacumulavelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Benefício inacumulável não encontrado"));
         BeneficioInacumulavelResponseDTO responseDTO = mapper.toResponseDTO(model);
-        responseDTO.setBeneficios(mapper.toBeneficioResponseList(model.getBeneficios()));
         return responseDTO;
     }
 
-    public BeneficioInacumulavelResponseDTO atualizarBeneficioInacumulavel(Long id, BeneficioInacumulavelRequestDTO requestDTO) {
+    public String atualizarBeneficioInacumulavel(Long id, BeneficioInacumulavelRequestDTO requestDTO) {
         BeneficioInacumulavelModel model = InacumulavelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Benefício inacumulável não encontrado"));
-        model.setNome(requestDTO.getNome());
-        List<BeneficioModel> beneficios = beneficioRepository.findAllById(requestDTO.getBeneficios());
-        model.setBeneficios(beneficios);
-        BeneficioInacumulavelModel savedModel = InacumulavelRepository.save(model);
-        BeneficioInacumulavelResponseDTO responseDTO = mapper.toResponseDTO(savedModel);
-        responseDTO.setBeneficios(mapper.toBeneficioResponseList(beneficios));
-        return responseDTO;
+        BeneficioInacumulavelModel modelUpdated = BeneficioInacumulavelModel.builder()
+                .id(model.getId())
+                .nome(requestDTO.getNome())
+                .beneficios(beneficioRepository.findAllById(requestDTO.getBeneficios()))
+                .build();
+        InacumulavelRepository.save(modelUpdated);
+        return "Benefício inacumulável atualizado com sucesso";
     }
 
     public void deletarBeneficioInacumulavel(Long id) {

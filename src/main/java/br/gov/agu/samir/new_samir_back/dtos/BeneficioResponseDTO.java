@@ -12,7 +12,7 @@ import java.util.List;
 public class BeneficioResponseDTO {
     private Long id;
     private String nome;
-    private Boolean diff;
+    private Boolean dif;
     private Boolean decimoTerceiro;
-        private List<BeneficioInacumulavelResponseDTO> beneficiosInacumulaveis;
+    private List<BeneficioInacumulavelResponseDTO> beneficiosInacumulaveis;
 }

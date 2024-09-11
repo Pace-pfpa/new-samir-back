@@ -21,7 +21,7 @@ public interface BeneficioInacumulavelMapper {
     @Mapping(target = "beneficios", ignore = true)
     BeneficioInacumulavelModel toModel(BeneficioInacumulavelRequestDTO beneficioInacumulavelRequestDTO);
 
-    @Mapping(target = "beneficios", ignore = true)
+
     BeneficioInacumulavelResponseDTO toResponseDTO(BeneficioInacumulavelModel beneficioInacumulavelModel);
 
     default List<BeneficioResponseDTO> toBeneficioResponseList(List<BeneficioModel> beneficios) {

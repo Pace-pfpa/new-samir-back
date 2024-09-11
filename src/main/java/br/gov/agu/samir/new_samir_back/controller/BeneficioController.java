@@ -33,9 +33,9 @@ public class BeneficioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BeneficioResponseDTO> atualizarBeneficio(@PathVariable Long id, @RequestBody BeneficioRequestDTO requestDTO){
-        BeneficioResponseDTO responseDTO = beneficioService.atualizarBeneficio(id, requestDTO);
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<String> atualizarBeneficio(@PathVariable Long id, @RequestBody BeneficioRequestDTO requestDTO){
+        String response = beneficioService.atualizarBeneficio(id, requestDTO);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")

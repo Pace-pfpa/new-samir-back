@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 public class BeneficioRequestDTO {
     private String nome;
-    private Boolean diff;
+    private Boolean dif;
     private Boolean decimoTerceiro;
     private List<Long> beneficiosInacumulaveisIds;
 }

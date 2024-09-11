@@ -22,11 +22,11 @@ public class BeneficioModel {
 
     private String nome;
 
-    private Boolean diff;
+    private Boolean dif;
 
     private Boolean decimoTerceiro;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "tb_beneficio_inacumulavel",
             joinColumns = @JoinColumn(name = "beneficio_id"),
             inverseJoinColumns = @JoinColumn(name = "inacumulavel_id"))

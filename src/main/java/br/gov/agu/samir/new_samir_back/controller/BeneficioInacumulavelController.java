@@ -32,9 +32,9 @@ public class BeneficioInacumulavelController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BeneficioInacumulavelResponseDTO> atualizarBeneficioInacumulavel(@PathVariable Long id, @RequestBody BeneficioInacumulavelRequestDTO requestDTO) {
-        BeneficioInacumulavelResponseDTO responseDTO = beneficioInacumulavelService.atualizarBeneficioInacumulavel(id, requestDTO);
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<String> atualizarBeneficioInacumulavel(@PathVariable Long id, @RequestBody BeneficioInacumulavelRequestDTO requestDTO) {
+        String response = beneficioInacumulavelService.atualizarBeneficioInacumulavel(id, requestDTO);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")

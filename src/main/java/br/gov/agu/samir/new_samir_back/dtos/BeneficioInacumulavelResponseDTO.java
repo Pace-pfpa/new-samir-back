@@ -2,7 +2,6 @@ package br.gov.agu.samir.new_samir_back.dtos;
 
 import lombok.*;
 
-import java.util.List;
 
 @Getter
 @Setter
@@ -14,7 +13,4 @@ public class BeneficioInacumulavelResponseDTO {
     private Long id;
 
     private String nome;
-
-    private List<BeneficioResponseDTO> beneficios;
-
 }
