@@ -1,5 +1,6 @@
 package br.gov.agu.samir.new_samir_back.service.strategy.impl;
 
+import br.gov.agu.samir.new_samir_back.models.InpcModel;
 import br.gov.agu.samir.new_samir_back.models.IpcaeModel;
 import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.IpcaeRepository;
@@ -25,33 +26,34 @@ public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
 
     @Override
     public BigDecimal calcularIndexadorCorrecaoMonetaria(LocalDate dataAlvo) {
-        LocalDate dataFinalBusca = LocalDate.now().minusMonths(2).withDayOfMonth(1);
         LocalDate dataLimiteSelic = LocalDate.of(2021,11,1);
-        BigDecimal valorCorrecao = new BigDecimal("1");
 
         if(dataAlvo.isAfter(dataLimiteSelic)){
-            List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo,dataFinalBusca);
-            for (SelicModel selic : listSelic) {
-                BigDecimal valorSelic = selic.getValor().divide(new BigDecimal("100"));
-                valorCorrecao = valorCorrecao.add(valorSelic);
-            }
+            return calculoSomenteComSelic(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
         }else {
-            valorCorrecao = calcularSelicTotal(dataFinalBusca);
-            List<IpcaeModel> listIpcae = ipcaeRepository.findAllByDataBetween(dataAlvo, LocalDate.of(2021,11,1));
-            for (IpcaeModel ipcae : listIpcae) {
-                BigDecimal valorIpcae = ipcae.getValor().divide(new BigDecimal("100"));
-                valorIpcae = valorIpcae.add(new BigDecimal("1"));
-                valorCorrecao = valorCorrecao.multiply(valorIpcae);
-            }
+            return calculoComIPCAEeSELIC(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
+        }
+    }
+
+
+
+    private BigDecimal calculoComIPCAEeSELIC(LocalDate dataAlvo){
+        BigDecimal valorCorrecao = calculoSomenteComSelic(LocalDate.of(2021,12,1));
+        List<IpcaeModel> listIPCAE = ipcaeRepository.findAllByDataBetween(dataAlvo, LocalDate.of(2021,11,1));
+        for (IpcaeModel inpcModel : listIPCAE) {
+            BigDecimal valorIpcae= inpcModel.getValor().divide(BigDecimal.valueOf(100));
+            valorIpcae = valorIpcae.add(BigDecimal.valueOf(1));
+            valorCorrecao = valorCorrecao.multiply(valorIpcae);
         }
         return valorCorrecao;
     }
 
-    private BigDecimal calcularSelicTotal(LocalDate dataAtual){
+    private BigDecimal calculoSomenteComSelic(LocalDate dataAlvo){
         BigDecimal valorCorrecao = BigDecimal.ONE;
-        List<SelicModel> selicList = selicRepository.findAllByDataBetween(LocalDate.of(2021,12,1),LocalDate.now().minusMonths(2));
-        for (SelicModel selic : selicList) {
-            BigDecimal valorSelic = selic.getValor().divide(BigDecimal.valueOf(100));
+        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo,LocalDate.now().minusMonths(2));
+        for (SelicModel selic : listSelic) {
+            BigDecimal valorSelic = selic.getValor()
+                    .divide(BigDecimal.valueOf(100));
             valorCorrecao = valorCorrecao.add(valorSelic);
         }
         return valorCorrecao;
