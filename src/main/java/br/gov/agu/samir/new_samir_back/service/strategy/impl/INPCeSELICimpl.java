@@ -19,6 +19,8 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
 
     private final InpcRepository inpcRepository;
 
+    private static final LocalDate DATA_LIMITE_SELIC = LocalDate.of(2021,11,1);
+
     public INPCeSELICimpl(SelicRepository selicRepository, InpcRepository inpcRepository) {
         this.selicRepository = selicRepository;
         this.inpcRepository = inpcRepository;
@@ -26,34 +28,33 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
 
     @Override
     public BigDecimal calcularIndexadorCorrecaoMonetaria(LocalDate dataAlvo) {
-        LocalDate dataFinalBusca = LocalDate.now().minusMonths(2).withDayOfMonth(1);
-        LocalDate dataLimiteSelic = LocalDate.of(2021,11,1);
-        BigDecimal valorCorrecao = BigDecimal.ONE;
 
-        if(dataAlvo.isAfter(dataLimiteSelic)){
-            List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo,dataFinalBusca);
-            for (SelicModel selic : listSelic) {
-                BigDecimal valorSelic = selic.getValor().divide(new BigDecimal("100"));
-                valorCorrecao = valorCorrecao.add(valorSelic);
-            }
+        if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
+            return calculoSomenteComSelic(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
         }else {
-            valorCorrecao = calcularSelicTotal();
-            List<InpcModel> listInpc = inpcRepository.findAllByDataBetween(dataAlvo, LocalDate.of(2021,11,1));
-            for (InpcModel inpc : listInpc) {
-                BigDecimal valorInpc = inpc.getValor().divide(new BigDecimal("100"));
-                valorInpc = valorInpc.add(BigDecimal.ONE);
-                valorCorrecao = valorCorrecao.multiply(valorInpc);
-            }
+            return calculoComINPCeSELIC(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
+        }
+    }
+
+
+    private BigDecimal calculoComINPCeSELIC(LocalDate dataAlvo){
+        BigDecimal valorCorrecao = calculoSomenteComSelic(LocalDate.of(2021,12,1));
+        List<InpcModel> listINPC = inpcRepository.findAllByDataBetween(dataAlvo, DATA_LIMITE_SELIC);
+        for (InpcModel inpcModel : listINPC) {
+            BigDecimal valorInpc = inpcModel.getValor().divide(BigDecimal.valueOf(100));
+            valorInpc = valorInpc.add(BigDecimal.valueOf(1));
+            valorCorrecao = valorCorrecao.multiply(valorInpc);
         }
         return valorCorrecao;
     }
 
-    //isso ta funcionando
-    private BigDecimal calcularSelicTotal(){
+
+    private BigDecimal calculoSomenteComSelic(LocalDate dataAlvo){
         BigDecimal valorCorrecao = BigDecimal.ONE;
-        List<SelicModel> selicList = selicRepository.findAllByDataBetween(LocalDate.of(2021,12,1),LocalDate.now().minusMonths(2));
-        for (SelicModel selic : selicList) {
-            BigDecimal valorSelic = selic.getValor().divide(BigDecimal.valueOf(100));
+        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo,LocalDate.now().minusMonths(2));
+        for (SelicModel selic : listSelic) {
+            BigDecimal valorSelic = selic.getValor()
+                    .divide(BigDecimal.valueOf(100));
             valorCorrecao = valorCorrecao.add(valorSelic);
         }
         return valorCorrecao;

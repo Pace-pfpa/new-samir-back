@@ -19,6 +19,7 @@ public class BeneficioInacumulavelModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String nome;
 
     @ManyToMany(mappedBy = "beneficiosInacumulaveis")

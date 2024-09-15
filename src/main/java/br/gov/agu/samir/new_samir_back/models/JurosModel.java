@@ -24,8 +24,9 @@ public class JurosModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private LocalDate data;
 
-    @Column(precision = 38, scale = 4)
+    @Column(precision = 38, scale = 4, nullable = false)
     private BigDecimal valor;
 }
