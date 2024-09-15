@@ -19,6 +19,8 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
 
     private final InpcRepository inpcRepository;
 
+    private static final LocalDate DATA_LIMITE_SELIC = LocalDate.of(2021,11,1);
+
     public INPCeSELICimpl(SelicRepository selicRepository, InpcRepository inpcRepository) {
         this.selicRepository = selicRepository;
         this.inpcRepository = inpcRepository;
@@ -26,9 +28,8 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
 
     @Override
     public BigDecimal calcularIndexadorCorrecaoMonetaria(LocalDate dataAlvo) {
-        LocalDate dataLimiteSelic = LocalDate.of(2021,11,1);
 
-        if(dataAlvo.isAfter(dataLimiteSelic)){
+        if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
             return calculoSomenteComSelic(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
         }else {
             return calculoComINPCeSELIC(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
@@ -38,7 +39,7 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
 
     private BigDecimal calculoComINPCeSELIC(LocalDate dataAlvo){
         BigDecimal valorCorrecao = calculoSomenteComSelic(LocalDate.of(2021,12,1));
-        List<InpcModel> listINPC = inpcRepository.findAllByDataBetween(dataAlvo, LocalDate.of(2021,11,1));
+        List<InpcModel> listINPC = inpcRepository.findAllByDataBetween(dataAlvo, DATA_LIMITE_SELIC);
         for (InpcModel inpcModel : listINPC) {
             BigDecimal valorInpc = inpcModel.getValor().divide(BigDecimal.valueOf(100));
             valorInpc = valorInpc.add(BigDecimal.valueOf(1));
@@ -46,6 +47,7 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
         }
         return valorCorrecao;
     }
+
 
     private BigDecimal calculoSomenteComSelic(LocalDate dataAlvo){
         BigDecimal valorCorrecao = BigDecimal.ONE;

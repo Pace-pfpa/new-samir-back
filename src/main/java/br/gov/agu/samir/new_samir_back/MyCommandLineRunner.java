@@ -1,5 +1,6 @@
 package br.gov.agu.samir.new_samir_back;
 
+
 import br.gov.agu.samir.new_samir_back.service.strategy.CalculoJuros;
 import br.gov.agu.samir.new_samir_back.service.strategy.factory.CorrecaoMonetariaFactory;
 import br.gov.agu.samir.new_samir_back.service.strategy.impl.JUROSeSELIC;
@@ -16,6 +17,7 @@ public class MyCommandLineRunner implements CommandLineRunner {
     private final CorrecaoMonetariaFactory factory;
 
     private final CalculoJuros calculo;
+
 
     public MyCommandLineRunner(CorrecaoMonetariaFactory factory, JUROSeSELIC calculo) {
         this.factory = factory;
