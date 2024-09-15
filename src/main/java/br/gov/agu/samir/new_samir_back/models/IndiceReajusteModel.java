@@ -21,5 +21,6 @@ public class IndiceReajusteModel {
 
     private LocalDate data;
 
+    @Column(precision = 30, scale = 4)
     private BigDecimal valor;
 }
