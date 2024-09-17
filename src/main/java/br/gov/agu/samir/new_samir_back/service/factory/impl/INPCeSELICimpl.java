@@ -1,10 +1,10 @@
-package br.gov.agu.samir.new_samir_back.service.strategy.impl;
+package br.gov.agu.samir.new_samir_back.service.factory.impl;
 
 import br.gov.agu.samir.new_samir_back.models.InpcModel;
 import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.InpcRepository;
 import br.gov.agu.samir.new_samir_back.repository.SelicRepository;
-import br.gov.agu.samir.new_samir_back.service.strategy.CalculoCorrecaoMonetaria;
+import br.gov.agu.samir.new_samir_back.service.factory.CalculoCorrecaoMonetaria;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

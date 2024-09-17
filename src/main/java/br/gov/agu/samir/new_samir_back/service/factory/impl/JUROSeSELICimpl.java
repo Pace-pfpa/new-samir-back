@@ -1,11 +1,10 @@
-package br.gov.agu.samir.new_samir_back.service.strategy.impl;
+package br.gov.agu.samir.new_samir_back.service.factory.impl;
 
 import br.gov.agu.samir.new_samir_back.models.JurosModel;
 import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.JurosRepository;
 import br.gov.agu.samir.new_samir_back.repository.SelicRepository;
-import br.gov.agu.samir.new_samir_back.service.strategy.CalculoJuros;
-import org.springframework.cglib.core.Local;
+import br.gov.agu.samir.new_samir_back.service.factory.CalculoJuros;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -13,7 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Component
-public class JUROSeSELIC implements CalculoJuros {
+public class JUROSeSELICimpl implements CalculoJuros {
 
     private final JurosRepository jurosRepository;
 
@@ -23,7 +22,7 @@ public class JUROSeSELIC implements CalculoJuros {
 
     private final static  LocalDate DATA_FINAL_BUSCA = LocalDate.now().minusMonths(2);
 
-    public JUROSeSELIC(JurosRepository jurosRepository, SelicRepository selicRepository) {
+    public JUROSeSELICimpl(JurosRepository jurosRepository, SelicRepository selicRepository) {
         this.jurosRepository = jurosRepository;
         this.selicRepository = selicRepository;
     }
