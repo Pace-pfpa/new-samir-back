@@ -5,30 +5,35 @@ import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.JurosRepository;
 import br.gov.agu.samir.new_samir_back.repository.SelicRepository;
 import br.gov.agu.samir.new_samir_back.service.factory.CalculoJuros;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
+@AllArgsConstructor
 public class JUROSeSELICimpl implements CalculoJuros {
 
     private final JurosRepository jurosRepository;
 
     private final SelicRepository selicRepository;
 
+    private final DateTimeFormatter ddMMyyyy;
+
     private final static LocalDate DATA_LIMITE_SELIC = LocalDate.of(2021,11,1);
 
     private final static  LocalDate DATA_FINAL_BUSCA = LocalDate.now().minusMonths(2);
 
-    public JUROSeSELICimpl(JurosRepository jurosRepository, SelicRepository selicRepository) {
-        this.jurosRepository = jurosRepository;
-        this.selicRepository = selicRepository;
-    }
+
 
     @Override
-    public BigDecimal calcularJuros(LocalDate dataAlvo) {
+    public BigDecimal calcularJuros(String data) {
+
+        LocalDate dataAlvo = LocalDate.parse(data,ddMMyyyy);
+
         if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
             return calculoSomenteComSelic(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
         }else{

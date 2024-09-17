@@ -5,29 +5,32 @@ import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.InpcRepository;
 import br.gov.agu.samir.new_samir_back.repository.SelicRepository;
 import br.gov.agu.samir.new_samir_back.service.factory.CalculoCorrecaoMonetaria;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
 @Component
+@AllArgsConstructor
 public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
 
     private final SelicRepository selicRepository;
 
     private final InpcRepository inpcRepository;
 
+    private final DateTimeFormatter ddMMyyyy;
+
     private static final LocalDate DATA_LIMITE_SELIC = LocalDate.of(2021,11,1);
 
-    public INPCeSELICimpl(SelicRepository selicRepository, InpcRepository inpcRepository) {
-        this.selicRepository = selicRepository;
-        this.inpcRepository = inpcRepository;
-    }
 
     @Override
-    public BigDecimal calcularIndexadorCorrecaoMonetaria(LocalDate dataAlvo) {
+    public BigDecimal calcularIndexadorCorrecaoMonetaria(String data) {
+
+        LocalDate dataAlvo = LocalDate.parse(data,ddMMyyyy);
 
         if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
             return calculoSomenteComSelic(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
