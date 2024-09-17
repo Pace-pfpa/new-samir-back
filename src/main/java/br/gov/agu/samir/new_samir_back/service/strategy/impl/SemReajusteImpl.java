@@ -21,7 +21,7 @@ public class SemReajusteImpl implements IndiceReajusteStrategy {
         if (isSemReajuste(dataString)) {
             return BigDecimal.ONE;
         }
-        return null;
+        return BigDecimal.ZERO;
     }
 
     private boolean isSemReajuste(String data) {

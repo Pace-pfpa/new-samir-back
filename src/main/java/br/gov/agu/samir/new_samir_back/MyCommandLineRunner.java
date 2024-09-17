@@ -32,15 +32,5 @@ public class MyCommandLineRunner implements CommandLineRunner {
         BigDecimal indexadorCorrecaoMonetaria = factory.getCalculo(TipoCorrecaoMonetaria.TIPO4).calcularIndexadorCorrecaoMonetaria("01/01/2021");
         System.out.println("Indexador Correção Monetária: " + indexadorCorrecaoMonetaria);
 
-        CalculoRequestDTO requestDTO = CalculoRequestDTO.builder()
-                .dib(LocalDate.of(2022, 12, 20))
-                .dataFim(LocalDate.of(2023, 1, 1))
-                .rmi(BigDecimal.valueOf(1000))
-                .tipoJuros(TipoJuros.TIPO2)
-                .tipoCorrecao(TipoCorrecaoMonetaria.TIPO4)
-                .build();
-
-        BigDecimal reajuste = strategyList.stream().map(impl -> impl.calcularIndiceReajuste(requestDTO, "01/01/2023")).reduce(BigDecimal.ZERO, BigDecimal::add);
-        System.out.println("Reajuste: " + reajuste);
     }
 }

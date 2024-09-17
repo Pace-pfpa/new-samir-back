@@ -24,9 +24,9 @@ public class PrimeiroReajusteimpl implements IndiceReajusteStrategy {
         LocalDate dib = request.getDib();
 
         if (isPrimeiroReajuste(data, dib)) {
-            return indiceReajusteRepository.findByData(dib).get().getValor();
+            return indiceReajusteRepository.findByData(dib.withDayOfMonth(1)).get().getValor();
         }
-        return null;
+        return BigDecimal.ZERO;
     }
 
     private boolean isPrimeiroReajuste(LocalDate data, LocalDate dib) {

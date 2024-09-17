@@ -28,7 +28,7 @@ public class ComumReajusteImpl implements IndiceReajusteStrategy {
             return indiceReajusteRepository.findByData(data.minusYears(1)).get().getValor();
         }
 
-        return null;
+        return BigDecimal.ZERO;
     }
 
     private  boolean isReajusteComum(LocalDate data, LocalDate dib) {

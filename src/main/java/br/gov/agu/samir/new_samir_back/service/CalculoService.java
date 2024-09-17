@@ -31,8 +31,7 @@ public class CalculoService {
         List<CalculoResponseDTO> tabela = new ArrayList<>();
 
         for (String data : dataList){
-
-            BigDecimal indiceReajuste = indiceReajuste(data, requestDTO);
+            BigDecimal indiceReajuste = isDecimoTerceiro(data) ? BigDecimal.ONE : indiceReajuste(data, requestDTO);
             BigDecimal valorRmi = rmiStrategy.calcularRmi(requestDTO, data);
             BigDecimal devido = valorRmi.multiply(indiceReajuste).setScale(2, BigDecimal.ROUND_HALF_UP);
             BigDecimal recebido = BigDecimal.ZERO;
@@ -58,11 +57,27 @@ public class CalculoService {
                         .build();
 
                 tabela.add(linha);
+            }else {
+                CalculoResponseDTO linha = CalculoResponseDTO.builder()
+                        .data(data)
+                        .indiceReajusteDevido(indiceReajuste)
+                        .devido(devido)
+                        .indiceReajusteRecebido(indiceReajuste)
+                        .recebido(recebido)
+                        .diferenca(diferenca)
+                        .indiceCorrecaoMonetaria(indiceCorrecaoMonetaria)
+                        .salarioCorrigido(salarioCorrigido)
+                        .porcentagemJuros(BigDecimal.ZERO)
+                        .juros(BigDecimal.ZERO)
+                        .soma(salarioCorrigido)
+                        .build();
+
+                tabela.add(linha);
             }
         }
 
 
-        return null;
+        return tabela;
     }
 
 
