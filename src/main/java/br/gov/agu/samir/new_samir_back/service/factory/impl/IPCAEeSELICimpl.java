@@ -1,34 +1,37 @@
-package br.gov.agu.samir.new_samir_back.service.strategy.impl;
+package br.gov.agu.samir.new_samir_back.service.factory.impl;
 
-import br.gov.agu.samir.new_samir_back.models.InpcModel;
 import br.gov.agu.samir.new_samir_back.models.IpcaeModel;
 import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.IpcaeRepository;
 import br.gov.agu.samir.new_samir_back.repository.SelicRepository;
-import br.gov.agu.samir.new_samir_back.service.strategy.CalculoCorrecaoMonetaria;
+import br.gov.agu.samir.new_samir_back.service.factory.CalculoCorrecaoMonetaria;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
+@AllArgsConstructor
 public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
 
     private final SelicRepository selicRepository;
 
     private final IpcaeRepository ipcaeRepository;
 
-    public IPCAEeSELICimpl(SelicRepository selicRepository, IpcaeRepository ipcaeRepository) {
-        this.selicRepository = selicRepository;
-        this.ipcaeRepository = ipcaeRepository;
-    }
+    private final DateTimeFormatter ddMMyyyy;
+    
+    private static final LocalDate DATA_LIMITE_SELIC = LocalDate.of(2021,11,1);
 
     @Override
-    public BigDecimal calcularIndexadorCorrecaoMonetaria(LocalDate dataAlvo) {
-        LocalDate dataLimiteSelic = LocalDate.of(2021,11,1);
+    public BigDecimal calcularIndexadorCorrecaoMonetaria(String data) {
+        
+        LocalDate dataAlvo = LocalDate.parse(data,ddMMyyyy);
+        
 
-        if(dataAlvo.isAfter(dataLimiteSelic)){
+        if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
             return calculoSomenteComSelic(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
         }else {
             return calculoComIPCAEeSELIC(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
