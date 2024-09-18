@@ -4,6 +4,7 @@ import br.gov.agu.samir.new_samir_back.dtos.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.CalculoResponseDTO;
 import br.gov.agu.samir.new_samir_back.enums.TipoCorrecaoMonetaria;
 import br.gov.agu.samir.new_samir_back.service.factory.CorrecaoMonetariaFactory;
+import br.gov.agu.samir.new_samir_back.service.strategy.DecimoTerceiroStrategy;
 import br.gov.agu.samir.new_samir_back.service.strategy.IndiceReajusteStrategy;
 import br.gov.agu.samir.new_samir_back.service.strategy.RmiStrategy;
 import br.gov.agu.samir.new_samir_back.util.DateUtils;
@@ -21,6 +22,8 @@ public class CalculoService {
     private final List<IndiceReajusteStrategy> indiceReajusteStrategyList;
 
     private final RmiStrategy rmiStrategy;
+
+    private final DecimoTerceiroStrategy decimoTerceiroStrategy;
 
     private final CorrecaoMonetariaFactory correcaoMonetariaFactory;
 
@@ -58,18 +61,22 @@ public class CalculoService {
 
                 tabela.add(linha);
             }else {
+
+                BigDecimal decimoTerceiro = decimoTerceiroStrategy.calcularDecimoTerceiro(requestDTO, devido, data);
+                BigDecimal devidoDecimoTerceiro = decimoTerceiro.multiply(indiceReajuste).setScale(2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal salarioCorrigidoDecimoTerceiro = devidoDecimoTerceiro.multiply(indiceCorrecaoMonetaria).setScale(2, BigDecimal.ROUND_HALF_UP);
                 CalculoResponseDTO linha = CalculoResponseDTO.builder()
                         .data(data)
                         .indiceReajusteDevido(indiceReajuste)
-                        .devido(devido)
+                        .devido(devidoDecimoTerceiro)
                         .indiceReajusteRecebido(indiceReajuste)
-                        .recebido(recebido)
-                        .diferenca(diferenca)
+                        .recebido(BigDecimal.ZERO)
+                        .diferenca(devidoDecimoTerceiro)
                         .indiceCorrecaoMonetaria(indiceCorrecaoMonetaria)
-                        .salarioCorrigido(salarioCorrigido)
+                        .salarioCorrigido(salarioCorrigidoDecimoTerceiro)
                         .porcentagemJuros(BigDecimal.ZERO)
                         .juros(BigDecimal.ZERO)
-                        .soma(salarioCorrigido)
+                        .soma(salarioCorrigidoDecimoTerceiro)
                         .build();
 
                 tabela.add(linha);
