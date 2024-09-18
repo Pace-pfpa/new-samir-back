@@ -63,7 +63,7 @@ public class JUROSeSELICimpl implements CalculoJuros {
 
     private BigDecimal retornaSelicTotalSelicTotal(){
         BigDecimal valorJuros = BigDecimal.ZERO;
-        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(LocalDate.of(2021,12,1),LocalDate.now().minusMonths(2));
+        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(LocalDate.of(2021,12,1),DATA_FINAL_BUSCA);
         for (SelicModel selicModel : listSelic) {
             valorJuros = valorJuros.add(selicModel.getValor());
         }

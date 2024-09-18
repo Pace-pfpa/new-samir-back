@@ -52,7 +52,7 @@ public class IpcaeController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping("buscarPorData")
+    @GetMapping("/buscarPorData")
     public ResponseEntity<IpcaeResponseDTO> buscarPorData(@RequestParam int mes, @RequestParam int ano) {
         IpcaeResponseDTO responseDTO = service.buscarPorData(mes,ano);
         return ResponseEntity.ok(responseDTO);

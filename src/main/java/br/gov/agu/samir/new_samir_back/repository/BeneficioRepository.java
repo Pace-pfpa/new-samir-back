@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BeneficioRepository extends JpaRepository<BeneficioModel, Long> {
+
+    BeneficioModel findByNome(String nome);
 }

@@ -6,6 +6,7 @@ import br.gov.agu.samir.new_samir_back.enums.TipoCorrecaoMonetaria;
 import br.gov.agu.samir.new_samir_back.service.factory.CalculoJurosFactory;
 import br.gov.agu.samir.new_samir_back.service.factory.CorrecaoMonetariaFactory;
 import br.gov.agu.samir.new_samir_back.service.strategy.DecimoTerceiroStrategy;
+import br.gov.agu.samir.new_samir_back.service.strategy.GerarListaStrategy;
 import br.gov.agu.samir.new_samir_back.service.strategy.IndiceReajusteStrategy;
 import br.gov.agu.samir.new_samir_back.service.strategy.RmiStrategy;
 import br.gov.agu.samir.new_samir_back.service.strategy.impl.CalculoJurosStrategy;
@@ -26,6 +27,8 @@ public class CalculoService {
 
     private final RmiStrategy rmiStrategy;
 
+    private final GerarListaStrategy gerarListaStrategy;
+
     private final DecimoTerceiroStrategy decimoTerceiroStrategy;
 
     private final CorrecaoMonetariaFactory correcaoMonetariaFactory;
@@ -35,7 +38,9 @@ public class CalculoService {
 
     public List<CalculoResponseDTO> calculoSemBeneficioAcumulado(CalculoRequestDTO requestDTO) {
 
-        List<String> dataList = DateUtils.gerarListaDataComDecimoTerceiro(requestDTO.getDib(), requestDTO.getDataFim());
+        //List<String> dataList = DateUtils.gerarListaDataComDecimoTerceiro(requestDTO.getDib(), requestDTO.getDataFim());
+       List<String> dataList = gerarListaStrategy.gerarLista(requestDTO);
+
         List<CalculoResponseDTO> tabela = new ArrayList<>();
 
         for (String data : dataList){

@@ -1,8 +1,10 @@
 package br.gov.agu.samir.new_samir_back.dtos;
 
 
+
 import br.gov.agu.samir.new_samir_back.enums.TipoCorrecaoMonetaria;
 import br.gov.agu.samir.new_samir_back.enums.TipoJuros;
+import br.gov.agu.samir.new_samir_back.models.BeneficioModel;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -38,4 +40,6 @@ public class CalculoRequestDTO {
 
     @Enumerated(EnumType.STRING)
     private TipoCorrecaoMonetaria tipoCorrecao;
+
+    private String beneficio;
 }
