@@ -3,15 +3,18 @@ package br.gov.agu.samir.new_samir_back.service;
 import br.gov.agu.samir.new_samir_back.dtos.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.CalculoResponseDTO;
 import br.gov.agu.samir.new_samir_back.enums.TipoCorrecaoMonetaria;
+import br.gov.agu.samir.new_samir_back.service.factory.CalculoJurosFactory;
 import br.gov.agu.samir.new_samir_back.service.factory.CorrecaoMonetariaFactory;
 import br.gov.agu.samir.new_samir_back.service.strategy.DecimoTerceiroStrategy;
 import br.gov.agu.samir.new_samir_back.service.strategy.IndiceReajusteStrategy;
 import br.gov.agu.samir.new_samir_back.service.strategy.RmiStrategy;
+import br.gov.agu.samir.new_samir_back.service.strategy.impl.CalculoJurosStrategy;
 import br.gov.agu.samir.new_samir_back.util.DateUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +29,8 @@ public class CalculoService {
     private final DecimoTerceiroStrategy decimoTerceiroStrategy;
 
     private final CorrecaoMonetariaFactory correcaoMonetariaFactory;
+
+    private final CalculoJurosStrategy calculoJurosStrategy;
 
 
     public List<CalculoResponseDTO> calculoSemBeneficioAcumulado(CalculoRequestDTO requestDTO) {
@@ -42,6 +47,8 @@ public class CalculoService {
             TipoCorrecaoMonetaria tipoCorrecao = requestDTO.getTipoCorrecao();
             BigDecimal indiceCorrecaoMonetaria = correcaoMonetariaFactory.getCalculo(tipoCorrecao).calcularIndexadorCorrecaoMonetaria(data);
             BigDecimal salarioCorrigido = devido.multiply(indiceCorrecaoMonetaria).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal porcentagemJuros = calculoJurosStrategy.calcularJuros(requestDTO, data);
+            BigDecimal juros = salarioCorrigido.multiply(porcentagemJuros).setScale(2, BigDecimal.ROUND_HALF_UP);
 
 
             if (!isDecimoTerceiro(data)){
@@ -54,8 +61,8 @@ public class CalculoService {
                         .diferenca(diferenca)
                         .indiceCorrecaoMonetaria(indiceCorrecaoMonetaria)
                         .salarioCorrigido(salarioCorrigido)
-                        .porcentagemJuros(BigDecimal.ZERO)
-                        .juros(BigDecimal.ZERO)
+                        .porcentagemJuros(porcentagemJuros)
+                        .juros(juros)
                         .soma(salarioCorrigido)
                         .build();
 

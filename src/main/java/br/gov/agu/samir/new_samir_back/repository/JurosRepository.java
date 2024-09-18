@@ -18,4 +18,6 @@ public interface JurosRepository extends JpaRepository<JurosModel,Long> {
 
     @Query("SELECT s FROM JurosModel s WHERE s.data BETWEEN :dataInicio AND :dataFim")
     List<JurosModel> findAllByDataBetween(@Param("dataInicio") LocalDate dataInicio, @Param("dataFim") LocalDate dataFim);
+
+    JurosModel findByData(LocalDate data);
 }
