@@ -28,9 +28,9 @@ public class GerarListaImpl implements GerarListaStrategy {
     }
 
     private boolean isBeneficioSemDecimoTerceiro(CalculoRequestDTO requestDTO) {
-        return  requestDTO.getBeneficio() != beneficioRepository.findByNome("87 - LOAS DEFICIENTE").getNome()
-                && requestDTO.getBeneficio() != beneficioRepository.findByNome("88 - LOAS IDOSO").getNome()
-                && requestDTO.getBeneficio() != beneficioRepository.findByNome("XX - SEGURO-DEFESO").getNome();
+        return  requestDTO.getBeneficio() == beneficioRepository.findByNome("87 - LOAS DEFICIENTE").getNome()
+                && requestDTO.getBeneficio() == beneficioRepository.findByNome("88 - LOAS IDOSO").getNome()
+                && requestDTO.getBeneficio() == beneficioRepository.findByNome("XX - SEGURO-DEFESO").getNome();
 
     }
 
