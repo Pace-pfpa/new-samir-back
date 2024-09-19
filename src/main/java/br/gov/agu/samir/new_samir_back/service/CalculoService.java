@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 @Service
@@ -38,22 +39,37 @@ public class CalculoService {
 
     public List<CalculoResponseDTO> calculoSemBeneficioAcumulado(CalculoRequestDTO requestDTO) {
 
-        //List<String> dataList = DateUtils.gerarListaDataComDecimoTerceiro(requestDTO.getDib(), requestDTO.getDataFim());
+
        List<String> dataList = gerarListaStrategy.gerarLista(requestDTO);
 
         List<CalculoResponseDTO> tabela = new ArrayList<>();
 
+        BigDecimal salarioReajustadoAnual = rmiStrategy.calcularRmi(requestDTO, dataList.get(0));
+
         for (String data : dataList){
+
+            if (isDataDeReajuste(data)){
+                salarioReajustadoAnual = rmiStrategy.calcularRmi(requestDTO, data).multiply(indiceReajuste(data, requestDTO)).setScale(2, BigDecimal.ROUND_HALF_UP);
+            }
+
             BigDecimal indiceReajuste = isDecimoTerceiro(data) ? BigDecimal.ONE : indiceReajuste(data, requestDTO);
-            BigDecimal valorRmi = rmiStrategy.calcularRmi(requestDTO, data);
-            BigDecimal devido = valorRmi.multiply(indiceReajuste).setScale(2, BigDecimal.ROUND_HALF_UP);
+
+            BigDecimal devido = salarioReajustadoAnual;
+
             BigDecimal recebido = BigDecimal.ZERO;
+
             BigDecimal diferenca = devido.subtract(recebido).setScale(2, BigDecimal.ROUND_HALF_UP);
+
             TipoCorrecaoMonetaria tipoCorrecao = requestDTO.getTipoCorrecao();
+
             BigDecimal indiceCorrecaoMonetaria = correcaoMonetariaFactory.getCalculo(tipoCorrecao).calcularIndexadorCorrecaoMonetaria(data);
+
             BigDecimal salarioCorrigido = devido.multiply(indiceCorrecaoMonetaria).setScale(2, BigDecimal.ROUND_HALF_UP);
+
             BigDecimal porcentagemJuros = calculoJurosStrategy.calcularJuros(requestDTO, data);
+
             BigDecimal juros = salarioCorrigido.multiply(porcentagemJuros).setScale(2, BigDecimal.ROUND_HALF_UP);
+
 
 
             if (!isDecimoTerceiro(data)){
@@ -102,6 +118,10 @@ public class CalculoService {
 
     private boolean isDecimoTerceiro(String data){
         return data.split("/")[1].equals("13");
+    }
+
+    private boolean isDataDeReajuste(String data){
+        return data.split("/")[1].equals("01");
     }
 
     private BigDecimal indiceReajuste(String data, CalculoRequestDTO requestDTO){
