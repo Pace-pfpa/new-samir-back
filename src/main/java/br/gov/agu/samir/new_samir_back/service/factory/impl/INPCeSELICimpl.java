@@ -30,6 +30,10 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
     @Override
     public BigDecimal calcularIndexadorCorrecaoMonetaria(String data) {
 
+        if (isDecimoTerceiro(data)){
+            data = data.replace("/13","/12");
+        }
+
         LocalDate dataAlvo = LocalDate.parse(data,ddMMyyyy);
 
         if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
@@ -61,5 +65,9 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
             valorCorrecao = valorCorrecao.add(valorSelic);
         }
         return valorCorrecao;
+    }
+
+    private boolean isDecimoTerceiro(String data){
+        return data.split("/")[1].equals("13");
     }
 }
