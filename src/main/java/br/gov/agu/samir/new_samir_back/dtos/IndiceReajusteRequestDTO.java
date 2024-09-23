@@ -18,4 +18,6 @@ public class IndiceReajusteRequestDTO {
 
     private BigDecimal valor;
 
+    private LocalDate dataReajuste;
+
 }

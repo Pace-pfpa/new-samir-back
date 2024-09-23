@@ -24,4 +24,7 @@ public class IndiceReajusteModel {
 
     @Column(precision = 30, scale = 4, nullable = false)
     private BigDecimal valor;
+
+    @Column(nullable = false)
+    private LocalDate dataReajuste;
 }

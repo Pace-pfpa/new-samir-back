@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -37,9 +38,9 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
         LocalDate dataAlvo = LocalDate.parse(data,ddMMyyyy);
 
         if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
-            return calculoSomenteComSelic(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
+            return calculoSomenteComSelic(dataAlvo).setScale(4, RoundingMode.HALF_UP);
         }else {
-            return calculoComINPCeSELIC(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
+            return calculoComINPCeSELIC(dataAlvo).setScale(4, RoundingMode.HALF_UP);
         }
     }
 
@@ -48,7 +49,7 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
         BigDecimal valorCorrecao = calculoSomenteComSelic(LocalDate.of(2021,12,1));
         List<InpcModel> listINPC = inpcRepository.findAllByDataBetween(dataAlvo, DATA_LIMITE_SELIC);
         for (InpcModel inpcModel : listINPC) {
-            BigDecimal valorInpc = inpcModel.getValor().divide(BigDecimal.valueOf(100));
+            BigDecimal valorInpc = inpcModel.getValor().divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
             valorInpc = valorInpc.add(BigDecimal.valueOf(1));
             valorCorrecao = valorCorrecao.multiply(valorInpc);
         }
@@ -61,7 +62,7 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
         List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo,LocalDate.now().minusMonths(2));
         for (SelicModel selic : listSelic) {
             BigDecimal valorSelic = selic.getValor()
-                    .divide(BigDecimal.valueOf(100));
+                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
             valorCorrecao = valorCorrecao.add(valorSelic);
         }
         return valorCorrecao;

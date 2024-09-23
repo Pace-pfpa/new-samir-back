@@ -2,6 +2,7 @@ package br.gov.agu.samir.new_samir_back.dtos;
 
 
 
+import br.gov.agu.samir.new_samir_back.enums.BeneficiosEnum;
 import br.gov.agu.samir.new_samir_back.enums.TipoCorrecaoMonetaria;
 import br.gov.agu.samir.new_samir_back.enums.TipoJuros;
 import br.gov.agu.samir.new_samir_back.models.BeneficioModel;
@@ -41,5 +42,8 @@ public class CalculoRequestDTO {
     @Enumerated(EnumType.STRING)
     private TipoCorrecaoMonetaria tipoCorrecao;
 
-    private String beneficio;
+    private BeneficiosEnum Beneficio;
+
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
+    private LocalDate dibAnterior;
 }

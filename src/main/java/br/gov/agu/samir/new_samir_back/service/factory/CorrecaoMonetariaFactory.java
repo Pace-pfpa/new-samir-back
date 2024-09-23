@@ -1,28 +1,22 @@
 package br.gov.agu.samir.new_samir_back.service.factory;
 
 import br.gov.agu.samir.new_samir_back.enums.TipoCorrecaoMonetaria;
-import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFoundException;
 import br.gov.agu.samir.new_samir_back.service.factory.impl.INPCeSELICimpl;
 import br.gov.agu.samir.new_samir_back.service.factory.impl.IPCAEeSELICimpl;
-import org.springframework.context.ApplicationContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static br.gov.agu.samir.new_samir_back.enums.TipoCorrecaoMonetaria.TIPO4;
+
+@RequiredArgsConstructor
 @Service
 public class CorrecaoMonetariaFactory {
 
-    private ApplicationContext context;
+    private final INPCeSELICimpl inpCeSELICimpl;
 
-    public CorrecaoMonetariaFactory(ApplicationContext context) {
-        this.context = context;
-    }
+    private final IPCAEeSELICimpl ipcaEeSELICimpl;
 
     public CalculoCorrecaoMonetaria getCalculo(TipoCorrecaoMonetaria tipo) {
-        if (tipo == TipoCorrecaoMonetaria.TIPO4) {
-            return context.getBean(INPCeSELICimpl.class);
-        }
-        if (tipo == TipoCorrecaoMonetaria.TIPO6) {
-            return context.getBean(IPCAEeSELICimpl.class);
-        }
-        throw new ResourceNotFoundException("Tipo de cálculo não encontrado");
+        return tipo == TIPO4 ? inpCeSELICimpl : ipcaEeSELICimpl;
     }
 }
