@@ -2,7 +2,6 @@ package br.gov.agu.samir.new_samir_back.service;
 
 import br.gov.agu.samir.new_samir_back.dtos.BeneficioInacumulavelRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.BeneficioInacumulavelResponseDTO;
-import br.gov.agu.samir.new_samir_back.dtos.BeneficioRequestDTO;
 import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFoundException;
 import br.gov.agu.samir.new_samir_back.mapper.BeneficioInacumulavelMapper;
 import br.gov.agu.samir.new_samir_back.models.BeneficioInacumulavelModel;

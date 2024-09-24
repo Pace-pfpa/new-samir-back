@@ -39,7 +39,6 @@ public class NovoCalculoService {
 
         for(String data : datas) {
 
-
             if (isDataDeReajuste(data)){
                 BigDecimal valorRmi = calculoRmiService.calcularRmi(rmiConversavada, data);
                 BigDecimal indiceReajusteAnual = isPrimeiroReajuste(infoCalculo, data) ? calculoIndiceReajusteService.primeiroReajuste(infoCalculo) : calculoIndiceReajusteService.comumReajuste(data);
