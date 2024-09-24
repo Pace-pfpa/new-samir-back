@@ -5,6 +5,7 @@ import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFoundException;
 import br.gov.agu.samir.new_samir_back.repository.IndiceReajusteRepository;
 import br.gov.agu.samir.new_samir_back.util.DateUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,8 +26,8 @@ public class CalculoIndiceReajusteService {
      * @return BigDecimal
      * Reajuste comum é o segundo reajuste em diante, que ocorre no mês de janeiro e a partir do segundo ano da DIB.
      */
-    public BigDecimal comumReajuste(String dataReajuste){
-        return indiceReajusteRepository.findFirstByData(dateUtils.mapStringToLocalDate(dataReajuste)).getValor();
+    public BigDecimal comumReajuste(String dataReajuste) {
+        return indiceReajusteRepository.findFirstByDataReajuste(dateUtils.mapStringToLocalDate(dataReajuste)).getValor();
     }
 
 

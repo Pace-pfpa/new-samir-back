@@ -13,4 +13,6 @@ public interface IndiceReajusteRepository extends JpaRepository<IndiceReajusteMo
     Optional<IndiceReajusteModel> findByData(LocalDate data);
 
     IndiceReajusteModel findFirstByData(LocalDate data);
+
+    IndiceReajusteModel findFirstByDataReajuste(LocalDate dataReajuste);
 }

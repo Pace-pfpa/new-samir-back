@@ -60,27 +60,25 @@ public List<String> gerarListaDatas(CalculoRequestDTO infoCalculo) {
         return listaDeDatas;
     }
 
-    private List<String> gerarListaSemDecimoTerceiro(LocalDate dib, LocalDate fimCalculo){
+    private List<String> gerarListaSemDecimoTerceiro(LocalDate dib, LocalDate fimCalculo) {
         List<String> listaDeDatas = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        // Adiciona a data inicial no formato
+        // Adicionar a data inicial formatada
         listaDeDatas.add(dib.format(formatter));
 
-        LocalDate dataAtual = dib.withDayOfMonth(1); // Começa no dia 01 do mês da data inicial
+        // Pular para o próximo mês
+        LocalDate proximaData = dib.plusMonths(1).withDayOfMonth(1);
 
-        while (dataAtual.isBefore(fimCalculo) || dataAtual.isEqual(fimCalculo)) {
-            // Adiciona a data formatada à lista
-            listaDeDatas.add(dataAtual.format(formatter));
-
-            // Pula para o próximo mês
-            dataAtual = dataAtual.plusMonths(1);
+        // Iterar até o mês anterior da data final
+        while (proximaData.isBefore(fimCalculo)) {
+            // Adiciona a data 01 de cada mês
+            listaDeDatas.add(proximaData.format(formatter));
+            proximaData = proximaData.plusMonths(1);
         }
 
-        // Adiciona a data final no formato se ainda não tiver sido adicionada
-        if (!listaDeDatas.contains(fimCalculo.format(formatter))) {
-            listaDeDatas.add(fimCalculo.format(formatter));
-        }
+        // Adiciona a data final formatada
+        listaDeDatas.add(fimCalculo.format(formatter));
 
         return listaDeDatas;
     }

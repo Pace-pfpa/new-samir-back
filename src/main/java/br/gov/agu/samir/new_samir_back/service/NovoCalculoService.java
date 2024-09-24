@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,69 +27,78 @@ public class NovoCalculoService {
     private final CalculoJurosService calculoJurosService;
 
 
-    public List<CalculoResponseDTO> calculoSemBeneficioAcumulado(CalculoRequestDTO infoCalculo){
+    public List<CalculoResponseDTO> calculoSemBeneficioAcumulado(CalculoRequestDTO infoCalculo) {
 
         List<CalculoResponseDTO> tabela = new ArrayList<>();
 
         List<String> datas = gerarListaDatasService.gerarListaDatas(infoCalculo);
 
-        BigDecimal valorRmi = calculoRmiService.calcularRmi(infoCalculo.getRmi(), datas.get(0));
-
         BigDecimal indiceReajuste = BigDecimal.ONE;
 
+        BigDecimal rmiConversavada = infoCalculo.getRmi();
 
-
-        for (String data : datas){
-
-            BigDecimal devido = valorRmi.multiply(indiceReajuste);
-
-            BigDecimal recebido = BigDecimal.ZERO;
-
-            BigDecimal diferenca = devido.subtract(recebido);
-            BigDecimal indiceCorrecaMonetaria = correcaoMonetariaFactory.getCalculo(infoCalculo.getTipoCorrecao()).calcularIndexadorCorrecaoMonetaria(data);
-
-
-            BigDecimal salarioCorrigido = diferenca.multiply(indiceCorrecaMonetaria);
-
-            BigDecimal porcentagemjuros = isCalculoComJuros(infoCalculo) ? calculoJurosService.calcularJuros(infoCalculo, data) : BigDecimal.ZERO;
-            BigDecimal juros = salarioCorrigido.multiply(porcentagemjuros);
+        for(String data : datas) {
 
 
             if (isDataDeReajuste(data)){
-
-                if (isPrimeiroReajuste(infoCalculo, data)) {
-                    indiceReajuste = calculoIndiceReajusteService.primeiroReajuste(infoCalculo);
-                }
-                valorRmi = calculoRmiService.calcularRmi(valorRmi, data);
-                indiceReajuste = calculoIndiceReajusteService.comumReajuste(data);
+                BigDecimal valorRmi = calculoRmiService.calcularRmi(rmiConversavada, data);
+                BigDecimal indiceReajusteAnual = isPrimeiroReajuste(infoCalculo, data) ? calculoIndiceReajusteService.primeiroReajuste(infoCalculo) : calculoIndiceReajusteService.comumReajuste(data);
+                rmiConversavada = valorRmi.multiply(indiceReajusteAnual);
             }
 
-            CalculoResponseDTO linha = CalculoResponseDTO.builder()
-                    .data(data)
-                    .indiceReajusteDevido(indiceReajuste)
-                    .devido(devido)
-                    .indiceReajusteRecebido(indiceReajuste)
-                    .recebido(recebido)
-                    .diferenca(diferenca)
-                    .indiceCorrecaoMonetaria(BigDecimal.ZERO)
-                    .salarioCorrigido(salarioCorrigido)
-                    .porcentagemJuros(porcentagemjuros)
-                    .juros(juros)
-                    .soma(salarioCorrigido.add(juros)).build();
+            BigDecimal rmi = calculoRmiService.calcularRmi(rmiConversavada, data);
+
+            CalculoResponseDTO linha = new CalculoResponseDTO();
+
+            linha.setData(data);
+
+            linha.setIndiceReajusteDevido(indiceReajuste);
+
+            BigDecimal devido = rmi.multiply(indiceReajuste).setScale(2, RoundingMode.HALF_UP);
+
+            linha.setDevido(devido);
+
+            linha.setIndiceReajusteRecebido(indiceReajuste);
+
+            BigDecimal valorRecebido = BigDecimal.ZERO;
+
+            linha.setRecebido(valorRecebido);
+
+            BigDecimal diferenca = devido.subtract(valorRecebido).setScale(2, RoundingMode.HALF_UP);
+
+            linha.setDiferenca(diferenca);
+
+            BigDecimal indiceCorrecaoMonetaria = correcaoMonetariaFactory.getCalculo(infoCalculo.getTipoCorrecao()).calcularIndexadorCorrecaoMonetaria(data);
+
+            linha.setIndiceCorrecaoMonetaria(indiceCorrecaoMonetaria);
+
+            BigDecimal corrigido = diferenca.multiply(indiceCorrecaoMonetaria).setScale(2, RoundingMode.HALF_UP);
+
+            linha.setSalarioCorrigido(corrigido);
+
+            BigDecimal porcentagemJuros = BigDecimal.ZERO;
+
+            linha.setPorcentagemJuros(porcentagemJuros);
+
+            BigDecimal juros = corrigido.multiply(porcentagemJuros).setScale(2, RoundingMode.HALF_UP);
+
+            linha.setJuros(juros);
+
+            BigDecimal soma = corrigido.add(juros).setScale(2, RoundingMode.HALF_UP);
+
+            linha.setSoma(soma);
 
             tabela.add(linha);
-
         }
-
         return tabela;
     }
-
-
 
     private boolean isCalculoComJuros(CalculoRequestDTO infoCalculo){
         return infoCalculo.getDataIncioJuros() != null ||
                 infoCalculo.getDataIncioJuros().isBefore(LocalDate.of(2021,12,1));
     }
+
+
 
     private boolean isDataDeReajuste(String data){
         return data.split("/")[1].equals("01") && data.split("/")[0].equals("01");
