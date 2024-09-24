@@ -2,7 +2,7 @@ package br.gov.agu.samir.new_samir_back.controller;
 
 import br.gov.agu.samir.new_samir_back.dtos.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.CalculoResponseDTO;
-import br.gov.agu.samir.new_samir_back.service.NovoCalculoService;
+import br.gov.agu.samir.new_samir_back.service.CalculoService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CalculoController {
 
-    private final NovoCalculoService calculoService;
-
+    private final CalculoService calculoService;
 
     @PostMapping
     public ResponseEntity<List<CalculoResponseDTO>> calcular(@RequestBody CalculoRequestDTO requestDTO){
