@@ -76,7 +76,7 @@ public class NovoCalculoService {
 
             linha.setSalarioCorrigido(corrigido);
 
-            BigDecimal porcentagemJuros = BigDecimal.ZERO;
+            BigDecimal porcentagemJuros = isCalculoComJuros(infoCalculo) ? calculoJurosService.calcularJuros(infoCalculo,data) : BigDecimal.ZERO;
 
             linha.setPorcentagemJuros(porcentagemJuros);
 
@@ -94,7 +94,7 @@ public class NovoCalculoService {
     }
 
     private boolean isCalculoComJuros(CalculoRequestDTO infoCalculo){
-        return infoCalculo.getDataIncioJuros() != null ||
+        return infoCalculo.getDataIncioJuros() != null &&
                 infoCalculo.getDataIncioJuros().isBefore(LocalDate.of(2021,12,1));
     }
 
