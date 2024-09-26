@@ -99,7 +99,9 @@ public class CalculoService {
 
                 linhaDecimoTerceiro.setIndiceReajusteDevido(BigDecimal.ONE);
 
-                linhaDecimoTerceiro.setDevido(decimoTerceiroService.calcularDecimoTerceiro(rmiConversavada,infoCalculo.getDib(),data));
+                BigDecimal devido = decimoTerceiroService.calcularDecimoTerceiro(rmiConversavada,infoCalculo.getDib(),data);
+
+                linhaDecimoTerceiro.setDevido(devido);
 
                 linhaDecimoTerceiro.setIndiceReajusteRecebido(BigDecimal.ONE);
 
@@ -109,7 +111,7 @@ public class CalculoService {
 
                 linhaDecimoTerceiro.setIndiceCorrecaoMonetaria(correcaoMonetariaFactory.getCalculo(infoCalculo.getTipoCorrecao()).calcularIndexadorCorrecaoMonetaria(data));
 
-                linhaDecimoTerceiro.setSalarioCorrigido(linhaDecimoTerceiro.getDevido().multiply(linhaDecimoTerceiro.getIndiceCorrecaoMonetaria()).setScale(2, RoundingMode.HALF_UP));
+                linhaDecimoTerceiro.setSalarioCorrigido(devido.multiply(linhaDecimoTerceiro.getIndiceCorrecaoMonetaria()).setScale(2, RoundingMode.HALF_UP));
 
                 linhaDecimoTerceiro.setPorcentagemJuros(BigDecimal.ZERO);
 
@@ -118,7 +120,6 @@ public class CalculoService {
                 linhaDecimoTerceiro.setSoma(linhaDecimoTerceiro.getSalarioCorrigido());
 
                 tabela.add(linhaDecimoTerceiro);
-                
             }
         }
         return tabela;
