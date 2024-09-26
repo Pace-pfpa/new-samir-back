@@ -19,7 +19,6 @@ public class CalculoController {
 
     private final CalculoService calculoService;
 
-
     @PostMapping
     public ResponseEntity<List<CalculoResponseDTO>> calcular(@RequestBody CalculoRequestDTO requestDTO){
         List<CalculoResponseDTO> tabela = calculoService.calculoSemBeneficioAcumulado(requestDTO);

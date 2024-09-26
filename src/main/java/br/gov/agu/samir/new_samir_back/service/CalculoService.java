@@ -2,129 +2,147 @@ package br.gov.agu.samir.new_samir_back.service;
 
 import br.gov.agu.samir.new_samir_back.dtos.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.CalculoResponseDTO;
-import br.gov.agu.samir.new_samir_back.enums.TipoCorrecaoMonetaria;
-import br.gov.agu.samir.new_samir_back.service.factory.CalculoJurosFactory;
 import br.gov.agu.samir.new_samir_back.service.factory.CorrecaoMonetariaFactory;
-import br.gov.agu.samir.new_samir_back.service.strategy.DecimoTerceiroStrategy;
-import br.gov.agu.samir.new_samir_back.service.strategy.GerarListaStrategy;
-import br.gov.agu.samir.new_samir_back.service.strategy.IndiceReajusteStrategy;
-import br.gov.agu.samir.new_samir_back.service.strategy.RmiStrategy;
-import br.gov.agu.samir.new_samir_back.service.strategy.impl.CalculoJurosStrategy;
-import br.gov.agu.samir.new_samir_back.util.DateUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.format.DateTimeFormatter;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class CalculoService {
 
-    private final List<IndiceReajusteStrategy> indiceReajusteStrategyList;
+    private final GerarListaDatasService gerarListaDatasService;
 
-    private final RmiStrategy rmiStrategy;
-
-    private final GerarListaStrategy gerarListaStrategy;
-
-    private final DecimoTerceiroStrategy decimoTerceiroStrategy;
+    private final CalculoRmiService calculoRmiService;
 
     private final CorrecaoMonetariaFactory correcaoMonetariaFactory;
 
-    private final CalculoJurosStrategy calculoJurosStrategy;
+    private final CalculoIndiceReajusteService calculoIndiceReajusteService;
+
+    private final CalculoJurosService calculoJurosService;
+    
+    private final DecimoTerceiroService decimoTerceiroService;
 
 
-    public List<CalculoResponseDTO> calculoSemBeneficioAcumulado(CalculoRequestDTO requestDTO) {
-
-
-       List<String> dataList = gerarListaStrategy.gerarLista(requestDTO);
+    public List<CalculoResponseDTO> calculoSemBeneficioAcumulado(CalculoRequestDTO infoCalculo) {
 
         List<CalculoResponseDTO> tabela = new ArrayList<>();
 
-        BigDecimal salarioReajustadoAnual = rmiStrategy.calcularRmi(requestDTO, dataList.get(0));
+        List<String> datas = gerarListaDatasService.gerarListaDatas(infoCalculo);
 
-        for (String data : dataList){
+        BigDecimal indiceReajuste = BigDecimal.ONE;
 
-            if (isDataDeReajuste(data)){
-                salarioReajustadoAnual = rmiStrategy.calcularRmi(requestDTO, data).multiply(indiceReajuste(data, requestDTO)).setScale(2, BigDecimal.ROUND_HALF_UP);
-            }
+        BigDecimal rmiConversavada = infoCalculo.getRmi();
 
-            BigDecimal indiceReajuste = isDecimoTerceiro(data) ? BigDecimal.ONE : indiceReajuste(data, requestDTO);
+        for(String data : datas) {
+            
+            if(!isDecimoTerceiro(data)){
+                
+                if (isDataDeReajuste(data)){
+                    BigDecimal valorRmi = calculoRmiService.calcularRmi(rmiConversavada, data);
+                    BigDecimal indiceReajusteAnual = isPrimeiroReajuste(infoCalculo, data) ? calculoIndiceReajusteService.primeiroReajuste(infoCalculo) : calculoIndiceReajusteService.comumReajuste(data);
+                    rmiConversavada = valorRmi.multiply(indiceReajusteAnual);
+                }
 
-            BigDecimal devido = salarioReajustadoAnual;
+                BigDecimal rmi = calculoRmiService.calcularRmi(rmiConversavada, data);
 
-            BigDecimal recebido = BigDecimal.ZERO;
+                CalculoResponseDTO linha = new CalculoResponseDTO();
 
-            BigDecimal diferenca = devido.subtract(recebido).setScale(2, BigDecimal.ROUND_HALF_UP);
+                linha.setData(data);
 
-            TipoCorrecaoMonetaria tipoCorrecao = requestDTO.getTipoCorrecao();
+                linha.setIndiceReajusteDevido(indiceReajuste);
 
-            BigDecimal indiceCorrecaoMonetaria = correcaoMonetariaFactory.getCalculo(tipoCorrecao).calcularIndexadorCorrecaoMonetaria(data);
+                BigDecimal devido = rmi.multiply(indiceReajuste).setScale(2, RoundingMode.HALF_UP);
 
-            BigDecimal salarioCorrigido = devido.multiply(indiceCorrecaoMonetaria).setScale(2, BigDecimal.ROUND_HALF_UP);
+                linha.setDevido(devido);
 
-            BigDecimal porcentagemJuros = calculoJurosStrategy.calcularJuros(requestDTO, data);
+                linha.setIndiceReajusteRecebido(indiceReajuste);
 
-            BigDecimal juros = salarioCorrigido.multiply(porcentagemJuros).setScale(2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal valorRecebido = BigDecimal.ZERO;
 
+                linha.setRecebido(valorRecebido);
 
+                BigDecimal diferenca = devido.subtract(valorRecebido).setScale(2, RoundingMode.HALF_UP);
 
-            if (!isDecimoTerceiro(data)){
-                CalculoResponseDTO linha = CalculoResponseDTO.builder()
-                        .data(data)
-                        .indiceReajusteDevido(indiceReajuste)
-                        .devido(devido)
-                        .indiceReajusteRecebido(indiceReajuste)
-                        .recebido(recebido)
-                        .diferenca(diferenca)
-                        .indiceCorrecaoMonetaria(indiceCorrecaoMonetaria)
-                        .salarioCorrigido(salarioCorrigido)
-                        .porcentagemJuros(porcentagemJuros)
-                        .juros(juros)
-                        .soma(salarioCorrigido)
-                        .build();
+                linha.setDiferenca(diferenca);
 
-                tabela.add(linha);
-            }else {
+                BigDecimal indiceCorrecaoMonetaria = correcaoMonetariaFactory.getCalculo(infoCalculo.getTipoCorrecao()).calcularIndexadorCorrecaoMonetaria(data);
 
-                BigDecimal decimoTerceiro = decimoTerceiroStrategy.calcularDecimoTerceiro(requestDTO, devido, data);
-                BigDecimal devidoDecimoTerceiro = decimoTerceiro.multiply(indiceReajuste).setScale(2, BigDecimal.ROUND_HALF_UP);
-                BigDecimal salarioCorrigidoDecimoTerceiro = devidoDecimoTerceiro.multiply(indiceCorrecaoMonetaria).setScale(2, BigDecimal.ROUND_HALF_UP);
-                CalculoResponseDTO linha = CalculoResponseDTO.builder()
-                        .data(data)
-                        .indiceReajusteDevido(indiceReajuste)
-                        .devido(devidoDecimoTerceiro)
-                        .indiceReajusteRecebido(indiceReajuste)
-                        .recebido(BigDecimal.ZERO)
-                        .diferenca(devidoDecimoTerceiro)
-                        .indiceCorrecaoMonetaria(indiceCorrecaoMonetaria)
-                        .salarioCorrigido(salarioCorrigidoDecimoTerceiro)
-                        .porcentagemJuros(BigDecimal.ZERO)
-                        .juros(BigDecimal.ZERO)
-                        .soma(salarioCorrigidoDecimoTerceiro)
-                        .build();
+                linha.setIndiceCorrecaoMonetaria(indiceCorrecaoMonetaria);
+
+                BigDecimal corrigido = diferenca.multiply(indiceCorrecaoMonetaria).setScale(2, RoundingMode.HALF_UP);
+
+                linha.setSalarioCorrigido(corrigido);
+
+                BigDecimal porcentagemJuros = isCalculoComJuros(infoCalculo) ? calculoJurosService.calcularJuros(infoCalculo,data) : BigDecimal.ZERO;
+
+                linha.setPorcentagemJuros(porcentagemJuros);
+
+                BigDecimal juros = corrigido.multiply(porcentagemJuros).setScale(2, RoundingMode.HALF_UP);
+
+                linha.setJuros(juros);
+
+                BigDecimal soma = corrigido.add(juros).setScale(2, RoundingMode.HALF_UP);
+
+                linha.setSoma(soma);
 
                 tabela.add(linha);
+            } else{
+                CalculoResponseDTO linhaDecimoTerceiro = new CalculoResponseDTO();
+
+                linhaDecimoTerceiro.setData(data);
+
+                linhaDecimoTerceiro.setIndiceReajusteDevido(BigDecimal.ONE);
+
+                BigDecimal devido = decimoTerceiroService.calcularDecimoTerceiro(rmiConversavada,infoCalculo.getDib(),data);
+
+                linhaDecimoTerceiro.setDevido(devido);
+
+                linhaDecimoTerceiro.setIndiceReajusteRecebido(BigDecimal.ONE);
+
+                linhaDecimoTerceiro.setRecebido(BigDecimal.ZERO);
+
+                linhaDecimoTerceiro.setDiferenca(linhaDecimoTerceiro.getDevido());
+
+                linhaDecimoTerceiro.setIndiceCorrecaoMonetaria(correcaoMonetariaFactory.getCalculo(infoCalculo.getTipoCorrecao()).calcularIndexadorCorrecaoMonetaria(data));
+
+                linhaDecimoTerceiro.setSalarioCorrigido(devido.multiply(linhaDecimoTerceiro.getIndiceCorrecaoMonetaria()).setScale(2, RoundingMode.HALF_UP));
+
+                linhaDecimoTerceiro.setPorcentagemJuros(BigDecimal.ZERO);
+
+                linhaDecimoTerceiro.setJuros(BigDecimal.ZERO);
+
+                linhaDecimoTerceiro.setSoma(linhaDecimoTerceiro.getSalarioCorrigido());
+
+                tabela.add(linhaDecimoTerceiro);
             }
         }
-
-
         return tabela;
     }
 
+    private boolean isCalculoComJuros(CalculoRequestDTO infoCalculo){
+        return infoCalculo.getDataIncioJuros() != null &&
+                infoCalculo.getDataIncioJuros().isBefore(LocalDate.of(2021,12,1));
+    }
 
     private boolean isDecimoTerceiro(String data){
-        return data.split("/")[1].equals("13");
+        return data.split("/")[1].equals("13"); 
     }
 
     private boolean isDataDeReajuste(String data){
-        return data.split("/")[1].equals("01");
+        return data.split("/")[1].equals("01") && data.split("/")[0].equals("01");
     }
 
-    private BigDecimal indiceReajuste(String data, CalculoRequestDTO requestDTO){
-        return indiceReajusteStrategyList.stream().map(impl -> impl.calcularIndiceReajuste(requestDTO, data)).reduce(BigDecimal.ZERO, BigDecimal::add);
+    private boolean isPrimeiroReajuste(CalculoRequestDTO infoCalculo, String data){
+        int ano = Integer.parseInt(data.split("/")[2]);
+        int mes = Integer.parseInt(data.split("/")[1]);
+
+        return  ano == infoCalculo.getDib().plusYears(1).getYear() && mes == 1;
+
     }
 }

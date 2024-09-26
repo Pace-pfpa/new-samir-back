@@ -18,11 +18,8 @@ import java.util.Optional;
 public class AgendamentoSelicService {
 
     private final RestTemplate restTemplate;
-
     private final SelicRepository selicRepository;
-
     private final SelicMapper selicMapper;
-
 
     public AgendamentoSelicService(RestTemplate restTemplate, SelicRepository selicRepository, SelicMapper selicMapper) {
         this.restTemplate = restTemplate;
@@ -36,11 +33,16 @@ public class AgendamentoSelicService {
         String dataAtualFormatada = dataAtual.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         String api = String.format("https://api.bcb.gov.br/dados/serie/bcdata.sgs.4390/dados?formato=json&dataInicial=%s&dataFinal=%s", dataAtualFormatada, dataAtualFormatada);
         SelicRequestDTO[] dto = restTemplate.getForObject(api, SelicRequestDTO[].class);
-        SelicModel selicModel = selicMapper.mapToModel(dto[0]);
-        Optional<SelicModel> verificaSeExistente = selicRepository.findByData(selicModel.getData());
-        if (verificaSeExistente.isEmpty()){
-            selicRepository.save(selicModel);
-            log.info("Salvando Selic no banco de dados");
+
+        if (dto != null && dto.length > 0) {
+            SelicModel selicModel = selicMapper.mapToModel(dto[0]);
+            Optional<SelicModel> verificaSeExistente = selicRepository.findByData(selicModel.getData());
+            if (verificaSeExistente.isEmpty()) {
+                selicRepository.save(selicModel);
+                log.info("Salvando Selic no banco de dados");
+            }
+        } else {
+            log.warn("No data received from API");
         }
     }
 }

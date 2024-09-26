@@ -11,4 +11,8 @@ import java.util.Optional;
 public interface IndiceReajusteRepository extends JpaRepository<IndiceReajusteModel, Long> {
 
     Optional<IndiceReajusteModel> findByData(LocalDate data);
+
+    IndiceReajusteModel findFirstByData(LocalDate data);
+
+    IndiceReajusteModel findFirstByDataReajuste(LocalDate dataReajuste);
 }

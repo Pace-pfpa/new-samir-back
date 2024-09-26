@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -32,9 +33,9 @@ public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
         
 
         if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
-            return calculoSomenteComSelic(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
+            return calculoSomenteComSelic(dataAlvo).setScale(4, RoundingMode.HALF_UP);
         }else {
-            return calculoComIPCAEeSELIC(dataAlvo).setScale(4, BigDecimal.ROUND_HALF_UP);
+            return calculoComIPCAEeSELIC(dataAlvo).setScale(4, RoundingMode.HALF_UP);
         }
     }
 
@@ -44,7 +45,7 @@ public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
         BigDecimal valorCorrecao = calculoSomenteComSelic(LocalDate.of(2021,12,1));
         List<IpcaeModel> listIPCAE = ipcaeRepository.findAllByDataBetween(dataAlvo, LocalDate.of(2021,11,1));
         for (IpcaeModel inpcModel : listIPCAE) {
-            BigDecimal valorIpcae= inpcModel.getValor().divide(BigDecimal.valueOf(100));
+            BigDecimal valorIpcae= inpcModel.getValor().divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
             valorIpcae = valorIpcae.add(BigDecimal.valueOf(1));
             valorCorrecao = valorCorrecao.multiply(valorIpcae);
         }
@@ -56,7 +57,7 @@ public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
         List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo,LocalDate.now().minusMonths(2));
         for (SelicModel selic : listSelic) {
             BigDecimal valorSelic = selic.getValor()
-                    .divide(BigDecimal.valueOf(100));
+                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
             valorCorrecao = valorCorrecao.add(valorSelic);
         }
         return valorCorrecao;
