@@ -40,9 +40,9 @@ public class CalculoService {
         BigDecimal rmiConversavada = infoCalculo.getRmi();
 
         for(String data : datas) {
-            
+
             if(!isDecimoTerceiro(data)){
-                
+
                 if (isDataDeReajuste(data)){
                     BigDecimal valorRmi = calculoRmiService.calcularRmi(rmiConversavada, data);
                     BigDecimal indiceReajusteAnual = isPrimeiroReajuste(infoCalculo, data) ? calculoIndiceReajusteService.primeiroReajuste(infoCalculo) : calculoIndiceReajusteService.comumReajuste(data);
@@ -125,13 +125,18 @@ public class CalculoService {
         return tabela;
     }
 
+    public List<CalculoResponseDTO> calculoComBeneficioAcumulado(CalculoRequestDTO requestDTO) {
+
+        return null;
+    }
+
     private boolean isCalculoComJuros(CalculoRequestDTO infoCalculo){
         return infoCalculo.getDataIncioJuros() != null &&
                 infoCalculo.getDataIncioJuros().isBefore(LocalDate.of(2021,12,1));
     }
 
     private boolean isDecimoTerceiro(String data){
-        return data.split("/")[1].equals("13"); 
+        return data.split("/")[1].equals("13");
     }
 
     private boolean isDataDeReajuste(String data){

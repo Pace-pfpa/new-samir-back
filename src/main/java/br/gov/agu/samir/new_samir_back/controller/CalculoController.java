@@ -21,6 +21,11 @@ public class CalculoController {
 
     @PostMapping
     public ResponseEntity<List<CalculoResponseDTO>> calcular(@RequestBody CalculoRequestDTO requestDTO){
+        if (requestDTO.getBeneficioAcumulados().isEmpty()){
+            List<CalculoResponseDTO> tabela = calculoService.calculoComBeneficioAcumulado(requestDTO);
+            return ResponseEntity.ok(tabela);
+        }
+
         List<CalculoResponseDTO> tabela = calculoService.calculoSemBeneficioAcumulado(requestDTO);
         return ResponseEntity.ok(tabela);
     }
