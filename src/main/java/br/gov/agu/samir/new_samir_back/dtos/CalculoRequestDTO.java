@@ -16,6 +16,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -45,4 +46,6 @@ public class CalculoRequestDTO {
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate dibAnterior;
+
+    private List<BeneficioAcumuladoRequestDTO> beneficioAcumulados;
 }
