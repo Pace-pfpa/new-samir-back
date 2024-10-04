@@ -2,6 +2,7 @@ package br.gov.agu.samir.new_samir_back.service;
 
 import br.gov.agu.samir.new_samir_back.dtos.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.CalculoResponseDTO;
+import br.gov.agu.samir.new_samir_back.repository.SalarioMinimoRepository;
 import br.gov.agu.samir.new_samir_back.service.factory.CorrecaoMonetariaFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ public class CalculoService {
     
     private final DecimoTerceiroService decimoTerceiroService;
 
+    private final SalarioMinimoRepository salarioMinimoRepository;
+
 
     public List<CalculoResponseDTO> calculoSemBeneficioAcumulado(CalculoRequestDTO infoCalculo) {
 
@@ -37,7 +40,9 @@ public class CalculoService {
 
         BigDecimal indiceReajuste = BigDecimal.ONE;
 
-        BigDecimal rmiConversavada = infoCalculo.getRmi();
+        BigDecimal salarioMinimo = salarioMinimoRepository.findByData(infoCalculo.getDib()).getValor();
+
+        BigDecimal rmiConversavada = salarioMinimo.compareTo(infoCalculo.getRmi()) > 0 ? salarioMinimo : infoCalculo.getRmi();
 
         for(String data : datas) {
 
@@ -93,6 +98,7 @@ public class CalculoService {
 
                 tabela.add(linha);
             } else{
+
                 CalculoResponseDTO linhaDecimoTerceiro = new CalculoResponseDTO();
 
                 linhaDecimoTerceiro.setData(data);

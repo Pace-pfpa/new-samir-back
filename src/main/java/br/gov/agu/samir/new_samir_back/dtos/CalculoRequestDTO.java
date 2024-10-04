@@ -5,6 +5,9 @@ package br.gov.agu.samir.new_samir_back.dtos;
 import br.gov.agu.samir.new_samir_back.enums.BeneficiosEnum;
 import br.gov.agu.samir.new_samir_back.enums.TipoCorrecaoMonetaria;
 import br.gov.agu.samir.new_samir_back.enums.TipoJuros;
+import br.gov.agu.samir.new_samir_back.models.BeneficioInacumulavelModel;
+import br.gov.agu.samir.new_samir_back.models.BeneficioModel;
+import br.gov.agu.samir.new_samir_back.repository.BeneficioRepository;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -13,10 +16,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -48,4 +54,22 @@ public class CalculoRequestDTO {
     private LocalDate dibAnterior;
 
     private List<BeneficioAcumuladoRequestDTO> beneficioAcumulados;
+
+
+    private BeneficioRepository beneficioRepository;
+
+
+    public List<BeneficioAcumuladoRequestDTO> getBeneficioValidos() {
+        List<BeneficioAcumuladoRequestDTO> beneficiosAcumulados = this.getBeneficioAcumulados();
+        List<BeneficioInacumulavelModel> beneficiosInacumulaveis = beneficioRepository.findByNome(beneficio.getDescricao()).getBeneficiosInacumulaveis();
+
+        return beneficiosAcumulados.stream()
+                .filter(beneficioAcumulado -> verificaSeBeneficioEhValido(beneficiosInacumulaveis, beneficioAcumulado.getBeneficioAcumulado().getDescricao()))
+                .toList();
+    }
+
+
+    private boolean verificaSeBeneficioEhValido(List<BeneficioInacumulavelModel> listInacumalaveis, String nomeBeneficio){
+        return listInacumalaveis.stream().map(BeneficioInacumulavelModel::getNome).toList().contains(nomeBeneficio);
+    }
 }

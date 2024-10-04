@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 
 
 @Repository
@@ -13,4 +14,6 @@ public interface SalarioMinimoRepository extends JpaRepository<SalarioMinimoMode
 
    @Query(nativeQuery = true, value = "SELECT * FROM tb_salario_minimo WHERE EXTRACT(MONTH FROM data) = :mes AND EXTRACT(YEAR FROM data) = :ano")
    SalarioMinimoModel findByMesAndAno(@Param("mes") int mes, @Param("ano") int ano);
+
+   SalarioMinimoModel findByData(LocalDate data);
 }
