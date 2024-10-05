@@ -10,6 +10,7 @@ import br.gov.agu.samir.new_samir_back.repository.SalarioMinimoRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 
@@ -60,8 +61,11 @@ public class SalarioMinimoService {
         repository.deleteById(id);
     }
 
-    public BigDecimal verificaSeRmiIsInferiorSalarioMinimo(CalculoRequestDTO calculoRequestDTO) {
-        return calculoRequestDTO.getRmi().compareTo(getSalarioMinimoByAno(calculoRequestDTO.getDib().getMonthValue(), calculoRequestDTO.getDib().getYear()).getValor()) < 0
-                ? getSalarioMinimoByAno(calculoRequestDTO.getDib().getMonthValue(), calculoRequestDTO.getDib().getYear()).getValor() : calculoRequestDTO.getRmi();
+    public BigDecimal getSalarioMinimoProximoPorDataNoMesmoAno(LocalDate data){
+        int ano = data.getYear();
+
+        return repository.findSalarioMinimoProximoPorDataNoMesmoAno(data, ano)
+                .orElseThrow(() -> new ResourceNotFoundException("não foi encontrado um salario minimo para a data: " + data))
+                .getValor();
     }
 }

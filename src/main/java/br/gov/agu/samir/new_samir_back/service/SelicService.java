@@ -31,7 +31,7 @@ public class SelicService {
 
     public List<SelicResponseDTO> buscarTodasSelic() {
         List<SelicModel> listModel = repository.findAll();
-        return listModel.stream().map(selicModel -> mapper.mapModelToResponseDTO(selicModel)).toList();
+        return listModel.stream().map(mapper::mapModelToResponseDTO).toList();
     }
 
     public SelicResponseDTO buscarPorId(Long id) {

@@ -29,7 +29,7 @@ public class CalculoService {
     
     private final DecimoTerceiroService decimoTerceiroService;
 
-    private final SalarioMinimoRepository salarioMinimoRepository;
+    private final SalarioMinimoService salarioMinimoService;
 
 
     public List<CalculoResponseDTO> calculoSemBeneficioAcumulado(CalculoRequestDTO infoCalculo) {
@@ -40,9 +40,9 @@ public class CalculoService {
 
         BigDecimal indiceReajuste = BigDecimal.ONE;
 
-        BigDecimal salarioMinimo = salarioMinimoRepository.findByData(infoCalculo.getDib()).getValor();
+        BigDecimal salarioMinimoEpoca = salarioMinimoService.getSalarioMinimoProximoPorDataNoMesmoAno(infoCalculo.getDib());
 
-        BigDecimal rmiConversavada = salarioMinimo.compareTo(infoCalculo.getRmi()) > 0 ? salarioMinimo : infoCalculo.getRmi();
+        BigDecimal rmiConversavada = isRmiMenorSalarioMinimo(infoCalculo.getRmi(), salarioMinimoEpoca) ? salarioMinimoEpoca : infoCalculo.getRmi();
 
         for(String data : datas) {
 
@@ -136,6 +136,10 @@ public class CalculoService {
         return null;
     }
 
+    private boolean isRmiMenorSalarioMinimo(BigDecimal rmi, BigDecimal salarioMinimo){
+        return rmi.compareTo(salarioMinimo) < 0;
+    }
+
     private boolean isCalculoComJuros(CalculoRequestDTO infoCalculo){
         return infoCalculo.getDataIncioJuros() != null &&
                 infoCalculo.getDataIncioJuros().isBefore(LocalDate.of(2021,12,1));
@@ -152,8 +156,6 @@ public class CalculoService {
     private boolean isPrimeiroReajuste(CalculoRequestDTO infoCalculo, String data){
         int ano = Integer.parseInt(data.split("/")[2]);
         int mes = Integer.parseInt(data.split("/")[1]);
-
         return  ano == infoCalculo.getDib().plusYears(1).getYear() && mes == 1;
-
     }
 }
