@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Getter
@@ -22,4 +23,15 @@ public class BeneficioAcumuladoRequestDTO {
     private LocalDate fimDesconto;
 
     private BigDecimal rmi;
+
+    private Integer porcentagemRmi;
+
+    private LocalDate dibAnterior;
+
+    public BigDecimal getRmi(){
+        if (porcentagemRmi < 0) {
+            throw new IllegalArgumentException("Porcentagem RMI deve ser maior que zero");
+        }
+        return porcentagemRmi != null ? rmi.multiply(BigDecimal.valueOf(porcentagemRmi).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)) : rmi;
+    }
 }

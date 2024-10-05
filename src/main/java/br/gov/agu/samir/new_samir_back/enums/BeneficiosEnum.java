@@ -30,7 +30,7 @@ public enum BeneficiosEnum {
     PENSAO_ESPECIAL_AO_PORTADOR_DE_HANSENIASE("96 - PENSÃO ESPECIAL AO PORTADOR DE HANSENÍASE", 96),
     SEGURO_DEFESO("XX - SEGURO DEFESO", 0);
 
-    private final String descricao;
+    private final String nome;
 
     private final int codigo;
 }
