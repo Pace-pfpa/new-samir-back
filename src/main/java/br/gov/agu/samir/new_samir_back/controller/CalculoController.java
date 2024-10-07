@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.controller;
 
-import br.gov.agu.samir.new_samir_back.dtos.CalculoRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.CalculoResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.CalculoResponseDTO;
 import br.gov.agu.samir.new_samir_back.service.CalculoService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

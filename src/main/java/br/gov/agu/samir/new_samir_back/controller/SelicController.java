@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.controller;
 
-import br.gov.agu.samir.new_samir_back.dtos.SelicRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.SelicResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.SelicRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.SelicResponseDTO;
 import br.gov.agu.samir.new_samir_back.service.SelicService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

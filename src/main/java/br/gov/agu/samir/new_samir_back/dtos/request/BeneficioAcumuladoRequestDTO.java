@@ -1,4 +1,4 @@
-package br.gov.agu.samir.new_samir_back.dtos;
+package br.gov.agu.samir.new_samir_back.dtos.request;
 
 import br.gov.agu.samir.new_samir_back.enums.BeneficiosEnum;
 import lombok.AllArgsConstructor;

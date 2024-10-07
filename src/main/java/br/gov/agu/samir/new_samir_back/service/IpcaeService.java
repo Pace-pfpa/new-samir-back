@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.service;
 
-import br.gov.agu.samir.new_samir_back.dtos.IpcaeRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.IpcaeResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.IpcaeRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.IpcaeResponseDTO;
 import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFoundException;
 import br.gov.agu.samir.new_samir_back.mapper.IpcaeMapper;
 import br.gov.agu.samir.new_samir_back.models.IpcaeModel;

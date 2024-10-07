@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.mapper;
 
-import br.gov.agu.samir.new_samir_back.dtos.SalarioMinimoRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.SalarioMinimoResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.SalarioMinimoRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.SalarioMinimoResponseDTO;
 import br.gov.agu.samir.new_samir_back.models.SalarioMinimoModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

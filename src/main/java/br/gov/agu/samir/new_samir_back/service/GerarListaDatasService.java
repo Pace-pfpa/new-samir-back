@@ -1,6 +1,6 @@
 package br.gov.agu.samir.new_samir_back.service;
 
-import br.gov.agu.samir.new_samir_back.dtos.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.enums.BeneficiosEnum;
 import org.springframework.stereotype.Component;
 

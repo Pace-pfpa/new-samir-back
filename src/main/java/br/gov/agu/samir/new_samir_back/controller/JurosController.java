@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.controller;
 
-import br.gov.agu.samir.new_samir_back.dtos.JurosRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.JurosResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.JurosRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.JurosResponseDTO;
 import br.gov.agu.samir.new_samir_back.service.JurosService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

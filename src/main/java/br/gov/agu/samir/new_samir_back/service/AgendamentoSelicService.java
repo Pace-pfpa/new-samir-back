@@ -1,6 +1,6 @@
 package br.gov.agu.samir.new_samir_back.service;
 
-import br.gov.agu.samir.new_samir_back.dtos.SelicRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.SelicRequestDTO;
 import br.gov.agu.samir.new_samir_back.mapper.SelicMapper;
 import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.SelicRepository;

@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.controller;
 
-import br.gov.agu.samir.new_samir_back.dtos.SalarioMinimoRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.SalarioMinimoResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.SalarioMinimoRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.SalarioMinimoResponseDTO;
 import br.gov.agu.samir.new_samir_back.service.SalarioMinimoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

@@ -1,4 +1,4 @@
-package br.gov.agu.samir.new_samir_back.dtos;
+package br.gov.agu.samir.new_samir_back.dtos.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,10 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BeneficioResponseDTO {
-    private Long id;
+public class BeneficioRequestDTO {
     private String nome;
     private Boolean dif;
     private Boolean decimoTerceiro;
-    private List<BeneficioInacumulavelResponseDTO> beneficiosInacumulaveis;
+    private List<Long> beneficiosInacumulaveisIds;
 }

@@ -1,4 +1,4 @@
-package br.gov.agu.samir.new_samir_back.dtos;
+package br.gov.agu.samir.new_samir_back.dtos.request;
 
 import br.gov.agu.samir.new_samir_back.enums.BeneficiosEnum;
 import br.gov.agu.samir.new_samir_back.enums.TipoCorrecaoMonetaria;
@@ -6,8 +6,6 @@ import br.gov.agu.samir.new_samir_back.enums.TipoJuros;
 import br.gov.agu.samir.new_samir_back.models.BeneficioInacumulavelModel;
 import br.gov.agu.samir.new_samir_back.repository.BeneficioRepository;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.annotation.Nullable;
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;

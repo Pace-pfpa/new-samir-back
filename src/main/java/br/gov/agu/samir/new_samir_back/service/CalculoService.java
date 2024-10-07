@@ -1,8 +1,7 @@
 package br.gov.agu.samir.new_samir_back.service;
 
-import br.gov.agu.samir.new_samir_back.dtos.CalculoRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.CalculoResponseDTO;
-import br.gov.agu.samir.new_samir_back.repository.SalarioMinimoRepository;
+import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.CalculoResponseDTO;
 import br.gov.agu.samir.new_samir_back.service.factory.CorrecaoMonetariaFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.controller;
 
-import br.gov.agu.samir.new_samir_back.dtos.IpcaeRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.IpcaeResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.IpcaeRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.IpcaeResponseDTO;
 import br.gov.agu.samir.new_samir_back.service.IpcaeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
