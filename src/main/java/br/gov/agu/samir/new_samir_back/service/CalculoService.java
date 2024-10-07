@@ -30,16 +30,23 @@ public class CalculoService {
 
     private final SalarioMinimoService salarioMinimoService;
 
+    private static final String MES_DECIMO_TERCEIRO = "13";
+
+    private static final String MES_REAJUSTE = "01";
+
+    private static final String DIA_REAJUSTE = "01";
+
+
 
     public List<CalculoResponseDTO> calculoSemBeneficioAcumulado(CalculoRequestDTO infoCalculo) {
 
         List<CalculoResponseDTO> tabela = new ArrayList<>();
 
-        List<String> datas = gerarListaDatasService.gerarListaDatas(infoCalculo);
+        List<String> datas = gerarListaDeDatasParaCalculo(infoCalculo);
 
         BigDecimal indiceReajuste = BigDecimal.ONE;
 
-        BigDecimal salarioMinimoEpoca = salarioMinimoService.getSalarioMinimoProximoPorDataNoMesmoAno(infoCalculo.getDib());
+        BigDecimal salarioMinimoEpoca = retornaSalarioMaisMinimoProximoPorDataNoMesmoAno(infoCalculo.getDib());
 
         BigDecimal rmiConversavada = isRmiMenorSalarioMinimo(infoCalculo.getRmi(), salarioMinimoEpoca) ? salarioMinimoEpoca : infoCalculo.getRmi();
 
@@ -49,7 +56,7 @@ public class CalculoService {
 
                 if (isDataDeReajuste(data)){
                     BigDecimal valorRmi = calculoRmiService.calcularRmi(rmiConversavada, data);
-                    BigDecimal indiceReajusteAnual = isPrimeiroReajuste(infoCalculo, data) ? calculoIndiceReajusteService.primeiroReajuste(infoCalculo) : calculoIndiceReajusteService.comumReajuste(data);
+                    BigDecimal indiceReajusteAnual = isPrimeiroReajuste(infoCalculo, data) ? calcularPrimeiroReajuste(infoCalculo) : calculoIndiceReajusteService.comumReajuste(data);
                     rmiConversavada = valorRmi.multiply(indiceReajusteAnual);
                 }
 
@@ -135,6 +142,22 @@ public class CalculoService {
         return null;
     }
 
+
+    private BigDecimal calcularPrimeiroReajuste(CalculoRequestDTO infoCalculo){
+        if (infoCalculo.getDibAnterior() != null){
+            return calculoIndiceReajusteService.primeiroReajusteComDibAnterior(infoCalculo);
+        }
+        return calculoIndiceReajusteService.primeiroReajuste(infoCalculo);
+    }
+
+    private BigDecimal retornaSalarioMaisMinimoProximoPorDataNoMesmoAno(LocalDate data){
+        return salarioMinimoService.getSalarioMinimoProximoPorDataNoMesmoAno(data);
+    }
+
+    private List<String> gerarListaDeDatasParaCalculo(CalculoRequestDTO infoCalculo){
+        return gerarListaDatasService.gerarListaDatas(infoCalculo);
+    }
+
     private boolean isRmiMenorSalarioMinimo(BigDecimal rmi, BigDecimal salarioMinimo){
         return rmi.compareTo(salarioMinimo) < 0;
     }
@@ -145,11 +168,11 @@ public class CalculoService {
     }
 
     private boolean isDecimoTerceiro(String data){
-        return data.split("/")[1].equals("13");
+        return data.split("/")[1].equals(MES_DECIMO_TERCEIRO);
     }
 
     private boolean isDataDeReajuste(String data){
-        return data.split("/")[1].equals("01") && data.split("/")[0].equals("01");
+        return data.split("/")[1].equals(DIA_REAJUSTE) && data.split("/")[0].equals(MES_REAJUSTE);
     }
 
     private boolean isPrimeiroReajuste(CalculoRequestDTO infoCalculo, String data){
