@@ -4,7 +4,7 @@ import br.gov.agu.samir.new_samir_back.models.InpcModel;
 import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.InpcRepository;
 import br.gov.agu.samir.new_samir_back.repository.SelicRepository;
-import br.gov.agu.samir.new_samir_back.service.factory.CalculoCorrecaoMonetaria;
+import br.gov.agu.samir.new_samir_back.service.factory.interfaces.CalculoCorrecaoMonetaria;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

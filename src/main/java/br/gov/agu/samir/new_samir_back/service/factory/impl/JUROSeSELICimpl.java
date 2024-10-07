@@ -4,14 +4,13 @@ import br.gov.agu.samir.new_samir_back.models.JurosModel;
 import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.JurosRepository;
 import br.gov.agu.samir.new_samir_back.repository.SelicRepository;
-import br.gov.agu.samir.new_samir_back.service.factory.CalculoJuros;
+import br.gov.agu.samir.new_samir_back.service.factory.interfaces.CalculoJuros;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component

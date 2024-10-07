@@ -1,4 +1,4 @@
-package br.gov.agu.samir.new_samir_back.service.factory;
+package br.gov.agu.samir.new_samir_back.service.factory.interfaces;
 
 import org.springframework.stereotype.Component;
 
