@@ -1,7 +1,9 @@
 package br.gov.agu.samir.new_samir_back.service;
 
+import br.gov.agu.samir.new_samir_back.dtos.request.BeneficioAcumuladoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.response.CalculoResponseDTO;
+import br.gov.agu.samir.new_samir_back.models.BeneficioInacumulavelModel;
 import br.gov.agu.samir.new_samir_back.service.factory.CorrecaoMonetariaFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -82,7 +84,7 @@ public class CalculoService {
 
                 linha.setDiferenca(diferenca);
 
-                BigDecimal indiceCorrecaoMonetaria = correcaoMonetariaFactory.getCalculo(infoCalculo.getTipoCorrecao()).calcularIndexadorCorrecaoMonetaria(data);
+                BigDecimal indiceCorrecaoMonetaria = retornaCorrecaoMonetaia(data, infoCalculo);
 
                 linha.setIndiceCorrecaoMonetaria(indiceCorrecaoMonetaria);
 
@@ -121,7 +123,7 @@ public class CalculoService {
 
                 linhaDecimoTerceiro.setDiferenca(linhaDecimoTerceiro.getDevido());
 
-                linhaDecimoTerceiro.setIndiceCorrecaoMonetaria(correcaoMonetariaFactory.getCalculo(infoCalculo.getTipoCorrecao()).calcularIndexadorCorrecaoMonetaria(data));
+                linhaDecimoTerceiro.setIndiceCorrecaoMonetaria(retornaCorrecaoMonetaia(data, infoCalculo));
 
                 linhaDecimoTerceiro.setSalarioCorrigido(devido.multiply(linhaDecimoTerceiro.getIndiceCorrecaoMonetaria()).setScale(2, RoundingMode.HALF_UP));
 
@@ -142,6 +144,9 @@ public class CalculoService {
         return null;
     }
 
+    private BigDecimal retornaCorrecaoMonetaia(String data, CalculoRequestDTO infoCalculo){
+        return correcaoMonetariaFactory.getCalculo(infoCalculo.getTipoCorrecao()).calcularIndexadorCorrecaoMonetaria(data, infoCalculo.getAtualizarAte());
+    }
 
     private BigDecimal calcularPrimeiroReajuste(CalculoRequestDTO infoCalculo){
         if (infoCalculo.getDibAnterior() != null){

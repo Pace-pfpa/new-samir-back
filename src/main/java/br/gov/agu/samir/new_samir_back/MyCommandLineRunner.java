@@ -23,8 +23,8 @@ public class MyCommandLineRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        BigDecimal indexadorCorrecaoMonetaria = factory.getCalculo(TipoCorrecaoMonetaria.TIPO4).calcularIndexadorCorrecaoMonetaria("01/01/2021");
-        System.out.println("Indexador Correção Monetária: " + indexadorCorrecaoMonetaria);
+//        BigDecimal indexadorCorrecaoMonetaria = factory.getCalculo(TipoCorrecaoMonetaria.TIPO4).calcularIndexadorCorrecaoMonetaria("01/01/2021");
+//        System.out.println("Indexador Correção Monetária: " + indexadorCorrecaoMonetaria);
 
     }
 }
