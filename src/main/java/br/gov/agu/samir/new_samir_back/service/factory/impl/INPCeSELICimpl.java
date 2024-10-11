@@ -42,18 +42,18 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
         LocalDate dataAlvo = LocalDate.parse(data,ddMMyyyy);
 
         if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
-            return calculoSomenteComSelic(dataAlvo, atualizarAte).setScale(4, RoundingMode.HALF_UP);
+            return calculoSomenteComSelic(dataAlvo.withDayOfMonth(1), atualizarAte);
         }else {
-            return calculoComINPCeSELIC(dataAlvo, atualizarAte).setScale(4, RoundingMode.HALF_UP);
+            return calculoComINPCeSELIC(dataAlvo.withDayOfMonth(1), atualizarAte);
         }
     }
 
 
     private BigDecimal calculoComINPCeSELIC(LocalDate dataAlvo, LocalDate atualizarAte){
-        BigDecimal valorCorrecao = calculoSomenteComSelic(LocalDate.of(2021,12,1), atualizarAte);
+        BigDecimal valorCorrecao = calculoSomenteComSelic(LocalDate.of(2021,12,1), atualizarAte.minusMonths(1L));
         List<InpcModel> listINPC = inpcRepository.findAllByDataBetween(dataAlvo, DATA_LIMITE_SELIC);
         for (InpcModel inpcModel : listINPC) {
-            BigDecimal valorInpc = inpcModel.getValor().divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+            BigDecimal valorInpc = inpcModel.getValor().divide(BigDecimal.valueOf(100),4, RoundingMode.UNNECESSARY);
             valorInpc = valorInpc.add(BigDecimal.valueOf(1));
             valorCorrecao = valorCorrecao.multiply(valorInpc);
         }
@@ -63,16 +63,15 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
 
     private BigDecimal calculoSomenteComSelic(LocalDate dataAlvo, LocalDate atualizarAte){
         BigDecimal valorCorrecao = BigDecimal.ONE;
-        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo, atualizarAte);
+        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo, atualizarAte.minusMonths(1L));
         for (SelicModel selic : listSelic) {
-            BigDecimal valorSelic = selic.getValor()
-                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+            BigDecimal valorSelic = selic.getValor().divide(BigDecimal.valueOf(100),4, RoundingMode.UNNECESSARY);
             valorCorrecao = valorCorrecao.add(valorSelic);
         }
         return valorCorrecao;
     }
 
     private boolean isDecimoTerceiro(String data){
-        return data.split("/")[1].equals("13");
+        return data.split("/")[1].equals(MES_DECIMO_TERCEIRO);
     }
 }

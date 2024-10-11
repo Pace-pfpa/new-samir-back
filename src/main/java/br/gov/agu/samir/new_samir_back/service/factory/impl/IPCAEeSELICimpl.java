@@ -34,20 +34,20 @@ public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
         
 
         if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
-            return calculoSomenteComSelic(dataAlvo, atualizarAte).setScale(4, RoundingMode.HALF_UP);
+            return calculoSomenteComSelic(dataAlvo.withDayOfMonth(1), atualizarAte);
         }else {
-            return calculoComIPCAEeSELIC(dataAlvo,atualizarAte).setScale(4, RoundingMode.HALF_UP);
+            return calculoComIPCAEeSELIC(dataAlvo.withDayOfMonth(1),atualizarAte);
         }
     }
 
 
 
     private BigDecimal calculoComIPCAEeSELIC(LocalDate dataAlvo, LocalDate atualizarAte){
-        BigDecimal valorCorrecao = calculoSomenteComSelic(LocalDate.of(2021,12,1), atualizarAte);
+        BigDecimal valorCorrecao = calculoSomenteComSelic(LocalDate.of(2021,12,1), atualizarAte.minusMonths(1L));
         List<IpcaeModel> listIPCAE = ipcaeRepository.findAllByDataBetween(dataAlvo, LocalDate.of(2021,11,1));
         for (IpcaeModel inpcModel : listIPCAE) {
-            BigDecimal valorIpcae= inpcModel.getValor().divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-            valorIpcae = valorIpcae.add(BigDecimal.valueOf(1));
+            BigDecimal valorIpcae= inpcModel.getValor().divide(BigDecimal.valueOf(100),4, RoundingMode.UNNECESSARY);
+            valorIpcae = valorIpcae.add(BigDecimal.ONE);
             valorCorrecao = valorCorrecao.multiply(valorIpcae);
         }
         return valorCorrecao;
@@ -55,10 +55,10 @@ public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
 
     private BigDecimal calculoSomenteComSelic(LocalDate dataAlvo, LocalDate atualizarAte){
         BigDecimal valorCorrecao = BigDecimal.ONE;
-        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo,atualizarAte);
+        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo,atualizarAte.minusMonths(1L));
         for (SelicModel selic : listSelic) {
             BigDecimal valorSelic = selic.getValor()
-                    .divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
+                    .divide(BigDecimal.valueOf(100),4, RoundingMode.UNNECESSARY);
             valorCorrecao = valorCorrecao.add(valorSelic);
         }
         return valorCorrecao;

@@ -1,9 +1,7 @@
 package br.gov.agu.samir.new_samir_back.service;
 
-import br.gov.agu.samir.new_samir_back.dtos.request.BeneficioAcumuladoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.response.CalculoResponseDTO;
-import br.gov.agu.samir.new_samir_back.models.BeneficioInacumulavelModel;
 import br.gov.agu.samir.new_samir_back.service.factory.CorrecaoMonetariaFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -58,7 +56,8 @@ public class CalculoService {
 
                 if (isDataDeReajuste(data)){
                     BigDecimal valorRmi = calculoRmiService.calcularRmi(rmiConversavada, data);
-                    BigDecimal indiceReajusteAnual = isPrimeiroReajuste(infoCalculo, data) ? calcularPrimeiroReajuste(infoCalculo) : calculoIndiceReajusteService.comumReajuste(data);
+                    BigDecimal indiceReajusteAnual = isPrimeiroReajuste(infoCalculo, data) ? calcularPrimeiroReajuste(infoCalculo.getDibAnterior(), infoCalculo.getDib()) : calculoIndiceReajusteService.comumReajuste(data);
+                    indiceReajuste = indiceReajusteAnual;
                     rmiConversavada = valorRmi.multiply(indiceReajusteAnual);
                 }
 
@@ -68,13 +67,13 @@ public class CalculoService {
 
                 linha.setData(data);
 
-                linha.setIndiceReajusteDevido(indiceReajuste);
+                linha.setIndiceReajusteDevido(isDataDeReajuste(data) ? indiceReajuste : BigDecimal.ONE);
 
                 BigDecimal devido = rmi.multiply(indiceReajuste).setScale(2, RoundingMode.HALF_UP);
 
                 linha.setDevido(devido);
 
-                linha.setIndiceReajusteRecebido(indiceReajuste);
+                linha.setIndiceReajusteRecebido(BigDecimal.ONE);
 
                 BigDecimal valorRecebido = BigDecimal.ZERO;
 
@@ -148,11 +147,11 @@ public class CalculoService {
         return correcaoMonetariaFactory.getCalculo(infoCalculo.getTipoCorrecao()).calcularIndexadorCorrecaoMonetaria(data, infoCalculo.getAtualizarAte());
     }
 
-    private BigDecimal calcularPrimeiroReajuste(CalculoRequestDTO infoCalculo){
-        if (infoCalculo.getDibAnterior() != null){
-            return calculoIndiceReajusteService.primeiroReajusteComDibAnterior(infoCalculo);
+    private BigDecimal calcularPrimeiroReajuste(LocalDate dibAnterior, LocalDate dib){
+        if (dibAnterior != null){
+            return calculoIndiceReajusteService.primeiroReajusteComDibAnterior(dibAnterior,dib);
         }
-        return calculoIndiceReajusteService.primeiroReajuste(infoCalculo);
+        return calculoIndiceReajusteService.primeiroReajusteSemDibAnterior(dib);
     }
 
     private BigDecimal retornaSalarioMaisMinimoProximoPorDataNoMesmoAno(LocalDate data){
@@ -183,6 +182,8 @@ public class CalculoService {
     private boolean isPrimeiroReajuste(CalculoRequestDTO infoCalculo, String data){
         int ano = Integer.parseInt(data.split("/")[2]);
         int mes = Integer.parseInt(data.split("/")[1]);
-        return  ano == infoCalculo.getDib().plusYears(1).getYear() && mes == 1;
+        int anoPrimeiroReajuste = infoCalculo.getDib().plusYears(1L).getYear();
+
+        return  ano == anoPrimeiroReajuste && mes == 1;
     }
 }
