@@ -69,9 +69,7 @@ public class CalculoService {
 
                 linha.setIndiceReajusteDevido(isDataDeReajuste(data) ? indiceReajuste : BigDecimal.ONE);
 
-                BigDecimal devido = rmi;
-
-                linha.setDevido(devido);
+                linha.setDevido(rmi);
 
                 linha.setIndiceReajusteRecebido(BigDecimal.ONE);
 
@@ -79,7 +77,7 @@ public class CalculoService {
 
                 linha.setRecebido(valorRecebido);
 
-                BigDecimal diferenca = devido.subtract(valorRecebido).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal diferenca = linha.getDevido().subtract(valorRecebido);
 
                 linha.setDiferenca(diferenca);
 

@@ -23,11 +23,10 @@ public class CalculoRmiService {
      */
     public BigDecimal calcularRmi(BigDecimal rmi, String dataString) {
 
-    LocalDate data = dateUtils.mapStringToLocalDate(dataString);
+        LocalDate data = dateUtils.mapStringToLocalDate(dataString);
+        int diasTrabalhados = 31 - data.getDayOfMonth();
 
-    int diasTrabalhados = 31 - data.getDayOfMonth();
-
-    return rmi.divide(BigDecimal.valueOf(30), 4, RoundingMode.HALF_UP)
+        return rmi.divide(BigDecimal.valueOf(30), 4, RoundingMode.HALF_UP)
               .multiply(BigDecimal.valueOf(diasTrabalhados));
-}
+    }
 }

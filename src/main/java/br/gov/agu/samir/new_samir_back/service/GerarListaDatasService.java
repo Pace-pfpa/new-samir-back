@@ -38,8 +38,6 @@ public List<String> gerarListaDatas(CalculoRequestDTO infoCalculo) {
         LocalDate dataAtual = dib.withDayOfMonth(1); // Começa no dia 01 do mês da data inicial
 
         while (dataAtual.isBefore(fimCalculo) || dataAtual.isEqual(fimCalculo)) {
-            // Adiciona a data normal
-            listaDeDatas.add(dataAtual.format(formatter));
 
             // Verifica o "mês 13"
             if (dataAtual.getMonthValue() == 12) {
