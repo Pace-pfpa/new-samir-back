@@ -55,10 +55,10 @@ public class CalculoService {
             if(!isDecimoTerceiro(data)){
 
                 if (isDataDeReajuste(data)){
-                    BigDecimal valorRmi = calculoRmiService.calcularRmi(rmiConversavada, data);
+                    BigDecimal valorRmi = calculoRmiService.calcularRmi(rmiConversavada, data).setScale(2, RoundingMode.HALF_UP);
                     BigDecimal indiceReajusteAnual = isPrimeiroReajuste(infoCalculo, data) ? calcularPrimeiroReajuste(infoCalculo.getDibAnterior(), infoCalculo.getDib()) : calculoIndiceReajusteService.comumReajuste(data);
                     indiceReajuste = indiceReajusteAnual;
-                    rmiConversavada = valorRmi.multiply(indiceReajusteAnual);
+                    rmiConversavada = valorRmi.multiply(indiceReajusteAnual).setScale(2, RoundingMode.FLOOR);
                 }
 
                 BigDecimal rmi = calculoRmiService.calcularRmi(rmiConversavada, data);
@@ -69,7 +69,7 @@ public class CalculoService {
 
                 linha.setIndiceReajusteDevido(isDataDeReajuste(data) ? indiceReajuste : BigDecimal.ONE);
 
-                BigDecimal devido = rmi.multiply(indiceReajuste).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal devido = rmi;
 
                 linha.setDevido(devido);
 

@@ -21,14 +21,13 @@ public class CalculoRmiService {
      * @param dataString a string de data no formato "dd/MM/yyyy"
      * @return o valor calculado da RMI para a data fornecida
      */
-    public BigDecimal calcularRmi(BigDecimal rmi, String dataString){
+    public BigDecimal calcularRmi(BigDecimal rmi, String dataString) {
 
-        LocalDate data = dateUtils.mapStringToLocalDate(dataString);
+    LocalDate data = dateUtils.mapStringToLocalDate(dataString);
 
-        int diasTrabalhados = 31 - data.getDayOfMonth();
+    int diasTrabalhados = 31 - data.getDayOfMonth();
 
-        return rmi.divide(BigDecimal.valueOf(30), RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(diasTrabalhados));
-
-    }
+    return rmi.divide(BigDecimal.valueOf(30), 4, RoundingMode.HALF_UP)
+              .multiply(BigDecimal.valueOf(diasTrabalhados));
+}
 }
