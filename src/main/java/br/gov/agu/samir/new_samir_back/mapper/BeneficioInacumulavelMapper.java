@@ -1,9 +1,9 @@
 package br.gov.agu.samir.new_samir_back.mapper;
 
-import br.gov.agu.samir.new_samir_back.dtos.BeneficioInacumulavelRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.BeneficioInacumulavelResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.BeneficioInacumulavelRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.BeneficioInacumulavelResponseDTO;
 
-import br.gov.agu.samir.new_samir_back.dtos.BeneficioResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.BeneficioResponseDTO;
 import br.gov.agu.samir.new_samir_back.models.BeneficioInacumulavelModel;
 import br.gov.agu.samir.new_samir_back.models.BeneficioModel;
 import org.mapstruct.Mapper;

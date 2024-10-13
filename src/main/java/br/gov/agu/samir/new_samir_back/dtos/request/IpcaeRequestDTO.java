@@ -1,4 +1,4 @@
-package br.gov.agu.samir.new_samir_back.dtos;
+package br.gov.agu.samir.new_samir_back.dtos.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -15,13 +15,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class IndiceReajusteRequestDTO {
+public class IpcaeRequestDTO {
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING ,pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate data;
 
     private BigDecimal valor;
-
-    private LocalDate dataReajuste;
-
 }

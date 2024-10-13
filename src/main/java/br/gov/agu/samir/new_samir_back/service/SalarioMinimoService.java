@@ -1,13 +1,15 @@
 package br.gov.agu.samir.new_samir_back.service;
 
-import br.gov.agu.samir.new_samir_back.dtos.SalarioMinimoRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.SalarioMinimoResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.SalarioMinimoRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.SalarioMinimoResponseDTO;
 import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFoundException;
 import br.gov.agu.samir.new_samir_back.mapper.SalarioMinimoMapper;
 import br.gov.agu.samir.new_samir_back.models.SalarioMinimoModel;
 import br.gov.agu.samir.new_samir_back.repository.SalarioMinimoRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 
@@ -32,17 +34,17 @@ public class SalarioMinimoService {
 
     public SalarioMinimoResponseDTO getSalarioMinimoById(Long id) {
         SalarioMinimoModel model = repository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("não foi encontrado um salario minimo com id: "+ id));
+                .orElseThrow(() -> new ResourceNotFoundException("não foi encontrado um salario minimo com id: " + id));
         return mapper.modelToResponseDTO(model);
     }
 
     public SalarioMinimoResponseDTO getSalarioMinimoByAno(int mes, int ano) {
-        SalarioMinimoModel model = repository.findByMesAndAno(mes,ano);
+        SalarioMinimoModel model = repository.findByMesAndAno(mes, ano);
         return mapper.modelToResponseDTO(model);
     }
 
     public SalarioMinimoResponseDTO updateSalarioMinimo(Long id, SalarioMinimoRequestDTO requestDTO) {
-        SalarioMinimoModel model = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("não foi encontrado um salario minimo com id: "+ id));
+        SalarioMinimoModel model = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("não foi encontrado um salario minimo com id: " + id));
 
         SalarioMinimoModel modelUpdated = SalarioMinimoModel.builder()
                 .id(model.getId())
@@ -56,5 +58,13 @@ public class SalarioMinimoService {
 
     public void deleteSalarioMinimo(Long id) {
         repository.deleteById(id);
+    }
+
+    public BigDecimal getSalarioMinimoProximoPorDataNoMesmoAno(LocalDate data){
+        int ano = data.getYear();
+
+        return repository.findSalarioMinimoProximoPorDataNoMesmoAno(data, ano)
+                .orElseThrow(() -> new ResourceNotFoundException("não foi encontrado um salario minimo para a data: " + data))
+                .getValor();
     }
 }

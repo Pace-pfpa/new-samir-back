@@ -1,4 +1,4 @@
-package br.gov.agu.samir.new_samir_back.dtos;
+package br.gov.agu.samir.new_samir_back.dtos.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SelicResponseDTO {
+public class IpcaeResponseDTO {
 
     private Long id;
 

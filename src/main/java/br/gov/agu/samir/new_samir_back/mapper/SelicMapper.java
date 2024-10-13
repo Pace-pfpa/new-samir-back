@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.mapper;
 
-import br.gov.agu.samir.new_samir_back.dtos.SelicRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.SelicResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.SelicRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.SelicResponseDTO;
 import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

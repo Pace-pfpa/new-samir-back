@@ -24,7 +24,7 @@ public class DecimoTerceiroService {
 public BigDecimal calcularDecimoTerceiro(BigDecimal rmi, LocalDate dataDib, String dataCalculo) {
     int mesesTrabalhados = 12 - dataDib.getMonthValue();
     return isPrimeiroDecimoTerceiro(dataDib, dataCalculo) ?
-        rmi.divide(BigDecimal.valueOf(mesesTrabalhados), RoundingMode.HALF_UP) : rmi;
+        rmi.divide(BigDecimal.valueOf(12), RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(mesesTrabalhados)) : rmi;
 }
 
 

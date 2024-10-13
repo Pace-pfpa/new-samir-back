@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.controller;
 
-import br.gov.agu.samir.new_samir_back.dtos.BeneficioRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.BeneficioResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.BeneficioRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.BeneficioResponseDTO;
 import br.gov.agu.samir.new_samir_back.models.BeneficioModel;
 import br.gov.agu.samir.new_samir_back.repository.BeneficioRepository;
 import br.gov.agu.samir.new_samir_back.service.BeneficioService;

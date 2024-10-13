@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.mapper;
 
-import br.gov.agu.samir.new_samir_back.dtos.IpcaeRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.IpcaeResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.IpcaeRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.IpcaeResponseDTO;
 import br.gov.agu.samir.new_samir_back.models.IpcaeModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

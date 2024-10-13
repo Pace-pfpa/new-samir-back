@@ -1,6 +1,6 @@
 package br.gov.agu.samir.new_samir_back.service;
 
-import br.gov.agu.samir.new_samir_back.dtos.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.enums.BeneficiosEnum;
 import org.springframework.stereotype.Component;
 
@@ -35,10 +35,10 @@ public List<String> gerarListaDatas(CalculoRequestDTO infoCalculo) {
         // Adiciona a data inicial no formato
         listaDeDatas.add(dib.format(formatter));
 
-        LocalDate dataAtual = dib.withDayOfMonth(1); // Começa no dia 01 do mês da data inicial
+        LocalDate dataAtual = dib.withDayOfMonth(1).plusMonths(1); // Começa no dia 01 do mês da data inicial
 
         while (dataAtual.isBefore(fimCalculo) || dataAtual.isEqual(fimCalculo)) {
-            // Adiciona a data normal
+
             listaDeDatas.add(dataAtual.format(formatter));
 
             // Verifica o "mês 13"

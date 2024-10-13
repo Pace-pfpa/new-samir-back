@@ -1,10 +1,7 @@
-package br.gov.agu.samir.new_samir_back.dtos;
+package br.gov.agu.samir.new_samir_back.dtos.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,7 +10,8 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SalarioMinimoResponseDTO {
+@Builder
+public class JurosResponseDTO {
 
     private Long id;
 

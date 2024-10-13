@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.service;
 
-import br.gov.agu.samir.new_samir_back.dtos.InpcRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.InpcResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.InpcRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.InpcResponseDTO;
 import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFoundException;
 import br.gov.agu.samir.new_samir_back.mapper.InpcMapper;
 import br.gov.agu.samir.new_samir_back.models.InpcModel;

@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.service;
 
-import br.gov.agu.samir.new_samir_back.dtos.SelicRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.SelicResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.SelicRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.SelicResponseDTO;
 import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFoundException;
 import br.gov.agu.samir.new_samir_back.mapper.SelicMapper;
 import br.gov.agu.samir.new_samir_back.models.SelicModel;
@@ -31,7 +31,7 @@ public class SelicService {
 
     public List<SelicResponseDTO> buscarTodasSelic() {
         List<SelicModel> listModel = repository.findAll();
-        return listModel.stream().map(selicModel -> mapper.mapModelToResponseDTO(selicModel)).toList();
+        return listModel.stream().map(mapper::mapModelToResponseDTO).toList();
     }
 
     public SelicResponseDTO buscarPorId(Long id) {

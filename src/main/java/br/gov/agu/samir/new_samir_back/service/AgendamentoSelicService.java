@@ -1,6 +1,6 @@
 package br.gov.agu.samir.new_samir_back.service;
 
-import br.gov.agu.samir.new_samir_back.dtos.SelicRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.SelicRequestDTO;
 import br.gov.agu.samir.new_samir_back.mapper.SelicMapper;
 import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.SelicRepository;
@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -27,7 +28,7 @@ public class AgendamentoSelicService {
         this.selicMapper = selicMapper;
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(fixedDelay = 24, timeUnit = TimeUnit.HOURS)
     public void salvaSelicNoBancoMensalmente() {
         LocalDate dataAtual = LocalDate.now();
         String dataAtualFormatada = dataAtual.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));

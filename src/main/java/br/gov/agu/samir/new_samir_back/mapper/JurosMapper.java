@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.mapper;
 
-import br.gov.agu.samir.new_samir_back.dtos.JurosRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.JurosResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.JurosRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.JurosResponseDTO;
 import br.gov.agu.samir.new_samir_back.models.JurosModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

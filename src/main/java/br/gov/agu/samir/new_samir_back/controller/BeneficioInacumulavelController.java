@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.controller;
 
-import br.gov.agu.samir.new_samir_back.dtos.BeneficioInacumulavelRequestDTO;
-import br.gov.agu.samir.new_samir_back.dtos.BeneficioInacumulavelResponseDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.BeneficioInacumulavelRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.response.BeneficioInacumulavelResponseDTO;
 import br.gov.agu.samir.new_samir_back.service.BeneficioInacumulavelService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

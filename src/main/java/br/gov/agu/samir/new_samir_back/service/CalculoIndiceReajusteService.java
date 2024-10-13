@@ -1,11 +1,10 @@
 package br.gov.agu.samir.new_samir_back.service;
 
-import br.gov.agu.samir.new_samir_back.dtos.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.exceptions.ResourceNotFoundException;
 import br.gov.agu.samir.new_samir_back.repository.IndiceReajusteRepository;
 import br.gov.agu.samir.new_samir_back.util.DateUtils;
 import lombok.AllArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,19 +24,24 @@ public class CalculoIndiceReajusteService {
      ** @param dataReajuste
      * @return BigDecimal
      * Reajuste comum é o segundo reajuste em diante, que ocorre no mês de janeiro e a partir do segundo ano da DIB.
+     * Ele é bucado no banco 1 ano antes da data de reajuste.
+     * Exemplo: DIB = 01/01/2020, o reajuste comum é buscado a partir de 01/01/2019.
      */
     public BigDecimal comumReajuste(String dataReajuste) {
-        return indiceReajusteRepository.findFirstByDataReajuste(dateUtils.mapStringToLocalDate(dataReajuste)).getValor();
+        LocalDate data = dateUtils.mapStringToLocalDate(dataReajuste).minusYears(1);
+        return indiceReajusteRepository.findByData(data).orElseThrow(
+                ()-> new ResourceNotFoundException("Indice de reajuste não encontrado")
+        ).getValor();
     }
 
 
     /**
-     * @param infoCalculo
+     * @param dib
      * @return BigDecimal
     * O primeiro reajuste é calculado a partir da data DIB.
     */
-    public BigDecimal primeiroReajuste(CalculoRequestDTO infoCalculo){
-        return indiceReajusteRepository.findByData(infoCalculo.getDib().withDayOfMonth(1)).orElseThrow(
+    public BigDecimal primeiroReajusteSemDibAnterior(LocalDate dib){
+        return indiceReajusteRepository.findByData(dib.withDayOfMonth(1)).orElseThrow(
                 ()-> new ResourceNotFoundException("Indice de reajuste não encontrado")
         ).getValor();
     }
@@ -45,18 +49,18 @@ public class CalculoIndiceReajusteService {
 
     /**
      * @return BigDecimal
-     * @param infoCalculo
+     * @param dibAnterior, dib
     * Caso as datas de reajuste sejam iguais, o valor do índice é buscado a partir da dibAnterior.
     * Caso contrário, o valor do índice é buscado o primeiro valor a partir da data de reajuste da DIB atual.
     */
-    public BigDecimal primeiroReajusteComDibAnterior(CalculoRequestDTO infoCalculo) {
-        LocalDate dataReajusteDibAtual = indiceReajusteRepository.findByData(infoCalculo.getDib().withDayOfMonth(1)).orElseThrow().getDataReajuste();
-        LocalDate dataReajusteDibAnterior = indiceReajusteRepository.findByData(infoCalculo.getDibAnterior().withDayOfMonth(1)).orElseThrow().getDataReajuste();
+    public BigDecimal primeiroReajusteComDibAnterior(LocalDate dibAnterior, LocalDate dib) {
+        LocalDate dataReajusteDibAtual = indiceReajusteRepository.findByData(dib.withDayOfMonth(1)).orElseThrow().getDataReajuste();
+        LocalDate dataReajusteDibAnterior = indiceReajusteRepository.findByData(dibAnterior.withDayOfMonth(1)).orElseThrow().getDataReajuste();
 
         if (dataReajusteDibAtual.isEqual(dataReajusteDibAnterior)) {
-            return indiceReajusteRepository.findByData(infoCalculo.getDibAnterior().withDayOfMonth(1)).orElseThrow().getValor();
+            return indiceReajusteRepository.findByData(dibAnterior.withDayOfMonth(1)).orElseThrow().getValor();
         }else{
-            return indiceReajusteRepository.findFirstByData(dataReajusteDibAtual).getValor();
+            return indiceReajusteRepository.findFirstByDataReajuste(dataReajusteDibAtual).getValor();
         }
     }
 }
