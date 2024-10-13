@@ -1,13 +1,11 @@
 package br.gov.agu.samir.new_samir_back.service.factory.impl;
 
-import br.gov.agu.samir.new_samir_back.models.InpcModel;
 import br.gov.agu.samir.new_samir_back.models.IpcaeModel;
 import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.IpcaeRepository;
 import br.gov.agu.samir.new_samir_back.repository.SelicRepository;
 import br.gov.agu.samir.new_samir_back.service.factory.interfaces.CalculoCorrecaoMonetaria;
 import lombok.AllArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -19,7 +17,7 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
+public class CorrecaoIPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
 
     private final SelicRepository selicRepository;
 

@@ -4,9 +4,8 @@ import br.gov.agu.samir.new_samir_back.dtos.request.BeneficioAcumuladoRequestDTO
 import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.response.CalculoResponseDTO;
 import br.gov.agu.samir.new_samir_back.models.BeneficioInacumulavelModel;
-import br.gov.agu.samir.new_samir_back.repository.BeneficioInacumulavelRepository;
 import br.gov.agu.samir.new_samir_back.repository.BeneficioRepository;
-import br.gov.agu.samir.new_samir_back.service.CalculoService;
+import br.gov.agu.samir.new_samir_back.service.CalculadoraService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +19,9 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/calculo")
 @AllArgsConstructor
-public class CalculoController {
+public class CalculadoraController {
 
-    private final CalculoService calculoService;
+    private final CalculadoraService calculadoraService;
 
     private final BeneficioRepository beneficioRepository;
 
@@ -35,10 +34,10 @@ public class CalculoController {
         List<BeneficioAcumuladoRequestDTO> beneficioAcumulados = requestDTO.getBeneficioInacumulaveisParaCalculo(beneficioInacumulaveis);
 
         if (Objects.isNull(beneficioAcumulados)){
-            List<CalculoResponseDTO> tabela = calculoService.calculoSemBeneficioAcumulado(requestDTO);
+            List<CalculoResponseDTO> tabela = calculadoraService.calculoSemBeneficioAcumulado(requestDTO);
             return ResponseEntity.ok(tabela);
         }
-        List<CalculoResponseDTO> tabela = calculoService.calculoComBeneficioAcumulado(requestDTO);
+        List<CalculoResponseDTO> tabela = calculadoraService.calculoComBeneficioAcumulado(requestDTO);
         return ResponseEntity.ok(tabela);
 
     }

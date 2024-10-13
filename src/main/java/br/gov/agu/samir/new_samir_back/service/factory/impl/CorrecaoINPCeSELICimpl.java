@@ -18,7 +18,7 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
+public class CorrecaoINPCeSELICimpl implements CalculoCorrecaoMonetaria {
 
     private final SelicRepository selicRepository;
 

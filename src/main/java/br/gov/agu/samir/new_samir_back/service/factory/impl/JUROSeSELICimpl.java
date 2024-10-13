@@ -21,9 +21,9 @@ public class JUROSeSELICimpl implements CalculoJuros {
 
     private final SelicRepository selicRepository;
 
-    private final static LocalDate DATA_LIMITE_SELIC = LocalDate.of(2021,11,1);
+    private static final LocalDate DATA_LIMITE_SELIC = LocalDate.of(2021,11,1);
 
-    private final static  LocalDate DATA_FINAL_BUSCA = LocalDate.now().minusMonths(2);
+    private static final  LocalDate DATA_FINAL_BUSCA = LocalDate.now().minusMonths(2);
 
 
 

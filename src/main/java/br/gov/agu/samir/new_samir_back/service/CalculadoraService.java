@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class CalculoService {
+public class CalculadoraService {
 
     private final GerarListaDatasService gerarListaDatasService;
 
