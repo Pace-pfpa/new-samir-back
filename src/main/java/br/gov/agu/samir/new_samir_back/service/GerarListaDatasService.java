@@ -1,30 +1,23 @@
 package br.gov.agu.samir.new_samir_back.service;
 
-import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.enums.BeneficiosEnum;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class GerarListaDatasService {
 
 
-   /**
- * Gera uma lista de datas com base nas informações de cálculo fornecidas.
- * Se o benefício não incluir décimo terceiro, gera uma lista sem décimo terceiro.
- * Caso contrário, gera uma lista com décimo terceiro.
- *
- * @param infoCalculo as informações de cálculo contendo a data de início (DIB) e a data de fim
- * @return uma lista de strings representando as datas no formato "dd/MM/yyyy"
- */
-public List<String> gerarListaDatas(CalculoRequestDTO infoCalculo) {
-    return isBeneficioSemDecimoTerceiro(infoCalculo) ?
-            gerarListaSemDecimoTerceiro(infoCalculo.getDib(), infoCalculo.getDataFim()) :
-            gerarListaComDecimoTerceiro(infoCalculo.getDib(), infoCalculo.getDataFim());
+public List<String> gerarListaDatasPorBeneficioEperiodo(BeneficiosEnum beneficio, LocalDate dib, LocalDate fimCalculo) {
+    return isBeneficioSemDecimoTerceiro(beneficio) ?
+            gerarListaSemDecimoTerceiro(dib, fimCalculo) :
+            gerarListaComDecimoTerceiro(dib, fimCalculo);
 }
 
 
@@ -34,6 +27,10 @@ public List<String> gerarListaDatas(CalculoRequestDTO infoCalculo) {
 
         // Adiciona a data inicial no formato
         listaDeDatas.add(dib.format(formatter));
+
+        if (dib.getMonthValue() == 12) {
+            listaDeDatas.add("01/13/" + dib.getYear());
+        }
 
         LocalDate dataAtual = dib.withDayOfMonth(1).plusMonths(1); // Começa no dia 01 do mês da data inicial
 
@@ -84,9 +81,13 @@ public List<String> gerarListaDatas(CalculoRequestDTO infoCalculo) {
     }
 
 
-    private boolean isBeneficioSemDecimoTerceiro(CalculoRequestDTO infoCalculo){
-        return infoCalculo.getBeneficio() == BeneficiosEnum.SEGURO_DEFESO ||
-                infoCalculo.getBeneficio() == BeneficiosEnum.LOAS_DEFICIENTE ||
-                infoCalculo.getBeneficio() == BeneficiosEnum.LOAS_IDOSO;
+    private static final Set<BeneficiosEnum> BENEFICIOS_SEM_DECIMO_TERCEIRO = EnumSet.of(
+            BeneficiosEnum.SEGURO_DEFESO,
+            BeneficiosEnum.LOAS_DEFICIENTE,
+            BeneficiosEnum.LOAS_IDOSO
+    );
+
+    private boolean isBeneficioSemDecimoTerceiro(BeneficiosEnum beneficio) {
+        return BENEFICIOS_SEM_DECIMO_TERCEIRO.contains(beneficio);
     }
 }

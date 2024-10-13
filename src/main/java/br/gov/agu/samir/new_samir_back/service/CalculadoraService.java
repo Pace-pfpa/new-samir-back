@@ -2,6 +2,7 @@ package br.gov.agu.samir.new_samir_back.service;
 
 import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.dtos.response.CalculoResponseDTO;
+import br.gov.agu.samir.new_samir_back.enums.BeneficiosEnum;
 import br.gov.agu.samir.new_samir_back.service.factory.CorrecaoMonetariaFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -156,8 +157,8 @@ public class CalculadoraService {
         return salarioMinimoService.getSalarioMinimoProximoPorDataNoMesmoAno(data);
     }
 
-    private List<String> gerarListaDeDatasParaCalculo(CalculoRequestDTO infoCalculo){
-        return gerarListaDatasService.gerarListaDatas(infoCalculo);
+    private List<String> gerarListaDeDatasPorTipoBeneficioEperiodo(BeneficiosEnum beneficio, LocalDate dataInicio, LocalDate dataFim){
+        return gerarListaDatasService.gerarListaDatasPorBeneficioEperiodo(beneficio, dataInicio, dataFim);
     }
 
     private boolean isRmiMenorSalarioMinimo(BigDecimal rmi, BigDecimal salarioMinimo){
