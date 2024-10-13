@@ -43,7 +43,7 @@ public class CalculadoraService {
 
         List<CalculoResponseDTO> tabela = new ArrayList<>();
 
-        List<String> datas = gerarListaDeDatasParaCalculo(infoCalculo);
+        List<String> datas = gerarListaDeDatasPorTipoBeneficioEperiodo(infoCalculo.getBeneficio(), infoCalculo.getDib(), infoCalculo.getAtualizarAte());
 
         BigDecimal indiceReajuste = BigDecimal.ONE;
 
