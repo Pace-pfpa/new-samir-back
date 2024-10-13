@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -25,50 +26,56 @@ public class INPCeSELICimpl implements CalculoCorrecaoMonetaria {
 
     private final DateTimeFormatter ddMMyyyy;
 
-    private static final LocalDate DATA_LIMITE_SELIC = LocalDate.of(2021,11,1);
+    private static final LocalDate DATA_FINAL_INPC = LocalDate.of(2021,11,1);
+
+    private static final LocalDate INICIO_SELIC = LocalDate.of(2021,12,1);
 
     private static final String MES_DECIMO_TERCEIRO = "13";
 
     private static final String MES_DEZEMBRO = "12";
 
 
+
+
     @Override
     public BigDecimal calcularIndexadorCorrecaoMonetaria(String data, LocalDate atualizarAte) {
+
+        atualizarAte = atualizarAte.minusMonths(1L);
+
 
         if (isDecimoTerceiro(data)){
             data = data.replace(MES_DECIMO_TERCEIRO,MES_DEZEMBRO);
         }
 
-        LocalDate dataAlvo = LocalDate.parse(data,ddMMyyyy);
+        LocalDate dataFormatada = LocalDate.parse(data,ddMMyyyy);
 
-        if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
-            return calculoSomenteComSelic(dataAlvo.withDayOfMonth(1), atualizarAte);
+        if(dataFormatada.isAfter(DATA_FINAL_INPC)){
+            return retornaSelicAcumulada(dataFormatada.withDayOfMonth(1), atualizarAte);
         }else {
-            return calculoComINPCeSELIC(dataAlvo.withDayOfMonth(1), atualizarAte);
+            return calculoComINPCeSELIC(dataFormatada.withDayOfMonth(1), atualizarAte);
         }
     }
 
 
-    private BigDecimal calculoComINPCeSELIC(LocalDate dataAlvo, LocalDate atualizarAte){
-        BigDecimal valorCorrecao = calculoSomenteComSelic(LocalDate.of(2021,12,1), atualizarAte.minusMonths(1L));
-        List<InpcModel> listINPC = inpcRepository.findAllByDataBetween(dataAlvo, DATA_LIMITE_SELIC);
+    private BigDecimal calculoComINPCeSELIC(LocalDate data, LocalDate atualizarAte){
+        BigDecimal totalSelicAcumulada = retornaSelicAcumulada(INICIO_SELIC, atualizarAte);
+        List<InpcModel> listINPC = inpcRepository.findAllByDataBetween(data, DATA_FINAL_INPC);
+        List<BigDecimal> listValoresInpc = new ArrayList<>();
         for (InpcModel inpcModel : listINPC) {
-            BigDecimal valorInpc = inpcModel.getValor().divide(BigDecimal.valueOf(100),4, RoundingMode.UNNECESSARY);
-            valorInpc = valorInpc.add(BigDecimal.valueOf(1));
-            valorCorrecao = valorCorrecao.multiply(valorInpc);
+            BigDecimal valorInpc = inpcModel.getValor().divide(BigDecimal.valueOf(100),4, RoundingMode.UNNECESSARY).add(BigDecimal.ONE);
+            listValoresInpc.add(valorInpc);
         }
-        return valorCorrecao;
+        return  listValoresInpc.stream().reduce(totalSelicAcumulada,BigDecimal::multiply);
     }
 
-
-    private BigDecimal calculoSomenteComSelic(LocalDate dataAlvo, LocalDate atualizarAte){
-        BigDecimal valorCorrecao = BigDecimal.ONE;
-        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo, atualizarAte.minusMonths(1L));
-        for (SelicModel selic : listSelic) {
+    private BigDecimal retornaSelicAcumulada(LocalDate data, LocalDate atualizarAte){
+        List<BigDecimal> listSelic = new ArrayList<>();
+        List<SelicModel> listSelicModel = selicRepository.findAllByDataBetween(data, atualizarAte);
+        for (SelicModel selic : listSelicModel) {
             BigDecimal valorSelic = selic.getValor().divide(BigDecimal.valueOf(100),4, RoundingMode.UNNECESSARY);
-            valorCorrecao = valorCorrecao.add(valorSelic);
+            listSelic.add(valorSelic);
         }
-        return valorCorrecao;
+        return listSelic.stream().reduce(BigDecimal.ONE,BigDecimal::add);
     }
 
     private boolean isDecimoTerceiro(String data){
