@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Component
 public interface CalculoJuros {
 
-    BigDecimal calcularJuros(LocalDate dataAlvo);
+    BigDecimal calcularJuros(LocalDate dataCalculo, LocalDate atualizarAte);
 
 
 

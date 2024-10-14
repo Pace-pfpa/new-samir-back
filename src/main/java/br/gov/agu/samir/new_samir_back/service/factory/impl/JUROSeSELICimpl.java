@@ -28,19 +28,16 @@ public class JUROSeSELICimpl implements CalculoJuros {
 
 
     @Override
-    public BigDecimal calcularJuros(LocalDate dataAlvo) {
+    public BigDecimal calcularJuros(LocalDate dataCalculo, LocalDate atualizarAte) {
 
+        atualizarAte = atualizarAte.minusMonths(1L);
 
-        if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
-            return calculoSomenteComSelic(dataAlvo).setScale(4, RoundingMode.HALF_UP);
-        }else{
-            return calculoComJurosESelic(dataAlvo).setScale(4, RoundingMode.HALF_UP);
-        }
+        return calcularJurosComSelic(dataCalculo, atualizarAte);
     }
 
 
-    private BigDecimal calculoComJurosESelic(LocalDate dataAlvo){
-        BigDecimal valorJuros = retornaSelicTotalSelicTotal();
+    private BigDecimal calcularJurosComSelic(LocalDate dataAlvo, LocalDate atualizarAte){
+        BigDecimal valorJuros = retornaSelicTotalAcumulada(atualizarAte);
         List<JurosModel> listJuros = jurosRepository.findAllByDataBetween(dataAlvo,DATA_LIMITE_SELIC);
         for (JurosModel juros: listJuros) {
             valorJuros = valorJuros.add(juros.getValor());
@@ -48,19 +45,10 @@ public class JUROSeSELICimpl implements CalculoJuros {
         return valorJuros;
     }
 
-    private BigDecimal calculoSomenteComSelic(LocalDate dataAlvo){
-        BigDecimal valorJuros = BigDecimal.ZERO;
-        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo,DATA_FINAL_BUSCA);
-        for (SelicModel selicModel : listSelic) {
-            valorJuros = valorJuros.add(selicModel.getValor());
-        }
-        return valorJuros;
 
-    }
-
-    private BigDecimal retornaSelicTotalSelicTotal(){
+    private BigDecimal retornaSelicTotalAcumulada(LocalDate atualizarAte){
         BigDecimal valorJuros = BigDecimal.ZERO;
-        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(LocalDate.of(2021,12,1),DATA_FINAL_BUSCA);
+        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(LocalDate.of(2021,12,1),atualizarAte);
         for (SelicModel selicModel : listSelic) {
             valorJuros = valorJuros.add(selicModel.getValor());
         }

@@ -9,5 +9,5 @@ import java.time.LocalDate;
 @Component
 public interface CalculoCorrecaoMonetaria {
 
-    BigDecimal calcularIndexadorCorrecaoMonetaria(String dataAlvo, LocalDate atualizarAte);
+    BigDecimal calcularIndexadorCorrecaoMonetaria(LocalDate dataCalculo, LocalDate atualizarAte);
 }

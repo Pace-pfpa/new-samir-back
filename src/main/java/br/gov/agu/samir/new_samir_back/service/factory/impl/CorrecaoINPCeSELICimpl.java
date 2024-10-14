@@ -38,21 +38,14 @@ public class CorrecaoINPCeSELICimpl implements CalculoCorrecaoMonetaria {
 
 
     @Override
-    public BigDecimal calcularIndexadorCorrecaoMonetaria(String data, LocalDate atualizarAte) {
+    public BigDecimal calcularIndexadorCorrecaoMonetaria(LocalDate dataCalculo, LocalDate atualizarAte) {
 
         atualizarAte = atualizarAte.minusMonths(1L);
 
-
-        if (isDecimoTerceiro(data)){
-            data = data.replace(MES_DECIMO_TERCEIRO,MES_DEZEMBRO);
-        }
-
-        LocalDate dataFormatada = LocalDate.parse(data,ddMMyyyy);
-
-        if(dataFormatada.isAfter(DATA_FINAL_INPC)){
-            return retornaSelicAcumulada(dataFormatada.withDayOfMonth(1), atualizarAte);
+        if(dataCalculo.isAfter(DATA_FINAL_INPC)){
+            return retornaSelicAcumulada(dataCalculo.withDayOfMonth(1), atualizarAte);
         }else {
-            return calculoComINPCeSELIC(dataFormatada.withDayOfMonth(1), atualizarAte);
+            return calculoComINPCeSELIC(dataCalculo.withDayOfMonth(1), atualizarAte);
         }
     }
 
@@ -76,9 +69,5 @@ public class CorrecaoINPCeSELICimpl implements CalculoCorrecaoMonetaria {
             listSelic.add(valorSelic);
         }
         return listSelic.stream().reduce(BigDecimal.ONE,BigDecimal::add);
-    }
-
-    private boolean isDecimoTerceiro(String data){
-        return data.split("/")[1].equals(MES_DECIMO_TERCEIRO);
     }
 }

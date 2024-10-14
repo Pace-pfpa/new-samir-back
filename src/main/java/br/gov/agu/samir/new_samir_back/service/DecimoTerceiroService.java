@@ -21,15 +21,23 @@ public class DecimoTerceiroService {
  * @param dataCalculo a data de cálculo no formato "dd/MM/yyyy"
  * @return o valor calculado do décimo terceiro salário
  */
-public BigDecimal calcularDecimoTerceiro(BigDecimal rmi, LocalDate dataDib, String dataCalculo) {
+public BigDecimal calcularDecimoTerceiro(String dataDecimoTerceiro,LocalDate dataDib, BigDecimal rmi) {
+
     int mesesTrabalhados = 12 - dataDib.getMonthValue();
-    return isPrimeiroDecimoTerceiro(dataDib, dataCalculo) ?
-        rmi.divide(BigDecimal.valueOf(12), RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(mesesTrabalhados)) : rmi;
+
+    if (dataDib.getDayOfMonth() < 17) {
+        mesesTrabalhados = 13 - dataDib.getMonthValue();
+    }
+
+    BigDecimal valorDecimoTerceiro = rmi.divide(BigDecimal.valueOf(12),2, RoundingMode.HALF_UP);
+    valorDecimoTerceiro = valorDecimoTerceiro.multiply(BigDecimal.valueOf(mesesTrabalhados));
+
+    return isPrimeiroDecimoTerceiro(dataDecimoTerceiro, dataDib) ? valorDecimoTerceiro : rmi;
 }
 
 
-    private boolean isPrimeiroDecimoTerceiro(LocalDate dataDib, String dataCalculo){
-        return Integer.parseInt(dataCalculo.split("/")[2])  == dataDib.getYear();
+    private boolean isPrimeiroDecimoTerceiro(String decimoTerceiro, LocalDate dataDib){
+        return Integer.parseInt(decimoTerceiro.split("/")[2])  == dataDib.getYear();
     }
 }
 

@@ -37,8 +37,8 @@ public class CalculadoraController {
             List<CalculoResponseDTO> tabela = calculadoraService.calculoSemBeneficioAcumulado(requestDTO);
             return ResponseEntity.ok(tabela);
         }
-        List<CalculoResponseDTO> tabela = calculadoraService.calculoComBeneficioAcumulado(requestDTO);
-        return ResponseEntity.ok(tabela);
+
+        return ResponseEntity.ok(null);
 
     }
 }
