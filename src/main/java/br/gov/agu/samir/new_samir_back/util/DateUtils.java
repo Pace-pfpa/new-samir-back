@@ -24,8 +24,5 @@ public class DateUtils {
     }
 }
 
-    public LocalDate mapDecimoTerceiroToLocalDate(String dataString) {
-        return LocalDate.parse(dataString.replace("13", "12"), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-    }
 
 }

@@ -25,19 +25,12 @@ import java.util.NoSuchElementException;
 public class CalculadoraService {
 
     private final GerarListaDatasService gerarListaDatasService;
-
     private final BeneficioRepository beneficioRepository;
-
     private final CorrecaoMonetariaFactory correcaoMonetariaFactory;
-
     private final CalculoIndiceReajusteService calculoIndiceReajusteService;
-
     private final CalculoJurosService calculoJurosService;
-    
     private final DecimoTerceiroService decimoTerceiroService;
-
     private final SalarioMinimoService salarioMinimoService;
-
     private final DateUtils dateUtils;
 
     private static final String MES_DECIMO_TERCEIRO = "13";
@@ -46,7 +39,7 @@ public class CalculadoraService {
     public List<CalculoResponseDTO> gerarTabelaDeCalculo(CalculoRequestDTO infoCalculo) {
         List<CalculoResponseDTO> tabelaCalculo = new ArrayList<>();
         List<String> listaDeDatasParaCalculo = gerarDatasPorBeneficioEPeriodo(infoCalculo.getBeneficio(), infoCalculo.getDib(), infoCalculo.getDataFim());
-        BigDecimal indiceReajuste = BigDecimal.ONE;
+        BigDecimal indiceReajuste;
         BigDecimal salarioMinimo = retornaSalarioMaisMinimoProximoPorDataNoMesmoAno(infoCalculo.getDib());
         BigDecimal rmi = retornarSalarioMinimoSeRmiForInferior(infoCalculo.getRmi(), salarioMinimo);
 
@@ -94,7 +87,7 @@ public class CalculadoraService {
             linhaTabela.setSalarioCorrigido(salarioCorrigido.setScale(2, RoundingMode.HALF_UP));
 
             BigDecimal jurosPorcentagem = retornaCalculoJurosPorTipo(dataCalculo, infoCalculo);
-            linhaTabela.setPorcentagemJuros(jurosPorcentagem.setScale(2, RoundingMode.HALF_UP));
+            linhaTabela.setPorcentagemJuros(jurosPorcentagem.setScale(4, RoundingMode.HALF_UP));
 
             BigDecimal juros = jurosPorcentagem.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
             juros = juros.multiply(linhaTabela.getSalarioCorrigido());
@@ -119,7 +112,7 @@ public class CalculadoraService {
             LocalDate dataDibAnterior = beneficioInacumulavel.getDibAnterior();
             List<String> datas = gerarDatasPorBeneficioEPeriodo(beneficio, inicioDesconto, dataFim);
             BigDecimal rmi = beneficioInacumulavel.getRmi();
-            BigDecimal indiceReajuste = BigDecimal.ONE;
+            BigDecimal indiceReajuste;
             for (String data : datas){
                 FiltroRecebido filtroRecebido = new FiltroRecebido();
                 filtroRecebido.setData(data);
@@ -166,7 +159,7 @@ public class CalculadoraService {
     }
 
     private BigDecimal calcularRmiPorDiasTrabalhadosNoMes(LocalDate dataCalculo,LocalDate fimCalculo, BigDecimal rmi){
-        int diasTrabalhados= 0;
+        int diasTrabalhados;
         diasTrabalhados = 31 - dataCalculo.getDayOfMonth();
         if (dataCalculo.isEqual(fimCalculo)){
             diasTrabalhados = fimCalculo.getDayOfMonth();

@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,7 +22,6 @@ public class JUROSeSELICimpl implements CalculoJuros {
 
     private static final LocalDate DATA_LIMITE_SELIC = LocalDate.of(2021,11,1);
 
-    private static final  LocalDate DATA_FINAL_BUSCA = LocalDate.now().minusMonths(2);
 
 
 
@@ -36,9 +34,9 @@ public class JUROSeSELICimpl implements CalculoJuros {
     }
 
 
-    private BigDecimal calcularJurosComSelic(LocalDate dataAlvo, LocalDate atualizarAte){
+    private BigDecimal calcularJurosComSelic(LocalDate dataCalculo, LocalDate atualizarAte){
         BigDecimal valorJuros = retornaSelicTotalAcumulada(atualizarAte);
-        List<JurosModel> listJuros = jurosRepository.findAllByDataBetween(dataAlvo,DATA_LIMITE_SELIC);
+        List<JurosModel> listJuros = jurosRepository.findAllByDataBetween(dataCalculo.withDayOfMonth(1),DATA_LIMITE_SELIC);
         for (JurosModel juros: listJuros) {
             valorJuros = valorJuros.add(juros.getValor());
         }
