@@ -1,13 +1,11 @@
 package br.gov.agu.samir.new_samir_back.service.factory.impl;
 
-import br.gov.agu.samir.new_samir_back.models.InpcModel;
 import br.gov.agu.samir.new_samir_back.models.IpcaeModel;
 import br.gov.agu.samir.new_samir_back.models.SelicModel;
 import br.gov.agu.samir.new_samir_back.repository.IpcaeRepository;
 import br.gov.agu.samir.new_samir_back.repository.SelicRepository;
 import br.gov.agu.samir.new_samir_back.service.factory.interfaces.CalculoCorrecaoMonetaria;
 import lombok.AllArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -19,7 +17,7 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
+public class CorrecaoIPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
 
     private final SelicRepository selicRepository;
 
@@ -37,19 +35,14 @@ public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
 
 
     @Override
-    public BigDecimal calcularIndexadorCorrecaoMonetaria(String data, LocalDate atualizarAte) {
+    public BigDecimal calcularIndexadorCorrecaoMonetaria(LocalDate dataCalculo, LocalDate atualizarAte) {
 
-        if (isDecimoTerceiro(data)){
-            data = data.replace(MES_DECIMO_TERCEIRO,MES_DEZEMBRO);
-        }
-
-        LocalDate dataFormatada = LocalDate.parse(data,ddMMyyyy).withDayOfMonth(1);
         atualizarAte = atualizarAte.minusMonths(1L);
 
-        if(dataFormatada.isAfter(DATA_FINAL_IPCAE)){
-            return retornaSelicAcumulada(dataFormatada, atualizarAte);
+        if(dataCalculo.isAfter(DATA_FINAL_IPCAE)){
+            return retornaSelicAcumulada(dataCalculo, atualizarAte);
         }else {
-            return calculoComIPCAEeSELIC(dataFormatada,atualizarAte);
+            return calculoComIPCAEeSELIC(dataCalculo,atualizarAte);
         }
     }
 
@@ -74,9 +67,5 @@ public class IPCAEeSELICimpl implements CalculoCorrecaoMonetaria {
             listSelic.add(valorSelic);
         }
         return listSelic.stream().reduce(BigDecimal.ONE,BigDecimal::add);
-    }
-
-    private boolean isDecimoTerceiro(String data){
-        return data.split("/")[1].equals(MES_DECIMO_TERCEIRO);
     }
 }

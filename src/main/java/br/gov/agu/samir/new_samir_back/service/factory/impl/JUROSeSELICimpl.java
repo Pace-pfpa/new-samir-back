@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,46 +20,33 @@ public class JUROSeSELICimpl implements CalculoJuros {
 
     private final SelicRepository selicRepository;
 
-    private final static LocalDate DATA_LIMITE_SELIC = LocalDate.of(2021,11,1);
+    private static final LocalDate DATA_LIMITE_SELIC = LocalDate.of(2021,11,1);
 
-    private final static  LocalDate DATA_FINAL_BUSCA = LocalDate.now().minusMonths(2);
 
 
 
     @Override
-    public BigDecimal calcularJuros(LocalDate dataAlvo) {
+    public BigDecimal calcularJuros(LocalDate dataCalculo, LocalDate atualizarAte) {
 
+        atualizarAte = atualizarAte.minusMonths(1L);
 
-        if(dataAlvo.isAfter(DATA_LIMITE_SELIC)){
-            return calculoSomenteComSelic(dataAlvo).setScale(4, RoundingMode.HALF_UP);
-        }else{
-            return calculoComJurosESelic(dataAlvo).setScale(4, RoundingMode.HALF_UP);
-        }
+        return calcularJurosComSelic(dataCalculo, atualizarAte);
     }
 
 
-    private BigDecimal calculoComJurosESelic(LocalDate dataAlvo){
-        BigDecimal valorJuros = retornaSelicTotalSelicTotal();
-        List<JurosModel> listJuros = jurosRepository.findAllByDataBetween(dataAlvo,DATA_LIMITE_SELIC);
+    private BigDecimal calcularJurosComSelic(LocalDate dataCalculo, LocalDate atualizarAte){
+        BigDecimal valorJuros = retornaSelicTotalAcumulada(atualizarAte);
+        List<JurosModel> listJuros = jurosRepository.findAllByDataBetween(dataCalculo.withDayOfMonth(1),DATA_LIMITE_SELIC);
         for (JurosModel juros: listJuros) {
             valorJuros = valorJuros.add(juros.getValor());
         }
         return valorJuros;
     }
 
-    private BigDecimal calculoSomenteComSelic(LocalDate dataAlvo){
-        BigDecimal valorJuros = BigDecimal.ZERO;
-        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(dataAlvo,DATA_FINAL_BUSCA);
-        for (SelicModel selicModel : listSelic) {
-            valorJuros = valorJuros.add(selicModel.getValor());
-        }
-        return valorJuros;
 
-    }
-
-    private BigDecimal retornaSelicTotalSelicTotal(){
+    private BigDecimal retornaSelicTotalAcumulada(LocalDate atualizarAte){
         BigDecimal valorJuros = BigDecimal.ZERO;
-        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(LocalDate.of(2021,12,1),DATA_FINAL_BUSCA);
+        List<SelicModel> listSelic = selicRepository.findAllByDataBetween(LocalDate.of(2021,12,1),atualizarAte);
         for (SelicModel selicModel : listSelic) {
             valorJuros = valorJuros.add(selicModel.getValor());
         }

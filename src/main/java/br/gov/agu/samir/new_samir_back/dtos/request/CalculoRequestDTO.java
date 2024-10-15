@@ -37,7 +37,7 @@ public class CalculoRequestDTO {
     private Integer porcentagemRmi;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
-    private LocalDate dataIncioJuros; //Data citação -> vai ter juros quando a citação for anterior a 12/2021
+    private LocalDate dataIncioJuros; // Data citação -> vai ter juros quando a citação for anterior a 12/2021
 
     @Enumerated(EnumType.STRING)
     private TipoJuros tipoJuros;

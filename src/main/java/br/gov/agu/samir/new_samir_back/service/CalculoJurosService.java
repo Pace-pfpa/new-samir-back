@@ -1,6 +1,7 @@
 package br.gov.agu.samir.new_samir_back.service;
 
 import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.enums.TipoJuros;
 import br.gov.agu.samir.new_samir_back.service.factory.CalculoJurosFactory;
 import br.gov.agu.samir.new_samir_back.util.DateUtils;
 import lombok.AllArgsConstructor;
@@ -13,27 +14,19 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CalculoJurosService {
 
-
-    private final DateUtils dateUtils;
-
     private final CalculoJurosFactory calculoJurosFactory;
 
-    public BigDecimal calcularJuros(CalculoRequestDTO infoCalulo, String data) {
+    public BigDecimal calcularJuros(LocalDate dataCalculo, CalculoRequestDTO infoCalculo) {
 
 
-        LocalDate dataFormatada = isDecimoTerceiro(data) ? dateUtils.mapDecimoTerceiroToLocalDate(data) : dateUtils.mapStringToLocalDate(data);
+        if (infoCalculo.getDataIncioJuros().isAfter(LocalDate.of(2021,12,1))){
+            return BigDecimal.ZERO;
+        }
 
-        return  isDataAntesDaCitacao(infoCalulo.getDataIncioJuros(), dataFormatada) ?
-                calculoJurosFactory.getCalculo(infoCalulo.getTipoJuros()).calcularJuros(infoCalulo.getDataIncioJuros()) :
-                calculoJurosFactory.getCalculo(infoCalulo.getTipoJuros()).calcularJuros(dataFormatada);
+        if (dataCalculo.isBefore(infoCalculo.getDataIncioJuros())){
+            return calculoJurosFactory.getCalculo(infoCalculo.getTipoJuros()).calcularJuros(infoCalculo.getDataIncioJuros(),infoCalculo.getAtualizarAte());
+        }
+        return calculoJurosFactory.getCalculo(infoCalculo.getTipoJuros()).calcularJuros(dataCalculo,infoCalculo.getAtualizarAte());
     }
 
-
-    private boolean isDataAntesDaCitacao(LocalDate dataCitacao, LocalDate data){
-        return  data.isBefore(dataCitacao);
-    }
-
-    private boolean isDecimoTerceiro(String data) {
-        return data.split("/")[1].equals("13");
-    }
 }
