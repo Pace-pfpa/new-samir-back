@@ -35,7 +35,7 @@ public class CalculadoraService {
 
     private static final String MES_DECIMO_TERCEIRO = "13";
 
-
+//TODO REVISAR INDICE REAJUSTE DEVIDO
 
 
     public List<CalculoResponseDTO> calculoSemBeneficioAcumulado(CalculoRequestDTO infoCalculo) {
@@ -55,35 +55,46 @@ public class CalculadoraService {
                 indiceReajuste = retornaIndiceReajuste(dataCalculo, infoCalculo.getDib(), infoCalculo.getDibAnterior());
                 rmi = rmi.multiply(indiceReajuste).setScale(2, RoundingMode.HALF_UP);
             }
-            linhaTabela.setIndiceReajusteDevido(indiceReajuste);
-            BigDecimal devido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data,infoCalculo.getDib(), rmi): calcularRmiPorDiasTrabalhadosNoMes(dataCalculo, rmi);
-            linhaTabela.setDevido(devido);
-            linhaTabela.setIndiceReajusteRecebido(BigDecimal.ONE);
-            linhaTabela.setRecebido(BigDecimal.ZERO);
-            linhaTabela.setDiferenca(devido);
-            linhaTabela.setIndiceCorrecaoMonetaria(calcularCorrecaoMonetariaPorTipo(infoCalculo.getTipoCorrecao(),dataCalculo,infoCalculo.getAtualizarAte()));
-            linhaTabela.setSalarioCorrigido(linhaTabela.getDiferenca().multiply(linhaTabela.getIndiceCorrecaoMonetaria()));
-            BigDecimal jurosPorcentagem = retornaCalculoJurosPorTipo(dataCalculo, infoCalculo);
-            linhaTabela.setPorcentagemJuros(jurosPorcentagem);
 
-            //TODO
-            // AQUI TA QUEBRADO MEU FILHO
+            BigDecimal indiceReajusteDevido = retornaIndiceReajuste(dataCalculo, infoCalculo.getDib(), infoCalculo.getDibAnterior());
+            linhaTabela.setIndiceReajusteDevido(indiceReajusteDevido.setScale(4, RoundingMode.HALF_UP));
+
+            BigDecimal devido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data,infoCalculo.getDib(), rmi) : calcularRmiPorDiasTrabalhadosNoMes(dataCalculo, rmi);
+            linhaTabela.setDevido(devido.setScale(2, RoundingMode.HALF_UP));
+
+            BigDecimal indiceReajusteRecebido = BigDecimal.ONE;
+            linhaTabela.setIndiceReajusteRecebido(indiceReajusteRecebido.setScale(4, RoundingMode.HALF_UP));
+
+            BigDecimal recebido = BigDecimal.ZERO;
+            linhaTabela.setRecebido(recebido.setScale(2, RoundingMode.HALF_UP));
+
+            BigDecimal diferenca = linhaTabela.getDevido().subtract(linhaTabela.getRecebido());
+            linhaTabela.setDiferenca(diferenca.setScale(2, RoundingMode.HALF_UP));
+
+            BigDecimal correcaoMonetaria = calcularCorrecaoMonetariaPorTipo(infoCalculo.getTipoCorrecao(),dataCalculo,infoCalculo.getAtualizarAte());
+            linhaTabela.setIndiceCorrecaoMonetaria(correcaoMonetaria.setScale(4, RoundingMode.HALF_UP));
+
+            BigDecimal salarioCorrigido = linhaTabela.getDiferenca().multiply(linhaTabela.getIndiceCorrecaoMonetaria());
+            linhaTabela.setSalarioCorrigido(salarioCorrigido.setScale(2, RoundingMode.HALF_UP));
+
+            BigDecimal jurosPorcentagem = retornaCalculoJurosPorTipo(dataCalculo, infoCalculo);
+            linhaTabela.setPorcentagemJuros(jurosPorcentagem.setScale(2, RoundingMode.HALF_UP));
+
             BigDecimal juros = jurosPorcentagem.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
             juros = juros.multiply(linhaTabela.getSalarioCorrigido());
-            linhaTabela.setJuros(juros);
-            linhaTabela.setSoma(linhaTabela.getSalarioCorrigido().add(linhaTabela.getJuros()));
+            linhaTabela.setJuros(juros.setScale(2, RoundingMode.HALF_UP));
+
+            BigDecimal soma = linhaTabela.getSalarioCorrigido().add(linhaTabela.getJuros());
+            linhaTabela.setSoma(soma.setScale(2, RoundingMode.HALF_UP));
 
             tabelaCalculo.add(linhaTabela);
         }
         return tabelaCalculo;
     }
 
-
     private BigDecimal retornaValorDecimoTerceiro(String data, LocalDate dib, BigDecimal rmi){
         return decimoTerceiroService.calcularDecimoTerceiro(data,dib,rmi);
     }
-
-
 
     //TODO
     // ISSO AQUI PRECISA MEXER

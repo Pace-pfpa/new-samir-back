@@ -83,6 +83,7 @@ public List<String> gerarListaDatasPorBeneficioEperiodo(BeneficiosEnum beneficio
 
     private static final Set<BeneficiosEnum> BENEFICIOS_SEM_DECIMO_TERCEIRO = EnumSet.of(
             BeneficiosEnum.SEGURO_DEFESO,
+            BeneficiosEnum.SEGURO_DESEMPREGO,
             BeneficiosEnum.LOAS_DEFICIENTE,
             BeneficiosEnum.LOAS_IDOSO
     );
