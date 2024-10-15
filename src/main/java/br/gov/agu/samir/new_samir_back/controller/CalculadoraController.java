@@ -23,22 +23,9 @@ public class CalculadoraController {
 
     private final CalculadoraService calculadoraService;
 
-    private final BeneficioRepository beneficioRepository;
-
     @PostMapping
     public ResponseEntity<List<CalculoResponseDTO>> calcular(@RequestBody CalculoRequestDTO requestDTO){
-
-        String beneficioNome = requestDTO.getBeneficio().getNome();
-
-        List<BeneficioInacumulavelModel> beneficioInacumulaveis = beneficioRepository.findByNome(beneficioNome).getBeneficiosInacumulaveis();
-        List<BeneficioAcumuladoRequestDTO> beneficioAcumulados = requestDTO.getBeneficioInacumulaveisParaCalculo(beneficioInacumulaveis);
-
-        if (Objects.isNull(beneficioAcumulados)){
-            List<CalculoResponseDTO> tabela = calculadoraService.calculoSemBeneficioAcumulado(requestDTO);
-            return ResponseEntity.ok(tabela);
-        }
-
-        return ResponseEntity.ok(null);
-
+        List<CalculoResponseDTO> tabela = calculadoraService.gerarTabelaDeCalculo(requestDTO);
+        return ResponseEntity.ok(tabela);
     }
 }

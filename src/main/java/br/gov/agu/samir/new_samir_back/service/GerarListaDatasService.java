@@ -36,6 +36,13 @@ public List<String> gerarListaDatasPorBeneficioEperiodo(BeneficiosEnum beneficio
 
         while (dataAtual.isBefore(fimCalculo) || dataAtual.isEqual(fimCalculo)) {
 
+            if (dataAtual.isEqual(fimCalculo.withDayOfMonth(1))) {
+                listaDeDatas.add(fimCalculo.format(formatter));
+            }
+
+            if (listaDeDatas.contains(fimCalculo.format(formatter))) {
+                break;
+            }
             listaDeDatas.add(dataAtual.format(formatter));
 
             // Verifica o "mês 13"

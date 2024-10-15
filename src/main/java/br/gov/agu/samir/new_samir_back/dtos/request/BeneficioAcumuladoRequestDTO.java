@@ -1,6 +1,7 @@
 package br.gov.agu.samir.new_samir_back.dtos.request;
 
 import br.gov.agu.samir.new_samir_back.enums.BeneficiosEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,9 +19,14 @@ public class BeneficioAcumuladoRequestDTO {
 
     private BeneficiosEnum beneficioAcumulado;
 
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate inicioDesconto;
 
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate fimDesconto;
+
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
+    private LocalDate dib;
 
     private BigDecimal rmi;
 
@@ -29,9 +35,10 @@ public class BeneficioAcumuladoRequestDTO {
     private LocalDate dibAnterior;
 
     public BigDecimal getRmi(){
-        if (porcentagemRmi < 0) {
-            throw new IllegalArgumentException("Porcentagem RMI deve ser maior que zero");
+        int porcentagem = porcentagemRmi != null ? porcentagemRmi : 100;
+        if (porcentagem < 0 || porcentagem > 100){
+            throw new IllegalArgumentException("Porcentagem RMI deve ser entre 0 e 100");
         }
-        return porcentagemRmi != null ? rmi.multiply(BigDecimal.valueOf(porcentagemRmi).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP)) : rmi;
+        return rmi.multiply(BigDecimal.valueOf(porcentagem)).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP);
     }
 }
