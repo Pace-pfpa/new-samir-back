@@ -1,5 +1,10 @@
 package br.gov.agu.samir.new_samir_back.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public enum TipoCorrecaoMonetaria {
 
     TIPO2("INPC"),
@@ -8,13 +13,6 @@ public enum TipoCorrecaoMonetaria {
 
     private String descricao;
 
-    TipoCorrecaoMonetaria(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
 
     public static TipoCorrecaoMonetaria getTipoCorrecaoMonetaria(String descricao) {
         for (TipoCorrecaoMonetaria tipo : TipoCorrecaoMonetaria.values()) {

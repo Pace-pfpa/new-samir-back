@@ -12,15 +12,7 @@ import java.time.LocalDate;
 @Service
 public class DecimoTerceiroService {
 
-    /**
- * Calcula o valor do décimo terceiro salário com base na RMI (Remuneração Mensal Inicial),
- * na data de início do benefício (dataDib) e na data de cálculo (dataCalculo).
- *
- * @param rmi o valor inicial da remuneração mensal
- * @param dataDib a data de início do benefício
- * @param dataCalculo a data de cálculo no formato "dd/MM/yyyy"
- * @return o valor calculado do décimo terceiro salário
- */
+
 public BigDecimal calcularDecimoTerceiro(String dataDecimoTerceiro,LocalDate dataDib, BigDecimal rmi) {
 
     int mesesTrabalhados = 12 - dataDib.getMonthValue();

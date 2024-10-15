@@ -4,7 +4,6 @@ import br.gov.agu.samir.new_samir_back.enums.BeneficiosEnum;
 import br.gov.agu.samir.new_samir_back.enums.TipoCorrecaoMonetaria;
 import br.gov.agu.samir.new_samir_back.enums.TipoJuros;
 import br.gov.agu.samir.new_samir_back.models.BeneficioInacumulavelModel;
-import br.gov.agu.samir.new_samir_back.repository.BeneficioRepository;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

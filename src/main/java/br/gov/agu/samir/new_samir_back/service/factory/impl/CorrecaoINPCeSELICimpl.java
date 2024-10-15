@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,18 +20,11 @@ import java.util.List;
 public class CorrecaoINPCeSELICimpl implements CalculoCorrecaoMonetaria {
 
     private final SelicRepository selicRepository;
-
     private final InpcRepository inpcRepository;
 
-    private final DateTimeFormatter ddMMyyyy;
-
     private static final LocalDate DATA_FINAL_INPC = LocalDate.of(2021,11,1);
-
     private static final LocalDate INICIO_SELIC = LocalDate.of(2021,12,1);
 
-    private static final String MES_DECIMO_TERCEIRO = "13";
-
-    private static final String MES_DEZEMBRO = "12";
 
 
 

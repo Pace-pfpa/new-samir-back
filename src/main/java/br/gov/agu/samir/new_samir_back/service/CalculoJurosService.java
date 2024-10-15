@@ -1,9 +1,7 @@
 package br.gov.agu.samir.new_samir_back.service;
 
 import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
-import br.gov.agu.samir.new_samir_back.enums.TipoJuros;
 import br.gov.agu.samir.new_samir_back.service.factory.CalculoJurosFactory;
-import br.gov.agu.samir.new_samir_back.util.DateUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

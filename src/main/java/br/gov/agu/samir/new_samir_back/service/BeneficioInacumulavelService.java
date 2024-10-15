@@ -33,9 +33,8 @@ public class BeneficioInacumulavelService {
         model.setBeneficios(beneficios);
         BeneficioInacumulavelModel savedModel = InacumulavelRepository.save(model);
 
-        BeneficioInacumulavelResponseDTO responseDTO = mapper.toResponseDTO(savedModel);
 
-        return responseDTO;
+        return mapper.toResponseDTO(savedModel);
     }
 
 
