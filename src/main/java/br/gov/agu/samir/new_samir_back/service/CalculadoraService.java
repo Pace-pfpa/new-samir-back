@@ -37,20 +37,22 @@ public class CalculadoraService {
 
 
     public List<CalculoResponseDTO> gerarTabelaDeCalculo(CalculoRequestDTO infoCalculo) {
-        List<CalculoResponseDTO> tabelaCalculo = new ArrayList<>();
-        List<String> listaDeDatasParaCalculo = gerarDatasPorBeneficioEPeriodo(infoCalculo.getBeneficio(), infoCalculo.getDib(), infoCalculo.getDataFim());
-        BigDecimal indiceReajuste;
-        BigDecimal salarioMinimo = retornaSalarioMaisMinimoProximoPorDataNoMesmoAno(infoCalculo.getDib());
-        BigDecimal rmi = retornarSalarioMinimoSeRmiForInferior(infoCalculo.getRmi(), salarioMinimo);
 
-        String nomeBeneficioVigente = infoCalculo.getBeneficio().getNome();
+        BeneficiosEnum beneficioVigente = infoCalculo.getBeneficio();
         LocalDate dib = infoCalculo.getDib();
         LocalDate fimCalculo = infoCalculo.getDataFim();
         LocalDate dibAnterior = infoCalculo.getDibAnterior();
         LocalDate atualizarAte = infoCalculo.getAtualizarAte();
         TipoCorrecaoMonetaria tipoCorrecao = infoCalculo.getTipoCorrecao();
 
-        List<BeneficioInacumulavelModel> beneficioInacumulaveisDoBeneficioVigente = beneficioRepository.findByNome(nomeBeneficioVigente).getBeneficiosInacumulaveis();
+        List<CalculoResponseDTO> tabelaCalculo = new ArrayList<>();
+        List<String> listaDeDatasParaCalculo = gerarDatasPorBeneficioEPeriodo(beneficioVigente, dib, fimCalculo);
+        BigDecimal indiceReajuste;
+
+        BigDecimal salarioMinimo = retornaSalarioMinimoProximoDaDataNoMesmoAno(dib);
+        BigDecimal rmi = retornarSalarioMinimoSeRmiForInferior(infoCalculo.getRmi(), salarioMinimo);
+
+        List<BeneficioInacumulavelModel> beneficioInacumulaveisDoBeneficioVigente = beneficioRepository.findByNome(beneficioVigente.getNome()).getBeneficiosInacumulaveis();
         List<BeneficioAcumuladoRequestDTO> beneficioInacumulaveisParaCalculo= infoCalculo.getBeneficioInacumulaveisParaCalculo(beneficioInacumulaveisDoBeneficioVigente);
         HashSet<FiltroRecebido> listaDeCalculoRecebido = gerarListaDeCalculoParaRecebido(beneficioInacumulaveisParaCalculo);
 
@@ -153,7 +155,6 @@ public class CalculadoraService {
         }
     }
 
-
     private BigDecimal retornaValorDecimoTerceiro(String data, LocalDate dib, BigDecimal rmi){
         return decimoTerceiroService.calcularDecimoTerceiro(data,dib,rmi);
     }
@@ -183,7 +184,7 @@ public class CalculadoraService {
         return isRmiMenorSalarioMinimo(rmi, salarioMinimo) ? salarioMinimo : rmi;
     }
 
-    private BigDecimal retornaSalarioMaisMinimoProximoPorDataNoMesmoAno(LocalDate data){
+    private BigDecimal retornaSalarioMinimoProximoDaDataNoMesmoAno(LocalDate data){
         return salarioMinimoService.getSalarioMinimoProximoPorDataNoMesmoAno(data);
     }
 
