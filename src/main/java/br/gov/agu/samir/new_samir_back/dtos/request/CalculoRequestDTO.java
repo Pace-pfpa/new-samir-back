@@ -29,6 +29,9 @@ public class CalculoRequestDTO {
     private LocalDate dib;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
+    private LocalDate dataInicio;
+
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate dataFim;
 
     private BigDecimal rmi;

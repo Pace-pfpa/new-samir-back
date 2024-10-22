@@ -13,23 +13,23 @@ import java.time.LocalDate;
 public class DecimoTerceiroService {
 
 
-public BigDecimal calcularDecimoTerceiro(String dataDecimoTerceiro,LocalDate dataDib, BigDecimal rmi) {
+public BigDecimal calcularDecimoTerceiro(String dataDecimoTerceiro,LocalDate dataInicio, BigDecimal rmi) {
 
-    int mesesTrabalhados = 12 - dataDib.getMonthValue();
+    int mesesTrabalhados = 12 - dataInicio.getMonthValue();
 
-    if (dataDib.getDayOfMonth() < 17) {
-        mesesTrabalhados = 13 - dataDib.getMonthValue();
+    if (dataInicio.getDayOfMonth() < 17) {
+        mesesTrabalhados = 13 - dataInicio.getMonthValue();
     }
 
     BigDecimal valorDecimoTerceiro = rmi.divide(BigDecimal.valueOf(12),2, RoundingMode.HALF_UP);
     valorDecimoTerceiro = valorDecimoTerceiro.multiply(BigDecimal.valueOf(mesesTrabalhados));
 
-    return isPrimeiroDecimoTerceiro(dataDecimoTerceiro, dataDib) ? valorDecimoTerceiro : rmi;
+    return isPrimeiroDecimoTerceiro(dataDecimoTerceiro, dataInicio) ? valorDecimoTerceiro : rmi;
 }
 
 
-    private boolean isPrimeiroDecimoTerceiro(String decimoTerceiro, LocalDate dataDib){
-        return Integer.parseInt(decimoTerceiro.split("/")[2])  == dataDib.getYear();
+    private boolean isPrimeiroDecimoTerceiro(String decimoTerceiro, LocalDate dataInicio){
+        return Integer.parseInt(decimoTerceiro.split("/")[2])  == dataInicio.getYear();
     }
 }
 

@@ -40,16 +40,17 @@ public class CalculadoraService {
 
         BeneficiosEnum beneficioVigente = infoCalculo.getBeneficio();
         LocalDate dib = infoCalculo.getDib();
+        LocalDate inicioCalculo = infoCalculo.getDataInicio();
         LocalDate fimCalculo = infoCalculo.getDataFim();
         LocalDate dibAnterior = infoCalculo.getDibAnterior();
         LocalDate atualizarAte = infoCalculo.getAtualizarAte();
         TipoCorrecaoMonetaria tipoCorrecao = infoCalculo.getTipoCorrecao();
 
         List<CalculoResponseDTO> tabelaCalculo = new ArrayList<>();
-        List<String> listaDeDatasParaCalculo = gerarDatasPorBeneficioEPeriodo(beneficioVigente, dib, fimCalculo);
+        List<String> listaDeDatasParaCalculo = gerarDatasPorBeneficioEPeriodo(beneficioVigente, inicioCalculo, fimCalculo);
         BigDecimal indiceReajuste;
 
-        BigDecimal salarioMinimo = retornaSalarioMinimoProximoDaDataNoMesmoAno(dib);
+        BigDecimal salarioMinimo = retornaSalarioMinimoProximoDaDataNoMesmoAno(inicioCalculo);
         BigDecimal rmi = retornarSalarioMinimoSeRmiForInferior(infoCalculo.getRmi(), salarioMinimo);
 
         List<BeneficioInacumulavelModel> beneficioInacumulaveisDoBeneficioVigente = beneficioRepository.findByNome(beneficioVigente.getNome()).getBeneficiosInacumulaveis();
