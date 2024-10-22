@@ -63,7 +63,7 @@ public class CalculadoraService {
             //Converter a data para LocalDate
             LocalDate dataCalculo = dateUtils.mapStringToLocalDate(data);
 
-            if (isDataDeReajuste(dataCalculo, dib)){
+            if (isDataDeReajuste(dataCalculo, inicioCalculo)){
                 indiceReajuste = retornaIndiceReajuste(dataCalculo, dib, dibAnterior);
                 rmi = rmi.multiply(indiceReajuste).setScale(2, RoundingMode.HALF_UP);
             }
@@ -71,7 +71,7 @@ public class CalculadoraService {
             BigDecimal indiceReajusteDevido = retornaIndiceReajuste(dataCalculo, dib, dibAnterior);
             linhaTabela.setIndiceReajusteDevido(indiceReajusteDevido.setScale(4, RoundingMode.HALF_UP));
 
-            BigDecimal devido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data,dib, rmi) : calcularRmiPorDiasTrabalhadosNoMes(dataCalculo,fimCalculo, rmi);
+            BigDecimal devido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data,inicioCalculo, rmi) : calcularRmiPorDiasTrabalhadosNoMes(dataCalculo,fimCalculo, rmi);
             linhaTabela.setDevido(devido.setScale(2, RoundingMode.HALF_UP));
 
             BigDecimal indiceReajusteRecebido = retornaIndiceReajusteRecebido(data, listaDeCalculoRecebido);
@@ -121,7 +121,7 @@ public class CalculadoraService {
                 filtroRecebido.setData(data);
                 //Converter dataString para LocalDate
                 LocalDate dataCalculo = dateUtils.mapStringToLocalDate(data);
-                if (isDataDeReajuste(dataCalculo, dib)){
+                if (isDataDeReajuste(dataCalculo, inicioDesconto)){
                     indiceReajuste = retornaIndiceReajuste(dataCalculo, dib,dataDibAnterior);
                     rmi = rmi.multiply(indiceReajuste).setScale(2, RoundingMode.HALF_UP);
                 }
@@ -156,16 +156,25 @@ public class CalculadoraService {
         }
     }
 
-    private BigDecimal retornaValorDecimoTerceiro(String data, LocalDate dib, BigDecimal rmi){
-        return decimoTerceiroService.calcularDecimoTerceiro(data,dib,rmi);
+    private BigDecimal retornaValorDecimoTerceiro(String data, LocalDate inicioCalculo, BigDecimal rmi){
+        return decimoTerceiroService.calcularDecimoTerceiro(data,inicioCalculo,rmi);
     }
 
+
+    //TODO REFATORAR
     private BigDecimal calcularRmiPorDiasTrabalhadosNoMes(LocalDate dataCalculo,LocalDate fimCalculo, BigDecimal rmi){
-        int diasTrabalhados;
-        diasTrabalhados = 31 - dataCalculo.getDayOfMonth();
+        int diasTrabalhados= 0;
+
         if (dataCalculo.isEqual(fimCalculo)){
             diasTrabalhados = fimCalculo.getDayOfMonth();
         }
+
+        if (dataCalculo.getDayOfMonth()==1){
+            return rmi;
+        }
+
+        diasTrabalhados = 31 - dataCalculo.getDayOfMonth();
+
         return rmi.divide(BigDecimal.valueOf(30), RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(diasTrabalhados));
     }
 
@@ -201,8 +210,8 @@ public class CalculadoraService {
         return data.split("/")[1].equals(MES_DECIMO_TERCEIRO);
     }
 
-    private boolean isDataDeReajuste(LocalDate dataCalculo, LocalDate dataDib){
-        return dataCalculo.getMonthValue() == 1 && dataCalculo.getYear() >= dataDib.plusYears(1L).getYear();
+    private boolean isDataDeReajuste(LocalDate dataCalculo, LocalDate inicioCalculo){
+        return dataCalculo.getMonthValue() == 1 && dataCalculo.getYear() >= inicioCalculo.plusYears(1L).getYear();
     }
 
 }
