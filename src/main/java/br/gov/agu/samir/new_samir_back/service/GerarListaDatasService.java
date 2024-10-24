@@ -13,12 +13,20 @@ import java.util.Set;
 @Component
 public class GerarListaDatasService {
 
+    private static final Set<BeneficiosEnum> BENEFICIOS_SEM_DECIMO_TERCEIRO = EnumSet.of(
+            BeneficiosEnum.PENSAO_MENSAL_VITALICIA_DO_SERINGUEIRO,
+            BeneficiosEnum.PENSAO_MENSAL_VITALICIA_DO_DEPENDENTE_DO_SERINGUEIRO,
+            BeneficiosEnum.LOAS_DEFICIENTE,
+            BeneficiosEnum.LOAS_IDOSO,
+            BeneficiosEnum.PENSAO_ESPECIAL_AO_PORTADOR_DE_HANSENIASE,
+            BeneficiosEnum.SEGURO_DEFESO
+    );
 
-public List<String> gerarListaDatasPorBeneficioEperiodo(BeneficiosEnum beneficio, LocalDate dib, LocalDate fimCalculo) {
-    return isBeneficioSemDecimoTerceiro(beneficio) ?
-            gerarListaSemDecimoTerceiro(dib, fimCalculo) :
-            gerarListaComDecimoTerceiro(dib, fimCalculo);
-}
+    public List<String> gerarListaDatasPorBeneficioEperiodo(BeneficiosEnum beneficio, LocalDate dib, LocalDate fimCalculo) {
+        return isBeneficioSemDecimoTerceiro(beneficio) ?
+                gerarListaSemDecimoTerceiro(dib, fimCalculo) :
+                gerarListaComDecimoTerceiro(dib, fimCalculo);
+    }
 
 
     private List<String> gerarListaComDecimoTerceiro(LocalDate dib, LocalDate fimCalculo) {
@@ -87,13 +95,6 @@ public List<String> gerarListaDatasPorBeneficioEperiodo(BeneficiosEnum beneficio
         return listaDeDatas;
     }
 
-
-    private static final Set<BeneficiosEnum> BENEFICIOS_SEM_DECIMO_TERCEIRO = EnumSet.of(
-            BeneficiosEnum.SEGURO_DEFESO,
-            BeneficiosEnum.SEGURO_DESEMPREGO,
-            BeneficiosEnum.LOAS_DEFICIENTE,
-            BeneficiosEnum.LOAS_IDOSO
-    );
 
     private boolean isBeneficioSemDecimoTerceiro(BeneficiosEnum beneficio) {
         return BENEFICIOS_SEM_DECIMO_TERCEIRO.contains(beneficio);
