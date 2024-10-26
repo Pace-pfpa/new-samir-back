@@ -45,7 +45,7 @@ public class CalculadoraService {
         LocalDate fimCalculo = infoCalculo.getDataFim();
         LocalDate dibAnterior = infoCalculo.getDibAnterior();
         LocalDate atualizarAte = infoCalculo.getAtualizarAte();
-        BigDecimal rmi = infoCalculo.getRmi();
+        BigDecimal rmi = rmiService.reajustarRmi(infoCalculo);
         rmi = retornaSalarioMinimoSeRmiForInferior(rmi, dib, beneficioVigente);
         TipoCorrecaoMonetaria tipoCorrecao = infoCalculo.getTipoCorrecao();
 

@@ -1,17 +1,22 @@
 package br.gov.agu.samir.new_samir_back.service;
 
 
+import br.gov.agu.samir.new_samir_back.dtos.request.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.enums.BeneficiosEnum;
 
+import br.gov.agu.samir.new_samir_back.models.IndiceReajusteModel;
+import br.gov.agu.samir.new_samir_back.repository.IndiceReajusteRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
-
+import java.util.List;
 
 
 @Service
@@ -19,12 +24,39 @@ import java.util.EnumSet;
 public class RmiService {
 
     private final SalarioMinimoService salarioMinimoService;
+    private final IndiceReajusteRepository indiceReajusteRepository;
+    private final CalculoIndiceReajusteService calculoIndiceReajusteService;
+
 
     private static final EnumSet<BeneficiosEnum> BENEFICIOS_QUE_RECEBEM_MENOS_QUE_SALARIO_MINIMO = EnumSet.of(
             BeneficiosEnum.AUXILIO_ACIDENTE,
             BeneficiosEnum.AUXILIO_ACIDENTE_POR_ACIDENTE_DO_TRABALHO
     );
 
+    //TODO REFATORAR
+    public BigDecimal reajustarRmi(CalculoRequestDTO infoCalculo){
+        LocalDate dataInicio = infoCalculo.getDataInicio();
+        BigDecimal rmi = infoCalculo.getRmi();
+        LocalDate dib = infoCalculo.getDib();
+       if (dataInicio.isEqual(dib)){
+           return rmi;
+       }
+       LocalDate dataCalculo = dib.plusYears(1L).withDayOfMonth(1);
+       List<BigDecimal> indicesParaReajuste = new ArrayList<>();
+       indicesParaReajuste.add(retornaPrimeiroReajuste(dib, infoCalculo.getDibAnterior()));
+       int anoCalculo = dataCalculo.getYear();
+       int anoFim = dataInicio.getYear();
+
+       while (anoCalculo < anoFim){
+           IndiceReajusteModel indiceReajuste = indiceReajusteRepository.findByData(dataCalculo.withDayOfMonth(1)).orElseThrow();
+           BigDecimal indice = indiceReajusteRepository.findFirstByDataReajuste(indiceReajuste.getDataReajuste()).getValor();
+           indicesParaReajuste.add(indice);
+           dataCalculo = dataCalculo.plusYears(1);
+           anoCalculo++;
+       }
+
+       return indicesParaReajuste.stream().reduce(rmi,BigDecimal::multiply);
+    }
 
 
     public BigDecimal calcularValorDevido(LocalDate dataCalculo, LocalDate fimCalculo, BigDecimal rmiConservada){
@@ -54,4 +86,12 @@ public class RmiService {
     private boolean isRmiInferiorSalarioMinimo(BigDecimal valorRmi, BigDecimal valorSalarioMinimoNaEpoca){
         return valorRmi.compareTo(valorSalarioMinimoNaEpoca) < 0;
     }
+
+    private BigDecimal retornaPrimeiroReajuste(LocalDate dib, LocalDate dibAnterior){
+        if (dibAnterior == null){
+            return calculoIndiceReajusteService.calcularPrimeiroReajusteSemDibAnterior(dib);
+        }
+        return calculoIndiceReajusteService.calcularPrimeiroReajusteComDibAnterior(dib, dibAnterior);
+    }
+
 }
