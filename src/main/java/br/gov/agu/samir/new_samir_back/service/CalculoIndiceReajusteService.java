@@ -31,7 +31,7 @@ public class CalculoIndiceReajusteService {
         return dataCalculo.getMonthValue() == 1 && dataCalculo.getYear() == dib.plusYears(1L).getYear();
     }
 
-    private BigDecimal calcularPrimeiroReajusteComDibAnterior(LocalDate dib, LocalDate dibAnterior){
+    public BigDecimal calcularPrimeiroReajusteComDibAnterior(LocalDate dib, LocalDate dibAnterior){
         LocalDate dataReajusteDibAtual = indiceReajusteRepository.findByData(dib.withDayOfMonth(1)).orElseThrow().getDataReajuste();
         LocalDate dataReajusteDibAnterior = indiceReajusteRepository.findByData(dibAnterior.withDayOfMonth(1)).orElseThrow().getDataReajuste();
 
@@ -41,7 +41,7 @@ public class CalculoIndiceReajusteService {
         return indiceReajusteRepository.findFirstByDataReajuste(dataReajusteDibAtual).getValor();
     }
 
-    private BigDecimal calcularPrimeiroReajusteSemDibAnterior(LocalDate dib){
+    public BigDecimal calcularPrimeiroReajusteSemDibAnterior(LocalDate dib){
         return indiceReajusteRepository.findByData(dib.withDayOfMonth(1)).orElseThrow().getValor();
     }
 }

@@ -32,6 +32,7 @@ public class CalculadoraService {
     private final DecimoTerceiroService decimoTerceiroService;
     private final SalarioMinimoService salarioMinimoService;
     private final DateUtils dateUtils;
+    private final RmiService rmiService;
 
     private static final String MES_DECIMO_TERCEIRO = "13";
 
@@ -44,17 +45,17 @@ public class CalculadoraService {
         LocalDate fimCalculo = infoCalculo.getDataFim();
         LocalDate dibAnterior = infoCalculo.getDibAnterior();
         LocalDate atualizarAte = infoCalculo.getAtualizarAte();
+        BigDecimal rmi = rmiService.reajustarRmi(infoCalculo);
+        rmi = retornaSalarioMinimoSeRmiForInferior(rmi, dib, beneficioVigente);
         TipoCorrecaoMonetaria tipoCorrecao = infoCalculo.getTipoCorrecao();
 
         List<CalculoResponseDTO> tabelaCalculo = new ArrayList<>();
         List<String> listaDeDatasParaCalculo = gerarDatasPorBeneficioEPeriodo(beneficioVigente, inicioCalculo, fimCalculo);
         BigDecimal indiceReajuste;
 
-        BigDecimal salarioMinimo = retornaSalarioMinimoProximoDaDataNoMesmoAno(inicioCalculo);
-        BigDecimal rmi = retornarSalarioMinimoSeRmiForInferior(infoCalculo.getRmi(), salarioMinimo);
-
+        //TODO Refatorar
         List<BeneficioInacumulavelModel> beneficioInacumulaveisDoBeneficioVigente = beneficioRepository.findByNome(beneficioVigente.getNome()).getBeneficiosInacumulaveis();
-        List<BeneficioAcumuladoRequestDTO> beneficioInacumulaveisParaCalculo= infoCalculo.getBeneficioInacumulaveisParaCalculo(beneficioInacumulaveisDoBeneficioVigente);
+        List<BeneficioAcumuladoRequestDTO> beneficioInacumulaveisParaCalculo = infoCalculo.getBeneficioInacumulaveisParaCalculo(beneficioInacumulaveisDoBeneficioVigente);
         HashSet<FiltroRecebido> listaDeCalculoRecebido = gerarListaDeCalculoParaRecebido(beneficioInacumulaveisParaCalculo);
 
         for (String data : listaDeDatasParaCalculo){
@@ -71,7 +72,7 @@ public class CalculadoraService {
             BigDecimal indiceReajusteDevido = retornaIndiceReajuste(dataCalculo, dib, dibAnterior);
             linhaTabela.setIndiceReajusteDevido(indiceReajusteDevido.setScale(4, RoundingMode.HALF_UP));
 
-            BigDecimal devido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data,inicioCalculo, rmi) : calcularRmiPorDiasTrabalhadosNoMes(dataCalculo,fimCalculo, rmi);
+            BigDecimal devido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data,inicioCalculo, rmi) : calcularValorDevido(dataCalculo, fimCalculo, rmi);
             linhaTabela.setDevido(devido.setScale(2, RoundingMode.HALF_UP));
 
             BigDecimal indiceReajusteRecebido = retornaIndiceReajusteRecebido(data, listaDeCalculoRecebido);
@@ -128,7 +129,7 @@ public class CalculadoraService {
                 BigDecimal indiceReajusteRecebido = retornaIndiceReajuste(dataCalculo, dib, dataDibAnterior);
                 filtroRecebido.setIndiceReajusteRecebido(indiceReajusteRecebido.setScale(4, RoundingMode.HALF_UP));
 
-                BigDecimal recebido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data,inicioDesconto, rmi) : calcularRmiPorDiasTrabalhadosNoMes(dataCalculo,dataFim, rmi);
+                BigDecimal recebido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data,inicioDesconto, rmi) :calcularValorDevido(dataCalculo, dataFim, rmi);
                 filtroRecebido.setRecebido(recebido.setScale(2, RoundingMode.HALF_UP));
                 listaDeCalculo.add(filtroRecebido);
             }
@@ -160,22 +161,12 @@ public class CalculadoraService {
         return decimoTerceiroService.calcularDecimoTerceiro(data,inicioCalculo,rmi);
     }
 
+    private BigDecimal retornaSalarioMinimoSeRmiForInferior(BigDecimal rmi, LocalDate dib, BeneficiosEnum beneficio){
+        return rmiService.obterSalarioMinimoOuRmi(rmi, dib, beneficio);
+    }
 
-    //TODO REFATORAR
-    private BigDecimal calcularRmiPorDiasTrabalhadosNoMes(LocalDate dataCalculo,LocalDate fimCalculo, BigDecimal rmi){
-        int diasTrabalhados= 0;
-
-        if (dataCalculo.isEqual(fimCalculo)){
-            diasTrabalhados = fimCalculo.getDayOfMonth();
-        }
-
-        if (dataCalculo.getDayOfMonth()==1){
-            return rmi;
-        }
-
-        diasTrabalhados = 31 - dataCalculo.getDayOfMonth();
-
-        return rmi.divide(BigDecimal.valueOf(30), RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(diasTrabalhados));
+    private BigDecimal calcularValorDevido(LocalDate dataCalculo, LocalDate fimCalculo, BigDecimal rmi){
+        return rmiService.calcularValorDevido(dataCalculo, fimCalculo, rmi);
     }
 
     private BigDecimal retornaCalculoJurosPorTipo(LocalDate dataCalculo, CalculoRequestDTO infoCalculo){
@@ -190,21 +181,11 @@ public class CalculadoraService {
         return correcaoMonetariaFactory.getCalculo(tipoCorrecao).calcularIndexadorCorrecaoMonetaria(dataCalculo, atualizarAte);
     }
 
-    private  BigDecimal retornarSalarioMinimoSeRmiForInferior(BigDecimal rmi, BigDecimal salarioMinimo){
-        return isRmiMenorSalarioMinimo(rmi, salarioMinimo) ? salarioMinimo : rmi;
-    }
-
-    private BigDecimal retornaSalarioMinimoProximoDaDataNoMesmoAno(LocalDate data){
-        return salarioMinimoService.getSalarioMinimoProximoPorDataNoMesmoAno(data);
-    }
 
     private List<String> gerarDatasPorBeneficioEPeriodo(BeneficiosEnum beneficio, LocalDate dataInicio, LocalDate dataFim){
         return gerarListaDatasService.gerarListaDatasPorBeneficioEperiodo(beneficio, dataInicio, dataFim);
     }
 
-    private boolean isRmiMenorSalarioMinimo(BigDecimal rmi, BigDecimal salarioMinimo){
-        return rmi.compareTo(salarioMinimo) < 0;
-    }
 
     private boolean isDecimoTerceiro(String data){
         return data.split("/")[1].equals(MES_DECIMO_TERCEIRO);
