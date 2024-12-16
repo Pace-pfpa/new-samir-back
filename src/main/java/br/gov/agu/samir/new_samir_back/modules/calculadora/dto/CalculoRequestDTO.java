@@ -8,6 +8,9 @@ import br.gov.agu.samir.new_samir_back.modules.beneficio.model.BeneficioInacumul
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,49 +30,60 @@ import java.util.List;
 public class CalculoRequestDTO {
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
+    @NotNull(message = "O data dib é um componente obrigatório")
     private LocalDate dib;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
+    @NotNull(message = "A data de inicio é um componente obrigatório")
     private LocalDate dataInicio;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
+    @NotNull(message = "A data final é um componente obrigatório")
     private LocalDate dataFim;
 
+    @NotNull(message = "O rmi é um componente obrigatório")
     private BigDecimal rmi;
 
-    private Integer porcentagemRmi;
+    @Min(value = 0, message = "A porcentagem do rmi não pode ser menor que 0")
+    @Max(value = 100, message = "A porcentagem do rmi não pode ser maior que 100")
+    private Integer porcentagemRmi = 100;
+
+    @Min(value = 0 , message = "O acordo não pode ser menor que 0")
+    @Max(value = 100, message = "O acordo não pode ser maior que 100")
+    private Integer acordo = 100;
+
+    private Integer porcentagemHonorarios;
+
+    private LocalDate honorariosAdvocaticiosAte;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
+    @NotNull(message = "A data de inicio dos juros é um componente obrigatório")
     private LocalDate dataIncioJuros; // Data citação -> vai ter juros quando a citação for anterior a 12/2021
 
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "O tipo de juros é um componente obrigatório")
     private TipoJuros tipoJuros;
 
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "O tipo de correção monetária é um componente obrigatório")
     private TipoCorrecaoMonetaria tipoCorrecao;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
+    @NotNull(message = "A data de atualização é um componente obrigatório")
     private LocalDate atualizarAte;
 
+    @NotNull(message = "O benefício é um componente obrigatório")
     private BeneficiosEnum beneficio;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
+    @NotNull(message = "A data de inicio do benefício é um componente obrigatório")
     private LocalDate dibAnterior;
 
     private List<BeneficioAcumuladoRequestDTO> beneficioAcumulados;
 
 
     public BigDecimal getRmi(){
-        int porcentagem = porcentagemRmi != null ? porcentagemRmi : 100;
-
-        if (isPorcentagemRmiInvalida(porcentagem)) {
-            throw new IllegalArgumentException("Porcentagem RMI deve ser valor entre 0-100");
-        }
-        return rmi.multiply(BigDecimal.valueOf(porcentagem)).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-    }
-
-    private boolean isPorcentagemRmiInvalida(int porcentagem) {
-        return  porcentagem < 0 || porcentagem > 100;
+        return rmi.multiply(BigDecimal.valueOf(this.porcentagemRmi)).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
     }
 
     public List<BeneficioAcumuladoRequestDTO> getBeneficioInacumulaveisParaCalculo(List<BeneficioInacumulavelModel> beneficiosInacumulaveis){
