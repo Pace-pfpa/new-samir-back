@@ -27,7 +27,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CalculoRequestDTO {
+public class CalculadoraRequestDTO {
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     @NotNull(message = "O data dib é um componente obrigatório")

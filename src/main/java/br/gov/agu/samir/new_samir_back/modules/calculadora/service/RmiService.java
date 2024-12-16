@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
 
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculadoraRequestDTO;
 import br.gov.agu.samir.new_samir_back.modules.beneficio.enums.BeneficiosEnum;
 
 import br.gov.agu.samir.new_samir_back.modules.indice_reajuste.model.IndiceReajusteModel;
@@ -34,7 +34,7 @@ public class RmiService {
     );
 
     //TODO REFATORAR
-    public BigDecimal reajustarRmi(CalculoRequestDTO infoCalculo){
+    public BigDecimal reajustarRmi(CalculadoraRequestDTO infoCalculo){
         LocalDate dataInicio = infoCalculo.getDataInicio();
         BigDecimal rmi = infoCalculo.getRmi();
         LocalDate dib = infoCalculo.getDib();

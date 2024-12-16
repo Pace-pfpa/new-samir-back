@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CalculoResponseDTO {
+public class LinhaTabelaDTO {
 
     private String data;
 

@@ -1,15 +1,16 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
 import br.gov.agu.samir.new_samir_back.modules.beneficio.dto.BeneficioAcumuladoRequestDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.*;
 import br.gov.agu.samir.new_samir_back.modules.beneficio.enums.BeneficiosEnum;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.enums.TipoCorrecaoMonetaria;
 import br.gov.agu.samir.new_samir_back.modules.beneficio.model.BeneficioInacumulavelModel;
-import br.gov.agu.samir.new_samir_back.modules.salario_minimo.service.SalarioMinimoService;
 import br.gov.agu.samir.new_samir_back.modules.beneficio.repository.BeneficioRepository;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculadoraRequestDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.LinhaTabelaDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.enums.TipoCorrecaoMonetaria;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.service.factory.CorrecaoMonetariaFactory;
+import br.gov.agu.samir.new_samir_back.modules.salario_minimo.service.SalarioMinimoService;
 import br.gov.agu.samir.new_samir_back.util.DateUtils;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,9 +21,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+@RequiredArgsConstructor
 @Service
-@AllArgsConstructor
-public class CalculadoraService {
+public class HonorariosAdvocaticiosService {
 
     private final GerarListaDatasService gerarListaDatasService;
     private final BeneficioRepository beneficioRepository;
@@ -30,8 +31,6 @@ public class CalculadoraService {
     private final CalculoIndiceReajusteService calculoIndiceReajusteService;
     private final CalculoJurosService calculoJurosService;
     private final DecimoTerceiroService decimoTerceiroService;
-    private final ResumoProcessoService resumoProcessoService;
-    private final RendimentosAcumuladosIRService rendimentosAcumuladosIRService;
     private final SalarioMinimoService salarioMinimoService;
     private final DateUtils dateUtils;
     private final RmiService rmiService;
@@ -39,14 +38,12 @@ public class CalculadoraService {
     private static final String MES_DECIMO_TERCEIRO = "13";
 
 
-    public CalculadoraResponseDTO calcularProcesso(CalculadoraRequestDTO infoCalculo) {
-        CalculadoraResponseDTO responseDTO = new CalculadoraResponseDTO();
-
+    public BigDecimal calcularHonorarios(CalculadoraRequestDTO infoCalculo) {
 
         BeneficiosEnum beneficioVigente = infoCalculo.getBeneficio();
         LocalDate dib = infoCalculo.getDib();
         LocalDate inicioCalculo = infoCalculo.getDataInicio();
-        LocalDate fimCalculo = infoCalculo.getDataFim();
+        LocalDate fimCalculo = infoCalculo.getHonorariosAdvocaticiosAte();
         LocalDate dibAnterior = infoCalculo.getDibAnterior();
         LocalDate atualizarAte = infoCalculo.getAtualizarAte();
         BigDecimal rmi = rmiService.reajustarRmi(infoCalculo);
@@ -106,14 +103,9 @@ public class CalculadoraService {
 
             tabelaCalculo.add(linhaTabela);
         }
-        ResumoProcessoDTO resumoProcesso = resumoProcessoService.gerarResumoProcesso(tabelaCalculo, infoCalculo);
-        RendimentosAcumuladosIRDTO rendimentosAcumuladosIR = rendimentosAcumuladosIRService.getRendimentosAcumuladosIR(tabelaCalculo, infoCalculo.getAcordo());
-        responseDTO.setTabela(tabelaCalculo);
-        responseDTO.setResumoProcesso(resumoProcesso);
-        responseDTO.setRendimentosAcumuladosIR(rendimentosAcumuladosIR);
 
-        return responseDTO;
-
+        BigDecimal totalProcesso = tabelaCalculo.stream().map(LinhaTabelaDTO::getSoma).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return totalProcesso.multiply(BigDecimal.valueOf(infoCalculo.getPorcentagemHonorarios())).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
     }
 
     //Foi utilizado HashSet para melhorar a performance na busca de um elemento
