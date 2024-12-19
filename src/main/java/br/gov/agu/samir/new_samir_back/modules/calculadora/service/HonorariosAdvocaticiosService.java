@@ -11,6 +11,7 @@ import br.gov.agu.samir.new_samir_back.modules.calculadora.service.factory.Corre
 import br.gov.agu.samir.new_samir_back.modules.salario_minimo.service.SalarioMinimoService;
 import br.gov.agu.samir.new_samir_back.util.DateUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @Service
@@ -37,8 +39,8 @@ public class HonorariosAdvocaticiosService {
 
     private static final String MES_DECIMO_TERCEIRO = "13";
 
-
-    public BigDecimal calcularHonorarios(CalculadoraRequestDTO infoCalculo) {
+    @Async
+    public CompletableFuture<BigDecimal> calcularHonorarios(CalculadoraRequestDTO infoCalculo) {
 
         BeneficiosEnum beneficioVigente = infoCalculo.getBeneficio();
         LocalDate dib = infoCalculo.getDib();
@@ -105,7 +107,8 @@ public class HonorariosAdvocaticiosService {
         }
 
         BigDecimal totalProcesso = tabelaCalculo.stream().map(LinhaTabelaDTO::getSoma).reduce(BigDecimal.ZERO, BigDecimal::add);
-        return totalProcesso.multiply(BigDecimal.valueOf(infoCalculo.getPorcentagemHonorarios())).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        BigDecimal resultado = totalProcesso.multiply(BigDecimal.valueOf(infoCalculo.getPorcentagemHonorarios())).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        return CompletableFuture.completedFuture(resultado);
     }
 
     //Foi utilizado HashSet para melhorar a performance na busca de um elemento

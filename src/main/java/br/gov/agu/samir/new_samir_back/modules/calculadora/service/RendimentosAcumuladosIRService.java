@@ -1,6 +1,5 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.DescricaoValorDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.DescricaoValorIRDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.LinhaTabelaDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.RendimentosAcumuladosIRDTO;
@@ -19,20 +18,20 @@ public class RendimentosAcumuladosIRService {
 
     public RendimentosAcumuladosIRDTO getRendimentosAcumuladosIR(List<LinhaTabelaDTO> tabela, int acordo) {
 
-            RendimentosAcumuladosIRDTO rendimentosAcumuladosIR = new RendimentosAcumuladosIRDTO();
-            DescricaoValorIRDTO anoAtual = gerarAnoCalendarioPagamento(tabela, acordo);
-            DescricaoValorIRDTO anterios = gerarAnosAnteriores(tabela, acordo);
-            DescricaoValorIRDTO total = gerarTotal(anoAtual, anterios, acordo);
-            rendimentosAcumuladosIR.setDescricaoIR(List.of(anoAtual, anterios, total));
-            return rendimentosAcumuladosIR;
+        RendimentosAcumuladosIRDTO rendimentosAcumuladosIR = new RendimentosAcumuladosIRDTO();
+        DescricaoValorIRDTO anoAtual = gerarAnoCalendarioPagamento(tabela, acordo);
+        DescricaoValorIRDTO anterios = gerarAnosAnteriores(tabela, acordo);
+        DescricaoValorIRDTO total = gerarTotal(anoAtual, anterios, acordo);
+        rendimentosAcumuladosIR.setDescricaoIR(List.of(anoAtual, anterios, total));
+        return rendimentosAcumuladosIR;
 
     }
 
-    private DescricaoValorIRDTO gerarAnoCalendarioPagamento(List<LinhaTabelaDTO> tabela, int acordo){
+    private DescricaoValorIRDTO gerarAnoCalendarioPagamento(List<LinhaTabelaDTO> tabela, int acordo) {
 
         DescricaoValorIRDTO anoCalendarioPagamento = new DescricaoValorIRDTO();
         AtomicInteger competencias = new AtomicInteger();
-        anoCalendarioPagamento.setDescricao("Ano calendário do pagamento("+ LocalDate.now().getYear()+")");
+        anoCalendarioPagamento.setDescricao("Ano calendário do pagamento(" + LocalDate.now().getYear() + ")");
         BigDecimal somaAnoPagamento = tabela.stream()
                 .filter(linha -> linha.getData().contains(String.valueOf(LocalDate.now().getYear())))
                 .map(LinhaTabelaDTO::getSoma)
@@ -70,7 +69,7 @@ public class RendimentosAcumuladosIRService {
         return anosAnteriores;
     }
 
-    private DescricaoValorIRDTO gerarTotal(DescricaoValorIRDTO anoAtual, DescricaoValorIRDTO anterios, int acordo){
+    private DescricaoValorIRDTO gerarTotal(DescricaoValorIRDTO anoAtual, DescricaoValorIRDTO anterios, int acordo) {
         DescricaoValorIRDTO total = new DescricaoValorIRDTO();
         total.setDescricao("Total");
         BigDecimal valoresAnoAtual = new BigDecimal(anoAtual.getValor().replace("R$ ", ""));

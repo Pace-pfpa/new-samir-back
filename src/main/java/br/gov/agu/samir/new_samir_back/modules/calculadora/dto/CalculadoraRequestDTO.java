@@ -54,6 +54,7 @@ public class CalculadoraRequestDTO {
 
     private Integer porcentagemHonorarios;
 
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate honorariosAdvocaticiosAte;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
@@ -90,7 +91,7 @@ public class CalculadoraRequestDTO {
         return beneficioAcumulados != null ? beneficioAcumulados.stream()
                 .filter(beneficioAcumulado -> beneficiosInacumulaveis.stream()
                         .anyMatch(inacumulavel -> inacumulavel.getNome().equals(beneficioAcumulado.getBeneficioAcumulado().getNome())))
-                .toList() : null;
+                            .toList() : null;
     }
 
 
