@@ -8,6 +8,7 @@ import br.gov.agu.samir.new_samir_back.modules.indice_reajuste.model.IndiceReaju
 import br.gov.agu.samir.new_samir_back.modules.indice_reajuste.repository.IndiceReajusteRepository;
 import br.gov.agu.samir.new_samir_back.modules.salario_minimo.service.SalarioMinimoService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,7 +21,7 @@ import java.util.List;
 
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RmiService {
 
     private final SalarioMinimoService salarioMinimoService;
@@ -49,7 +50,7 @@ public class RmiService {
 
        while (anoCalculo < anoFim){
            IndiceReajusteModel indiceReajuste = indiceReajusteRepository.findByData(dataCalculo.withDayOfMonth(1)).orElseThrow();
-           BigDecimal indice = indiceReajusteRepository.findFirstByDataReajuste(indiceReajuste.getDataReajuste()).getValor();
+           BigDecimal indice = indiceReajusteRepository.findFirstByDataReajuste(indiceReajuste.getDataReajuste().getData()).getValor();
            indicesParaReajuste.add(indice);
            dataCalculo = dataCalculo.plusYears(1);
            anoCalculo++;

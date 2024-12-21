@@ -32,8 +32,8 @@ public class CalculoIndiceReajusteService {
     }
 
     public BigDecimal calcularPrimeiroReajusteComDibAnterior(LocalDate dib, LocalDate dibAnterior){
-        LocalDate dataReajusteDibAtual = indiceReajusteRepository.findByData(dib.withDayOfMonth(1)).orElseThrow().getDataReajuste();
-        LocalDate dataReajusteDibAnterior = indiceReajusteRepository.findByData(dibAnterior.withDayOfMonth(1)).orElseThrow().getDataReajuste();
+        LocalDate dataReajusteDibAtual = indiceReajusteRepository.findByData(dib.withDayOfMonth(1)).orElseThrow().getDataReajuste().getData();
+        LocalDate dataReajusteDibAnterior = indiceReajusteRepository.findByData(dibAnterior.withDayOfMonth(1)).orElseThrow().getDataReajuste().getData();
 
         if (dataReajusteDibAtual.isEqual(dataReajusteDibAnterior)){
             return indiceReajusteRepository.findByData(dibAnterior.withDayOfMonth(1)).orElseThrow().getValor();

@@ -2,6 +2,7 @@ package br.gov.agu.samir.new_samir_back.modules.indice_reajuste.repository;
 
 import br.gov.agu.samir.new_samir_back.modules.indice_reajuste.model.IndiceReajusteModel;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -12,5 +13,7 @@ public interface IndiceReajusteRepository extends JpaRepository<IndiceReajusteMo
 
     Optional<IndiceReajusteModel> findByData(LocalDate data);
 
+
+    @Query("SELECT r FROM IndiceReajusteModel r WHERE r.dataReajuste.data = :dataReajuste ORDER BY r.dataReajuste.data ASC LIMIT 1 ")
     IndiceReajusteModel findFirstByDataReajuste(LocalDate dataReajuste);
 }
