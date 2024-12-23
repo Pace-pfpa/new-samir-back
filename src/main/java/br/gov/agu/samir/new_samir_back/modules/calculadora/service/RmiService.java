@@ -7,7 +7,6 @@ import br.gov.agu.samir.new_samir_back.modules.beneficio.enums.BeneficiosEnum;
 import br.gov.agu.samir.new_samir_back.modules.indice_reajuste.model.IndiceReajusteModel;
 import br.gov.agu.samir.new_samir_back.modules.indice_reajuste.repository.IndiceReajusteRepository;
 import br.gov.agu.samir.new_samir_back.modules.salario_minimo.service.SalarioMinimoService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

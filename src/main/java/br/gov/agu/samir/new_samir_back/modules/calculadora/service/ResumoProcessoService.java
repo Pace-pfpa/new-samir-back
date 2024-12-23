@@ -1,6 +1,5 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculadoraRequestDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.DescricaoValorDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.LinhaTabelaDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.ResumoProcessoDTO;

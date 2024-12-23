@@ -62,13 +62,13 @@ public class SelicService {
     }
 
     public String importarDadosSelic(List<SelicRequestDTO> listResquestDTO) {
-        List<SelicModel> listModel = listResquestDTO.stream().map(selicRequestDTO -> mapper.mapToModel(selicRequestDTO)).toList();
+        List<SelicModel> listModel = listResquestDTO.stream().map(mapper::mapToModel).toList();
         repository.saveAll(listModel);
         return "dados importados com sucesso";
     }
 
     public List<SelicResponseDTO> buscarPorDataIntervalo(LocalDate dataInicio, LocalDate dataFim) {
         List<SelicModel> listModel = repository.findAllByDataBetween(dataInicio, dataFim);
-        return listModel.stream().map(selicModel -> mapper.mapModelToResponseDTO(selicModel)).toList();
+        return listModel.stream().map(mapper::mapModelToResponseDTO).toList();
     }
 }

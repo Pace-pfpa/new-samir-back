@@ -27,7 +27,9 @@ public class CalculadoraService {
 
     public CalculadoraResponseDTO calcularProcesso(CalculadoraRequestDTO infoCalculo) {
 
-        if (infoCalculo.isAlcada()) return calculoAlcadaService.calcularComAlcada(infoCalculo);
+        if (infoCalculo.isAlcada()){
+            return calculoAlcadaService.calcularComAlcada(infoCalculo);
+        }
 
         CompletableFuture<BigDecimal> honorarios = calcularHonorarios(infoCalculo);
 
