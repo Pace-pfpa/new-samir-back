@@ -16,10 +16,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AnaliseJEFService {
-
-    private final DinheiroFormatador dinheiroFormatador;
+    
     private final SalarioMinimoService salarioMinimoService;
 
+
+    //TODO REFATORAR MÉTODO
     public AnaliseJuizadoEspecialFederalDTO gerarAnaliseJEF(List<LinhaTabelaDTO> tabelaAlcada,List<LinhaTabelaDTO> tabelaNormal, String dataAjuizamento) {
         List<DescricaoAnaliseJEFDTO> analiseJEF = new ArrayList<>();
 
@@ -29,8 +30,8 @@ public class AnaliseJEFService {
         DescricaoAnaliseJEFDTO dozeParcelasVicendas = gerar12ParcelasVicendas(tabelaAlcada);
         analiseJEF.add(dozeParcelasVicendas);
 
-        BigDecimal valor12ParcelasVicendas = dinheiroFormatador.formatarParaBigDecimal(dozeParcelasVicendas.getValor());
-        BigDecimal valorParcelasDevidasAteAjuizamento = dinheiroFormatador.formatarParaBigDecimal(parcelasDevidasAteAjuizamento.getValor());
+        BigDecimal valor12ParcelasVicendas = DinheiroFormatador.formatarParaBigDecimal(dozeParcelasVicendas.getValor());
+        BigDecimal valorParcelasDevidasAteAjuizamento = DinheiroFormatador.formatarParaBigDecimal(parcelasDevidasAteAjuizamento.getValor());
 
         DescricaoAnaliseJEFDTO valorDaCausaNoAjuizamento = valorDaCausaNoAjuizamento(valor12ParcelasVicendas, valorParcelasDevidasAteAjuizamento);
         analiseJEF.add(valorDaCausaNoAjuizamento);
@@ -38,12 +39,12 @@ public class AnaliseJEFService {
         DescricaoAnaliseJEFDTO limite60SalariosMinimos = limite60SalariosMinimos(LocalDate.parse(dataAjuizamento));
         analiseJEF.add(limite60SalariosMinimos);
 
-        BigDecimal valor60SalariosMinimos = dinheiroFormatador.formatarParaBigDecimal(limite60SalariosMinimos.getValor());
+        BigDecimal valor60SalariosMinimos = DinheiroFormatador.formatarParaBigDecimal(limite60SalariosMinimos.getValor());
 
         DescricaoAnaliseJEFDTO renunciaJEF = gerarRenunciaJEF(valorParcelasDevidasAteAjuizamento,valor60SalariosMinimos);
         analiseJEF.add(renunciaJEF);
 
-        DescricaoAnaliseJEFDTO valorAtualizadoRenunciaJEF = gerarValorAtualizadoRenunciaJEF(dinheiroFormatador.formatarParaBigDecimal(renunciaJEF.getValor()), tabelaNormal, dataAjuizamento);
+        DescricaoAnaliseJEFDTO valorAtualizadoRenunciaJEF = gerarValorAtualizadoRenunciaJEF(DinheiroFormatador.formatarParaBigDecimal(renunciaJEF.getValor()), tabelaNormal, dataAjuizamento);
         analiseJEF.add(valorAtualizadoRenunciaJEF);
 
         return new AnaliseJuizadoEspecialFederalDTO(analiseJEF);
@@ -54,7 +55,7 @@ public class AnaliseJEFService {
         DescricaoAnaliseJEFDTO descricao = new DescricaoAnaliseJEFDTO();
         BigDecimal valor = tabelaAlcada.stream().map(LinhaTabelaDTO::getSoma).reduce(BigDecimal.ZERO, BigDecimal::add);
         descricao.setDescricao("Parcelas devidas até ajuizamento " + dataAjuizamento);
-        descricao.setValor(dinheiroFormatador.formatarParaReal(valor));
+        descricao.setValor(DinheiroFormatador.formatarParaReal(valor));
         return descricao;
     }
 
@@ -63,7 +64,7 @@ public class AnaliseJEFService {
         int ultimoIndex = tabelaAlcada.size() - 1;
         BigDecimal dozeParcelasVincendas = tabelaAlcada.get(ultimoIndex).getSoma().multiply(BigDecimal.valueOf(12));
         descricao.setDescricao("12 parcelas vincendas");
-        descricao.setValor(dinheiroFormatador.formatarParaReal(dozeParcelasVincendas));
+        descricao.setValor(DinheiroFormatador.formatarParaReal(dozeParcelasVincendas));
         return descricao;
     }
 
@@ -71,7 +72,7 @@ public class AnaliseJEFService {
         DescricaoAnaliseJEFDTO descricao = new DescricaoAnaliseJEFDTO();
         BigDecimal valor = valor12ParcelasVicendas.add(valorParcelasDevidasAteAjuizamento);
         descricao.setDescricao("Valor da causa no ajuizamento");
-        descricao.setValor(dinheiroFormatador.formatarParaReal(valor));
+        descricao.setValor(DinheiroFormatador.formatarParaReal(valor));
         return descricao;
     }
 
@@ -79,7 +80,7 @@ public class AnaliseJEFService {
         BigDecimal valor60SalariosMinimos = salarioMinimoService.getSalarioMinimoProximoPorDataNoMesmoAno(dataAjuizamento).multiply(BigDecimal.valueOf(60));
         DescricaoAnaliseJEFDTO descricao = new DescricaoAnaliseJEFDTO();
         descricao.setDescricao("Limite 60 salários mínimos");
-        descricao.setValor(dinheiroFormatador.formatarParaReal(valor60SalariosMinimos));
+        descricao.setValor(DinheiroFormatador.formatarParaReal(valor60SalariosMinimos));
         return descricao;
     }
 
@@ -87,7 +88,7 @@ public class AnaliseJEFService {
         DescricaoAnaliseJEFDTO descricao = new DescricaoAnaliseJEFDTO();
         BigDecimal valor = valorDaCausaNoAjuizamento.subtract(limite60SalariosMinimos);
         descricao.setDescricao("Parcela referente à renúncia pela alçada do JEF no ajuizamento:");
-        descricao.setValor(dinheiroFormatador.formatarParaReal(valor));
+        descricao.setValor(DinheiroFormatador.formatarParaReal(valor));
         return descricao;
     }
 
@@ -112,7 +113,7 @@ public class AnaliseJEFService {
         BigDecimal valorAtualizado = valorRenunciaJEF.multiply(indiceCorrecaoAjuizamento).add(valorRenunciaJEF.multiply(porcentagemJuros));
         DescricaoAnaliseJEFDTO descricao = new DescricaoAnaliseJEFDTO();
         descricao.setDescricao("Valor atualizado da renúncia pela alçada do JEF no ajuizamento:");
-        descricao.setValor(dinheiroFormatador.formatarParaReal(valorAtualizado));
+        descricao.setValor(DinheiroFormatador.formatarParaReal(valorAtualizado));
         return descricao;
     }
 

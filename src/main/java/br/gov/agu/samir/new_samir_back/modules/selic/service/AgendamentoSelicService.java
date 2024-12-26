@@ -37,13 +37,13 @@ public class AgendamentoSelicService {
 
         if (dto != null && dto.length > 0) {
             SelicModel selicModel = selicMapper.mapToModel(dto[0]);
-            Optional<SelicModel> verificaSeExistente = selicRepository.findByData(selicModel.getData());
-            if (verificaSeExistente.isEmpty()) {
+            if (!selicRepository.existsByData(selicModel.getData())) {
                 selicRepository.save(selicModel);
                 log.info("Salvando Selic no banco de dados");
             }
-        } else {
-            log.warn("No data received from API");
+            else{
+                log.info("Selic já existe no banco de dados");
+            }
         }
     }
 }
