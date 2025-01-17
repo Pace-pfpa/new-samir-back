@@ -30,15 +30,11 @@ public class BeneficioAcumuladoRequestDTO {
 
     private BigDecimal rmi;
 
-    private Integer porcentagemRmi;
+    private Integer porcentagemRmi = 100;
 
     private LocalDate dibAnterior;
 
     public BigDecimal getRmi(){
-        int porcentagem = porcentagemRmi != null ? porcentagemRmi : 100;
-        if (porcentagem < 0 || porcentagem > 100){
-            throw new IllegalArgumentException("Porcentagem RMI deve ser entre 0 e 100");
-        }
-        return rmi.multiply(BigDecimal.valueOf(porcentagem)).divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP);
+        return rmi.multiply(BigDecimal.valueOf(porcentagemRmi)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
     }
 }

@@ -62,11 +62,11 @@ public class TabelaCalculoService {
             LocalDate dataCalculo = dateUtils.mapStringToLocalDate(data);
 
             if (isDataDeReajuste(dataCalculo, inicioCalculo)) {
-                indiceReajuste = retornaIndiceReajuste(dataCalculo,inicioCalculo, dib, dibAnterior);
+                indiceReajuste = retornaIndiceReajuste(dataCalculo, dib, dibAnterior);
                 rmi = rmi.multiply(indiceReajuste).setScale(2, RoundingMode.HALF_UP);
             }
 
-            BigDecimal indiceReajusteDevido = retornaIndiceReajuste(dataCalculo,inicioCalculo, dib, dibAnterior);
+            BigDecimal indiceReajusteDevido = retornaIndiceReajuste(dataCalculo, dib, dibAnterior);
             linhaTabela.setIndiceReajusteDevido(indiceReajusteDevido.setScale(4, RoundingMode.HALF_UP));
 
             BigDecimal devido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data, inicioCalculo, rmi) : calcularValorDevido(dataCalculo, fimCalculo, rmi);
@@ -176,8 +176,8 @@ public class TabelaCalculoService {
         return calculoJurosService.calcularJuros(dataCalculo, infoCalculo);
     }
 
-    private BigDecimal retornaIndiceReajuste(LocalDate dataCalculo,LocalDate inicioDesconto, LocalDate dataDib, LocalDate dataDibAnterior) {
-        return calculoIndiceReajusteService.calcularIndiceReajusteAnual(dataCalculo,inicioDesconto, dataDib, dataDibAnterior);
+    private BigDecimal retornaIndiceReajuste(LocalDate dataCalculo, LocalDate dataDib, LocalDate dataDibAnterior) {
+        return calculoIndiceReajusteService.calcularIndiceReajusteAnual(dataCalculo, dataDib, dataDibAnterior);
     }
 
     private BigDecimal calcularCorrecaoMonetariaPorTipo(TipoCorrecaoMonetaria tipoCorrecao, LocalDate dataCalculo, LocalDate atualizarAte) {
