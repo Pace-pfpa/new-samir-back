@@ -53,10 +53,7 @@ public class TabelaCalculoService {
         List<String> listaDeDatasParaCalculo = gerarDatasPorBeneficioEPeriodo(beneficioVigente, inicioCalculo, fimCalculo);
         BigDecimal indiceReajuste;
 
-        //TODO Refatorar
-        List<BeneficioInacumulavelModel> beneficioInacumulaveisDoBeneficioVigente = beneficioRepository.findByNome(beneficioVigente.getNome()).getBeneficiosInacumulaveis();
-        List<BeneficioAcumuladoRequestDTO> beneficioInacumulaveisParaCalculo = infoCalculo.getBeneficioInacumulaveisParaCalculo(beneficioInacumulaveisDoBeneficioVigente);
-        HashSet<FiltroRecebido> listaDeCalculoRecebido = gerarListaDeCalculoParaRecebido(beneficioInacumulaveisParaCalculo);
+        HashSet<FiltroRecebido> listaDeCalculoRecebido = gerarListaDeCalculoParaRecebido(filtrarBeneficiosInacumulaveis(infoCalculo));
 
         for (String data : listaDeDatasParaCalculo) {
             LinhaTabelaDTO linhaTabela = new LinhaTabelaDTO();
@@ -65,11 +62,11 @@ public class TabelaCalculoService {
             LocalDate dataCalculo = dateUtils.mapStringToLocalDate(data);
 
             if (isDataDeReajuste(dataCalculo, inicioCalculo)) {
-                indiceReajuste = retornaIndiceReajuste(dataCalculo, dib, dibAnterior);
+                indiceReajuste = retornaIndiceReajuste(dataCalculo,inicioCalculo, dib, dibAnterior);
                 rmi = rmi.multiply(indiceReajuste).setScale(2, RoundingMode.HALF_UP);
             }
 
-            BigDecimal indiceReajusteDevido = retornaIndiceReajuste(dataCalculo, dib, dibAnterior);
+            BigDecimal indiceReajusteDevido = retornaIndiceReajuste(dataCalculo,inicioCalculo, dib, dibAnterior);
             linhaTabela.setIndiceReajusteDevido(indiceReajusteDevido.setScale(4, RoundingMode.HALF_UP));
 
             BigDecimal devido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data, inicioCalculo, rmi) : calcularValorDevido(dataCalculo, fimCalculo, rmi);
@@ -105,7 +102,6 @@ public class TabelaCalculoService {
         return tabelaCalculo;
     }
 
-    //Foi utilizado HashSet para melhorar a performance na busca de um elemento
     private HashSet<FiltroRecebido> gerarListaDeCalculoParaRecebido(List<BeneficioAcumuladoRequestDTO> beneficiosInaculaveis) {
         HashSet<FiltroRecebido> listaDeCalculo = new HashSet<>();
         for (BeneficioAcumuladoRequestDTO beneficioInacumulavel : beneficiosInaculaveis) {
@@ -119,6 +115,9 @@ public class TabelaCalculoService {
             BigDecimal indiceReajuste;
             for (String data : datas) {
                 FiltroRecebido filtroRecebido = new FiltroRecebido();
+                if (dataJaPossuiNoCalculo(data, listaDeCalculo)) {
+                    continue;
+                }
                 filtroRecebido.setData(data);
                 //Converter dataString para LocalDate
                 LocalDate dataCalculo = dateUtils.mapStringToLocalDate(data);
@@ -135,6 +134,10 @@ public class TabelaCalculoService {
             }
         }
         return listaDeCalculo;
+    }
+
+    private boolean dataJaPossuiNoCalculo(String data, HashSet<FiltroRecebido> listaDeCalculo){
+        return listaDeCalculo.stream().anyMatch(filtro -> filtro.getData().equals(data));
     }
 
     private BigDecimal calcularDesconto(String data, HashSet<FiltroRecebido> listaDeCalculo) {
@@ -173,8 +176,8 @@ public class TabelaCalculoService {
         return calculoJurosService.calcularJuros(dataCalculo, infoCalculo);
     }
 
-    private BigDecimal retornaIndiceReajuste(LocalDate dataCalculo, LocalDate dataDib, LocalDate dataDibAnterior) {
-        return calculoIndiceReajusteService.calcularIndiceReajusteAnual(dataCalculo, dataDib, dataDibAnterior);
+    private BigDecimal retornaIndiceReajuste(LocalDate dataCalculo,LocalDate inicioDesconto, LocalDate dataDib, LocalDate dataDibAnterior) {
+        return calculoIndiceReajusteService.calcularIndiceReajusteAnual(dataCalculo,inicioDesconto, dataDib, dataDibAnterior);
     }
 
     private BigDecimal calcularCorrecaoMonetariaPorTipo(TipoCorrecaoMonetaria tipoCorrecao, LocalDate dataCalculo, LocalDate atualizarAte) {
@@ -193,6 +196,18 @@ public class TabelaCalculoService {
 
     private boolean isDataDeReajuste(LocalDate dataCalculo, LocalDate inicioCalculo) {
         return dataCalculo.getMonthValue() == 1 && dataCalculo.getYear() >= inicioCalculo.plusYears(1L).getYear();
+    }
+
+    private List<BeneficioAcumuladoRequestDTO> filtrarBeneficiosInacumulaveis(CalculadoraRequestDTO infoCalculo){
+
+        List<BeneficioInacumulavelModel> beneficiosInacumulaveisDoBeneficioVigente = beneficioRepository
+                .findByNome(infoCalculo.getBeneficio().getNome())
+                .getBeneficiosInacumulaveis();
+
+        return infoCalculo.getBeneficioAcumulados().stream()
+                .filter(beneficioAcumulado -> beneficiosInacumulaveisDoBeneficioVigente.stream()
+                        .anyMatch(inacumulavel -> inacumulavel.getNome().equals(beneficioAcumulado.getBeneficioAcumulado().getNome())))
+                .toList();
     }
 
 }
