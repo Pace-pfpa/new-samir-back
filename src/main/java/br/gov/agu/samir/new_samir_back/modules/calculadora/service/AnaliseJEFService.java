@@ -42,8 +42,9 @@ public class AnaliseJEFService {
 
     private BigDecimal calcularValorAtualizadoRenuncia(List<LinhaTabelaDTO> tabelaNormal, BigDecimal valorCausaAjuizamento, BigDecimal limite60SalariosMinimos, String dataAjuizamento) {
         BigDecimal valorRenunciaJEF = valorCausaAjuizamento.subtract(limite60SalariosMinimos);
-        BigDecimal correcaoAjuizamento = tabelaNormal.stream().filter(linha -> linha.getData().contains(dataAjuizamento.substring(0, 7))).map(LinhaTabelaDTO::getIndiceCorrecaoMonetaria).findFirst().orElse(BigDecimal.ZERO);
-        BigDecimal jurosAjuizamento = tabelaNormal.stream().filter(linha -> linha.getData().contains(dataAjuizamento.substring(0, 7))).map(LinhaTabelaDTO::getPorcentagemJuros).findFirst().orElse(BigDecimal.ZERO);
+        String mesAnoAjuizamento = dataAjuizamento.substring(3, 10);
+        BigDecimal correcaoAjuizamento = tabelaNormal.stream().filter(linha -> linha.getData().contains(mesAnoAjuizamento)).map(LinhaTabelaDTO::getIndiceCorrecaoMonetaria).findFirst().orElse(BigDecimal.ZERO);
+        BigDecimal jurosAjuizamento = tabelaNormal.stream().filter(linha -> linha.getData().contains(mesAnoAjuizamento)).map(LinhaTabelaDTO::getPorcentagemJuros).findFirst().orElse(BigDecimal.ZERO);
         BigDecimal valorAtualizadoRenuncia = valorRenunciaJEF.multiply(correcaoAjuizamento).add(valorRenunciaJEF.multiply(jurosAjuizamento));
         return valorAtualizadoRenuncia;
     }

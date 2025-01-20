@@ -28,33 +28,26 @@ public class CalculoAlcadaService {
 
     public CalculadoraResponseDTO calcularComAlcada(CalculadoraRequestDTO infoCalculo) {
 
-        CalculadoraResponseDTO responseDTO = new CalculadoraResponseDTO();
-
-
         List<LinhaTabelaDTO> tabelaComum = tabelaCalculoService.gerarTabelaCalculo(infoCalculo);
 
         atulizarCalculoParaAlcada(infoCalculo);
+
         List<LinhaTabelaDTO> tabelaAlcada = tabelaCalculoService.gerarTabelaCalculo(infoCalculo);
-        responseDTO.setTabela(tabelaAlcada);
 
         ResumoProcessoDTO resumoProcesso = resumoProcessoService.gerarResumoProcesso(tabelaAlcada, infoCalculo.getAcordo(), BigDecimal.ZERO);
-        responseDTO.setResumoProcesso(resumoProcesso);
 
         RendimentosAcumuladosIRDTO rendimentosAcumuladosIR = rendimentosAcumuladosIRService.getRendimentosAcumuladosIR(tabelaComum, infoCalculo.getAcordo());
-        responseDTO.setRendimentosAcumuladosIR(rendimentosAcumuladosIR);
 
         AnaliseJuizadoEspecialFederalDTO analiseJuizadoEspecialFederal = analiseJEFService.gerarAnaliseJEF(tabelaAlcada, tabelaComum, dateUtils.mapLocalDateToString(infoCalculo.getDataAjuizamento()));
-        responseDTO.setAnaliseJuizadoEspecialFederal(analiseJuizadoEspecialFederal);
 
-        return responseDTO;
-
+        return new CalculadoraResponseDTO(tabelaComum, resumoProcesso, rendimentosAcumuladosIR, analiseJuizadoEspecialFederal);
     }
 
 
     private void atulizarCalculoParaAlcada(CalculadoraRequestDTO requestDTO){
         LocalDate dataAjuizamento = requestDTO.getDataAjuizamento();
         LocalDate dataAtualizarAte = dataAjuizamento.withDayOfMonth(1);
-        LocalDate fimCalculo = dataAjuizamento.withDayOfMonth(1);
+        LocalDate fimCalculo =  dataAjuizamento.withDayOfMonth(dataAjuizamento.lengthOfMonth());
 
         requestDTO.setDataFim(fimCalculo);
         requestDTO.setAtualizarAte(dataAtualizarAte);
