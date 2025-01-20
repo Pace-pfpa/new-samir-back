@@ -32,12 +32,20 @@ public class AnaliseJEFService {
         BigDecimal limite60SalariosMinimos = calcularLimite60SalariosMinimos(salarioMinimo);
         BigDecimal valorRenunciaJEFAtualizado = calcularValorAtualizadoRenuncia(tabelaNormal, valorCausaNoAjuizamento, limite60SalariosMinimos, dataAjuizamento);
 
+        analiseJEF.add(gerarSalarioMinimoAnaliseJEF(salarioMinimo,Integer.parseInt(dataAjuizamento.substring(6,10))));
         analiseJEF.add(gerarParcelasDevidasAteAjuizameto(valorParcelasDevidasAteAjuizamento, dataAjuizamento));
         analiseJEF.add(gerarAnalise12ParcelasVicendas(valor12ParcelasVicendas));
         analiseJEF.add(valorDaCausaNoAjuizamento(valorCausaNoAjuizamento));
         analiseJEF.add(limite60SalariosMinimos(limite60SalariosMinimos));
         analiseJEF.add(gerarRenunciaJEF(valorRenunciaJEFAtualizado));
         return new AnaliseJuizadoEspecialFederalDTO(analiseJEF);
+    }
+
+    private DescricaoAnaliseJEFDTO gerarSalarioMinimoAnaliseJEF(BigDecimal salarioMinimo, int anoSalarioMinimo) {
+        DescricaoAnaliseJEFDTO descricao = new DescricaoAnaliseJEFDTO();
+        descricao.setDescricao("Salário mínimo (" + anoSalarioMinimo + ")");
+        descricao.setValor(DinheiroFormatador.formatarParaReal(salarioMinimo));
+        return descricao;
     }
 
     private BigDecimal calcularValorAtualizadoRenuncia(List<LinhaTabelaDTO> tabelaNormal, BigDecimal valorCausaAjuizamento, BigDecimal limite60SalariosMinimos, String dataAjuizamento) {
