@@ -1,6 +1,5 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.dto;
 
-import br.gov.agu.samir.new_samir_back.modules.calculadora.service.RendimentosAcumuladosIRService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,4 +16,6 @@ public class CalculadoraResponseDTO {
     private ResumoProcessoDTO resumoProcesso;
 
     private RendimentosAcumuladosIRDTO rendimentosAcumuladosIR;
+
+    private AnaliseJuizadoEspecialFederalDTO analiseJuizadoEspecialFederal;
 }

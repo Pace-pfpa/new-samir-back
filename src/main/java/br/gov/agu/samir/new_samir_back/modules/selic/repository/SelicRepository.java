@@ -16,7 +16,7 @@ public interface SelicRepository extends JpaRepository<SelicModel,Long> {
     @Query(value = "SELECT * FROM tb_selic WHERE EXTRACT(MONTH FROM data) = :mes AND EXTRACT(YEAR FROM data) = :ano", nativeQuery = true)
     Optional<SelicModel> findByMesAndAno(@Param("mes") int mes,@Param("ano") int ano);
 
-    Optional<SelicModel> findByData(LocalDate data);
+    boolean existsByData(LocalDate data);
 
     @Query("SELECT s FROM SelicModel s WHERE s.data BETWEEN :dataInicio AND :dataFim")
     List<SelicModel> findAllByDataBetween(@Param("dataInicio") LocalDate dataInicio, @Param("dataFim") LocalDate dataFim);

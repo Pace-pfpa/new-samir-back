@@ -3,7 +3,6 @@ package br.gov.agu.samir.new_samir_back.modules.calculadora.controller;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculadoraResponseDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculadoraRequestDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.service.CalculadoraService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

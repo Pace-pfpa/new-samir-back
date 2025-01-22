@@ -31,7 +31,7 @@ public class JurosService {
 
     public List<JurosResponseDTO> buscarTodasJuros() {
         List<JurosModel> listModel = repository.findAll();
-        return listModel.stream().map(JurosModel -> mapper.mapModelToResponseDTO(JurosModel)).toList();
+        return listModel.stream().map(mapper::mapModelToResponseDTO).toList();
     }
 
     public JurosResponseDTO buscarPorId(Long id) {
@@ -62,13 +62,13 @@ public class JurosService {
     }
 
     public String importarDadosJuros(List<JurosRequestDTO> listResquestDTO) {
-        List<JurosModel> listModel = listResquestDTO.stream().map(JurosRequestDTO -> mapper.mapToModel(JurosRequestDTO)).toList();
+        List<JurosModel> listModel = listResquestDTO.stream().map(mapper::mapToModel).toList();
         repository.saveAll(listModel);
         return "dados importados com sucesso";
     }
 
     public List<JurosResponseDTO> buscarPorDataIntervalo(LocalDate dataInicio, LocalDate dataFim) {
         List<JurosModel> listModel = repository.findAllByDataBetween(dataInicio, dataFim);
-        return listModel.stream().map(JurosModel -> mapper.mapModelToResponseDTO(JurosModel)).toList();
+        return listModel.stream().map(mapper::mapModelToResponseDTO).toList();
     }
 }
