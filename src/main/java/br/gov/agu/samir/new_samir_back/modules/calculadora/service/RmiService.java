@@ -35,35 +35,42 @@ public class RmiService {
 
     //TODO REFATORAR
     public BigDecimal reajustarRmi(CalculadoraRequestDTO infoCalculo){
-        LocalDate dataInicio = infoCalculo.getDataInicio();
-        BigDecimal rmi = infoCalculo.getRmi();
-        LocalDate dib = infoCalculo.getDib();
-       if (dataInicio.isEqual(dib)){
-           return rmi;
-       }
-       LocalDate dataCalculo = dib.plusYears(1L).withDayOfMonth(1);
-       List<BigDecimal> indicesParaReajuste = new ArrayList<>();
-       indicesParaReajuste.add(retornaPrimeiroReajuste(dib, infoCalculo.getDibAnterior()));
-       int anoCalculo = dataCalculo.getYear();
-       int anoFim = dataInicio.getYear();
 
-       while (anoCalculo < anoFim){
-           IndiceReajusteModel indiceReajuste = indiceReajusteRepository.findByData(dataCalculo.withDayOfMonth(1)).orElseThrow();
-           BigDecimal indice = indiceReajusteRepository.findFirstByDataReajuste(indiceReajuste.getDataReajuste().getData()).getValor();
-           indicesParaReajuste.add(indice);
-           dataCalculo = dataCalculo.plusYears(1);
-           anoCalculo++;
+       if (isReajusteNecessario(infoCalculo)){
+           LocalDate dataCalculo = infoCalculo.getDib().plusYears(1L).withDayOfMonth(1);
+           List<BigDecimal> indicesParaReajuste = new ArrayList<>();
+           indicesParaReajuste.add(retornaPrimeiroReajuste(infoCalculo.getDib(), infoCalculo.getDibAnterior()));
+           int anoCalculo = dataCalculo.getYear();
+           int anoFim = infoCalculo.getDataInicio().getYear();
+
+           while (anoCalculo < anoFim){
+               IndiceReajusteModel indiceReajuste = indiceReajusteRepository.findByData(dataCalculo.withDayOfMonth(1)).orElseThrow();
+               BigDecimal indice = indiceReajusteRepository.findFirstByDataReajuste(indiceReajuste.getDataReajuste().getData()).getValor();
+               indicesParaReajuste.add(indice);
+               dataCalculo = dataCalculo.plusYears(1);
+               anoCalculo++;
+           }
+
+           return indicesParaReajuste.stream().reduce(infoCalculo.getRmi(),BigDecimal::multiply);
        }
 
-       return indicesParaReajuste.stream().reduce(rmi,BigDecimal::multiply);
+       return infoCalculo.getRmi();
     }
 
 
-    public BigDecimal calcularValorDevido(LocalDate dataCalculo, LocalDate fimCalculo, BigDecimal rmiConservada){
+    public BigDecimal calcularValorDevido(LocalDate dataCalculo, LocalDate inicioCalculo, LocalDate fimCalculo, BigDecimal rmiConservada){
+
         if (dataCalculo.isEqual(fimCalculo)){
             int diasTrabalhados = fimCalculo.getDayOfMonth();
             return rmiConservada.divide(BigDecimal.valueOf(30),2, RoundingMode.UP).multiply(BigDecimal.valueOf(diasTrabalhados));
         }
+
+        if (isInicioEFimNoMesmoMesEAno(inicioCalculo,fimCalculo)){
+            int diasTrabalhados = 1 + fimCalculo.getDayOfMonth() - inicioCalculo.getDayOfMonth();
+            BigDecimal valor = rmiConservada.divide(BigDecimal.valueOf(30),2, RoundingMode.UP).multiply(BigDecimal.valueOf(diasTrabalhados));
+            return valor;
+        }
+
         if (dataCalculo.getDayOfMonth() == 1){
             return rmiConservada;
         }
@@ -81,6 +88,17 @@ public class RmiService {
 
         BigDecimal salarioMinimoNaEpoca = salarioMinimoService.getSalarioMinimoProximoPorDataNoMesmoAno(dib);
         return isRmiInferiorSalarioMinimo(rmi,salarioMinimoNaEpoca) ? salarioMinimoNaEpoca : rmi;
+    }
+
+
+    private boolean isInicioEFimNoMesmoMesEAno(LocalDate inicioCalculo, LocalDate fimCalculo){
+        return inicioCalculo.getMonth().equals(fimCalculo.getMonth()) && inicioCalculo.getYear() == fimCalculo.getYear();
+    }
+
+    private boolean isReajusteNecessario(CalculadoraRequestDTO infoCalculo){
+        LocalDate dataInicio = infoCalculo.getDataInicio();
+        LocalDate dib = infoCalculo.getDib();
+        return dataInicio.isAfter(dib) && dataInicio.getYear() != dib.getYear();
     }
 
     private boolean isRmiInferiorSalarioMinimo(BigDecimal valorRmi, BigDecimal valorSalarioMinimoNaEpoca){

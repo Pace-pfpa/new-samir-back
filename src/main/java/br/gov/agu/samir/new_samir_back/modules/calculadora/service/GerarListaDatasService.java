@@ -1,6 +1,7 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
 import br.gov.agu.samir.new_samir_back.modules.beneficio.enums.BeneficiosEnum;
+import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -22,25 +23,35 @@ public class GerarListaDatasService {
             BeneficiosEnum.SEGURO_DEFESO
     );
 
-    public List<String> gerarListaDatasPorBeneficioEperiodo(BeneficiosEnum beneficio, LocalDate dib, LocalDate fimCalculo) {
+    public List<String> gerarListaDatasPorBeneficioEperiodo(BeneficiosEnum beneficio, LocalDate inicioCalculo ,LocalDate fimCalculo) {
+
+        if (isInicioEFimNoMesmoAno(inicioCalculo, fimCalculo)) {
+            return List.of(DateTimeFormatter.ofPattern("dd/MM/yyyy").format(inicioCalculo));
+        }
+
+
         return isBeneficioSemDecimoTerceiro(beneficio) ?
-                gerarListaSemDecimoTerceiro(dib, fimCalculo) :
-                gerarListaComDecimoTerceiro(dib, fimCalculo);
+                gerarListaSemDecimoTerceiro(inicioCalculo, fimCalculo) :
+                gerarListaComDecimoTerceiro(inicioCalculo, fimCalculo);
+    }
+
+    private boolean isInicioEFimNoMesmoAno(LocalDate inicioCalculo, LocalDate fimCalculo){
+        return inicioCalculo.getYear() == fimCalculo.getYear() && inicioCalculo.getMonthValue() == fimCalculo.getMonthValue();
     }
 
 
-    private List<String> gerarListaComDecimoTerceiro(LocalDate dib, LocalDate fimCalculo) {
+    private List<String> gerarListaComDecimoTerceiro(LocalDate inicioCalculo, LocalDate fimCalculo) {
         List<String> listaDeDatas = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         // Adiciona a data inicial no formato
-        listaDeDatas.add(dib.format(formatter));
+        listaDeDatas.add(inicioCalculo.format(formatter));
 
-        if (dib.getMonthValue() == 12) {
-            listaDeDatas.add("01/13/" + dib.getYear());
+        if (inicioCalculo.getMonthValue() == 12) {
+            listaDeDatas.add("01/13/" + inicioCalculo.getYear());
         }
 
-        LocalDate dataAtual = dib.withDayOfMonth(1).plusMonths(1); // Começa no dia 01 do mês da data inicial
+        LocalDate dataAtual = inicioCalculo.withDayOfMonth(1).plusMonths(1); // Começa no dia 01 do mês da data inicial
 
         while (dataAtual.isBefore(fimCalculo) || dataAtual.isEqual(fimCalculo)) {
 
@@ -72,15 +83,15 @@ public class GerarListaDatasService {
         return listaDeDatas;
     }
 
-    private List<String> gerarListaSemDecimoTerceiro(LocalDate dib, LocalDate fimCalculo) {
+    private List<String> gerarListaSemDecimoTerceiro(LocalDate inicioCalculo, LocalDate fimCalculo) {
         List<String> listaDeDatas = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         // Adicionar a data inicial formatada
-        listaDeDatas.add(dib.format(formatter));
+        listaDeDatas.add(inicioCalculo.format(formatter));
 
         // Pular para o próximo mês
-        LocalDate proximaData = dib.plusMonths(1).withDayOfMonth(1);
+        LocalDate proximaData = inicioCalculo.plusMonths(1).withDayOfMonth(1);
 
         // Iterar até o mês anterior da data final
         while (proximaData.isBefore(fimCalculo)) {

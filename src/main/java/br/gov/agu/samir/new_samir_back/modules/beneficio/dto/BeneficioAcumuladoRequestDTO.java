@@ -32,6 +32,7 @@ public class BeneficioAcumuladoRequestDTO {
 
     private Integer porcentagemRmi = 100;
 
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate dibAnterior;
 
     public BigDecimal getRmi(){

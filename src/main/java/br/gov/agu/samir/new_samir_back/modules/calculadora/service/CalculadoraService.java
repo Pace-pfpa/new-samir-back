@@ -42,8 +42,6 @@ public class CalculadoraService {
 
         RendimentosAcumuladosIRDTO rendimentosAcumuladosIR = rendimentosAcumuladosIRService.getRendimentosAcumuladosIR(tabelaCalculo, acordo);
 
-
-
         responseDTO.setTabela(tabelaCalculo);
 
         responseDTO.setResumoProcesso(resumoProcesso);
