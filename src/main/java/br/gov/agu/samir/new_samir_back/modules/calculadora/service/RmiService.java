@@ -24,8 +24,9 @@ import java.util.List;
 public class RmiService {
 
     private final SalarioMinimoService salarioMinimoService;
-    private final IndiceReajusteRepository indiceReajusteRepository;
     private final CalculoIndiceReajusteService calculoIndiceReajusteService;
+
+    private final IndiceReajusteRepository indiceReajusteRepository;
 
 
     private static final EnumSet<BeneficiosEnum> BENEFICIOS_QUE_RECEBEM_MENOS_QUE_SALARIO_MINIMO = EnumSet.of(
