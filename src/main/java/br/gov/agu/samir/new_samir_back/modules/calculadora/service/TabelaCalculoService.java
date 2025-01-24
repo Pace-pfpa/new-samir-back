@@ -40,17 +40,29 @@ public class TabelaCalculoService {
 
     public List<LinhaTabelaDTO> gerarTabelaCalculo(CalculadoraRequestDTO infoCalculo) {
         BeneficiosEnum beneficioVigente = infoCalculo.getBeneficio();
+
         LocalDate dib = infoCalculo.getDib();
+
         LocalDate inicioCalculo = infoCalculo.getDataInicio();
+
         LocalDate fimCalculo = infoCalculo.getDataFim();
+
         LocalDate dibAnterior = infoCalculo.getDibAnterior();
+
         LocalDate atualizarAte = infoCalculo.getAtualizarAte();
+
         BigDecimal rmi = rmiService.reajustarRmi(infoCalculo);
+
         rmi = retornaSalarioMinimoSeRmiForInferior(rmi, dib, beneficioVigente);
+
         TipoCorrecaoMonetaria tipoCorrecao = infoCalculo.getTipoCorrecao();
 
+        boolean decimoTerceiroFinalCalculo = infoCalculo.isDecimoTerceiroFinalCalculo();
+
         List<LinhaTabelaDTO> tabelaCalculo = new ArrayList<>();
-        List<String> listaDeDatasParaCalculo = gerarDatasPorBeneficioEPeriodo(beneficioVigente, inicioCalculo, fimCalculo);
+
+        List<String> listaDeDatasParaCalculo = gerarDatasPorBeneficioEPeriodo(beneficioVigente,decimoTerceiroFinalCalculo, inicioCalculo, fimCalculo);
+
         BigDecimal indiceReajuste;
 
         HashSet<FiltroRecebido> listaDeCalculoRecebido = gerarListaDeCalculoParaRecebido(filtrarBeneficiosInacumulaveis(infoCalculo));
@@ -69,7 +81,7 @@ public class TabelaCalculoService {
             BigDecimal indiceReajusteDevido = retornaIndiceReajuste(dataCalculo, dib, dibAnterior);
             linhaTabela.setIndiceReajusteDevido(indiceReajusteDevido.setScale(4, RoundingMode.HALF_UP));
 
-            BigDecimal devido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data, inicioCalculo, rmi) : calcularValorDevido(dataCalculo,inicioCalculo,fimCalculo, rmi);
+            BigDecimal devido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data, inicioCalculo,fimCalculo, rmi) : calcularValorDevido(dataCalculo,inicioCalculo,fimCalculo, rmi);
             linhaTabela.setDevido(devido.setScale(2, RoundingMode.HALF_UP));
 
             BigDecimal indiceReajusteRecebido = retornaIndiceReajusteRecebido(data, listaDeCalculoRecebido);
@@ -106,29 +118,43 @@ public class TabelaCalculoService {
     //TODO: Refatorar Calculo do recebido
     private HashSet<FiltroRecebido> gerarListaDeCalculoParaRecebido(List<BeneficioAcumuladoRequestDTO> beneficiosInaculaveis) {
         HashSet<FiltroRecebido> listaDeCalculo = new HashSet<>();
+
         for (BeneficioAcumuladoRequestDTO beneficioInacumulavel : beneficiosInaculaveis) {
+
             BeneficiosEnum beneficio = beneficioInacumulavel.getBeneficioAcumulado();
+
             LocalDate dib = beneficioInacumulavel.getDib();
+
             LocalDate inicioDesconto = beneficioInacumulavel.getInicioDesconto();
+
             LocalDate dataFim = beneficioInacumulavel.getFimDesconto();
+
             LocalDate dataDibAnterior = beneficioInacumulavel.getDibAnterior();
-            List<String> datas = gerarDatasPorBeneficioEPeriodo(beneficio, inicioDesconto, dataFim);
+
+            List<String> datas = gerarDatasPorBeneficioEPeriodo(beneficio,false, inicioDesconto, dataFim);
+
             BigDecimal rmi = beneficioInacumulavel.getRmi();
+
             BigDecimal indiceReajuste;
+
             for (String data : datas) {
                 FiltroRecebido filtroRecebido = new FiltroRecebido();
 
                 filtroRecebido.setData(data);
                 //Converter dataString para LocalDate
                 LocalDate dataCalculo = dateUtils.mapStringToLocalDate(data);
+
                 if (isDataDeReajuste(dataCalculo, inicioDesconto)) {
                     indiceReajuste = retornaIndiceReajuste(dataCalculo, dib, dataDibAnterior);
                     rmi = rmi.multiply(indiceReajuste).setScale(2, RoundingMode.HALF_UP);
                 }
+
                 BigDecimal indiceReajusteRecebido = retornaIndiceReajuste(dataCalculo, dib, dataDibAnterior);
+
                 filtroRecebido.setIndiceReajusteRecebido(indiceReajusteRecebido.setScale(4, RoundingMode.HALF_UP));
 
-                BigDecimal recebido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data, inicioDesconto, rmi) : calcularValorDevido(dataCalculo,inicioDesconto ,dataFim, rmi);
+                BigDecimal recebido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data, inicioDesconto,dataFim, rmi) : calcularValorDevido(dataCalculo,inicioDesconto ,dataFim, rmi);
+
                 filtroRecebido.setRecebido(recebido.setScale(2, RoundingMode.HALF_UP));
 
                 if (dataJaPossuiNoCalculo(data, listaDeCalculo)) {
@@ -138,7 +164,9 @@ public class TabelaCalculoService {
                             .findFirst().orElseThrow();
 
                     BigDecimal valorRecebido = filtroRecebido.getRecebido();
+
                     BigDecimal novoValorRecebido = recebidoExistente.getRecebido().add(valorRecebido);
+
                     recebidoExistente.setRecebido(novoValorRecebido);
 
                     continue;
@@ -174,8 +202,8 @@ public class TabelaCalculoService {
         }
     }
 
-    private BigDecimal retornaValorDecimoTerceiro(String data, LocalDate inicioCalculo, BigDecimal rmi) {
-        return decimoTerceiroService.calcularDecimoTerceiro(data, inicioCalculo, rmi);
+    private BigDecimal retornaValorDecimoTerceiro(String data, LocalDate inicioCalculo,LocalDate fimCalculo, BigDecimal rmi) {
+        return decimoTerceiroService.calcularDecimoTerceiro(data, inicioCalculo,fimCalculo, rmi);
     }
 
     private BigDecimal retornaSalarioMinimoSeRmiForInferior(BigDecimal rmi, LocalDate dib, BeneficiosEnum beneficio) {
@@ -199,8 +227,8 @@ public class TabelaCalculoService {
     }
 
 
-    private List<String> gerarDatasPorBeneficioEPeriodo(BeneficiosEnum beneficio, LocalDate dataInicio, LocalDate dataFim) {
-        return gerarListaDatasService.gerarListaDatasPorBeneficioEperiodo(beneficio, dataInicio, dataFim);
+    private List<String> gerarDatasPorBeneficioEPeriodo(BeneficiosEnum beneficio, boolean decimoTerceiroFinalCalculo,LocalDate dataInicio, LocalDate dataFim) {
+        return gerarListaDatasService.gerarListaDatasPorBeneficioEperiodo(beneficio,decimoTerceiroFinalCalculo, dataInicio, dataFim);
     }
 
 

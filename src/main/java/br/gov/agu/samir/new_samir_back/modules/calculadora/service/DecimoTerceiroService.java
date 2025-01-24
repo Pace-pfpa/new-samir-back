@@ -12,24 +12,33 @@ import java.time.LocalDate;
 @Service
 public class DecimoTerceiroService {
 
+//TODO: Refatorar
+public BigDecimal calcularDecimoTerceiro(String dataDecimoTerceiro,LocalDate dataInicio, LocalDate fimCalculo, BigDecimal rmi) {
 
-public BigDecimal calcularDecimoTerceiro(String dataDecimoTerceiro,LocalDate dataInicio, BigDecimal rmi) {
-
-    int mesesTrabalhados = 12 - dataInicio.getMonthValue();
-
-    if (dataInicio.getDayOfMonth() < 17) {
-        mesesTrabalhados = 13 - dataInicio.getMonthValue();
-    }
-
-    BigDecimal valorDecimoTerceiro = rmi.divide(BigDecimal.valueOf(12),2, RoundingMode.HALF_UP);
-    valorDecimoTerceiro = valorDecimoTerceiro.multiply(BigDecimal.valueOf(mesesTrabalhados));
-
-    return isPrimeiroDecimoTerceiro(dataDecimoTerceiro, dataInicio) ? valorDecimoTerceiro : rmi;
+  if (isDecimoTerceiroParcial(dataDecimoTerceiro, dataInicio, dataInicio)) {
+      int mesesTrabalhados = calcularMesesTrabalhados(dataDecimoTerceiro, dataInicio, dataInicio);
+      return rmi.multiply(BigDecimal.valueOf(mesesTrabalhados)).divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
+  }
+  return rmi;
 }
 
 
-    private boolean isPrimeiroDecimoTerceiro(String decimoTerceiro, LocalDate dataInicio){
-        return Integer.parseInt(decimoTerceiro.split("/")[2])  == dataInicio.getYear();
+    private int calcularMesesTrabalhados(String decimoTerceiro ,LocalDate dataInicio, LocalDate fimCalculo) {
+
+        int anoDecimoTerceiro = Integer.parseInt(decimoTerceiro.split("/")[2]);
+
+        int mesesTrabalhados = 12 - dataInicio.getMonthValue();
+
+        if (dataInicio.getDayOfMonth() < 17) {
+            mesesTrabalhados = 13 - dataInicio.getMonthValue();
+        }
+        return mesesTrabalhados;
+    }
+
+    private boolean isDecimoTerceiroParcial(String decimoTerceiro, LocalDate dataInicio, LocalDate dataFim) {
+        int anoDecimoTerceiro = Integer.parseInt(decimoTerceiro.split("/")[2]);
+        return anoDecimoTerceiro == dataInicio.getYear() ||
+                anoDecimoTerceiro == dataFim.getYear();
     }
 }
 

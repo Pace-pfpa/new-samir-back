@@ -23,7 +23,7 @@ public class GerarListaDatasService {
             BeneficiosEnum.SEGURO_DEFESO
     );
 
-    public List<String> gerarListaDatasPorBeneficioEperiodo(BeneficiosEnum beneficio, LocalDate inicioCalculo ,LocalDate fimCalculo) {
+    public List<String> gerarListaDatasPorBeneficioEperiodo(BeneficiosEnum beneficio,boolean decimoTerceiroFinalCalculo, LocalDate inicioCalculo ,LocalDate fimCalculo) {
 
         if (isInicioEFimNoMesmoAno(inicioCalculo, fimCalculo)) {
             return List.of(DateTimeFormatter.ofPattern("dd/MM/yyyy").format(inicioCalculo));
@@ -31,8 +31,8 @@ public class GerarListaDatasService {
 
 
         return isBeneficioSemDecimoTerceiro(beneficio) ?
-                gerarListaSemDecimoTerceiro(inicioCalculo, fimCalculo) :
-                gerarListaComDecimoTerceiro(inicioCalculo, fimCalculo);
+                gerarListaSemDecimoTerceiro(inicioCalculo, fimCalculo, decimoTerceiroFinalCalculo) :
+                gerarListaComDecimoTerceiro(inicioCalculo, fimCalculo, decimoTerceiroFinalCalculo);
     }
 
     private boolean isInicioEFimNoMesmoAno(LocalDate inicioCalculo, LocalDate fimCalculo){
@@ -40,7 +40,7 @@ public class GerarListaDatasService {
     }
 
 
-    private List<String> gerarListaComDecimoTerceiro(LocalDate inicioCalculo, LocalDate fimCalculo) {
+    private List<String> gerarListaComDecimoTerceiro(LocalDate inicioCalculo, LocalDate fimCalculo, boolean decimoTerceiroFinalCalculo) {
         List<String> listaDeDatas = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -80,10 +80,13 @@ public class GerarListaDatasService {
             listaDeDatas.add(fimCalculo.format(formatter));
         }
 
+        if (decimoTerceiroFinalCalculo) {
+            listaDeDatas.add("01/13/" + fimCalculo.getYear());
+        }
         return listaDeDatas;
     }
 
-    private List<String> gerarListaSemDecimoTerceiro(LocalDate inicioCalculo, LocalDate fimCalculo) {
+    private List<String> gerarListaSemDecimoTerceiro(LocalDate inicioCalculo, LocalDate fimCalculo, boolean decimoTerceiroFinalCalculo) {
         List<String> listaDeDatas = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -102,6 +105,10 @@ public class GerarListaDatasService {
 
         // Adiciona a data final formatada
         listaDeDatas.add(fimCalculo.format(formatter));
+
+        if (decimoTerceiroFinalCalculo) {
+            listaDeDatas.add("01/13/" + fimCalculo.getYear());
+        }
 
         return listaDeDatas;
     }

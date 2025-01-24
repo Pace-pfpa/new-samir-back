@@ -87,6 +87,8 @@ public class CalculadoraRequestDTO {
 
     private boolean alcada;
 
+    private boolean decimoTerceiroFinalCalculo;
+
     private List<BeneficioAcumuladoRequestDTO> beneficioAcumulados;
 
 
