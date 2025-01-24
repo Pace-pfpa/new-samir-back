@@ -38,7 +38,7 @@ public class CalculoAlcadaService {
 
         RendimentosAcumuladosIRDTO rendimentosAcumuladosIR = rendimentosAcumuladosIRService.getRendimentosAcumuladosIR(tabelaComum, infoCalculo.getAcordo());
 
-        AnaliseJuizadoEspecialFederalDTO analiseJuizadoEspecialFederal = analiseJEFService.gerarAnaliseJEF(tabelaAlcada, tabelaComum, dateUtils.mapLocalDateToString(infoCalculo.getDataAjuizamento()));
+        AnaliseJuizadoEspecialFederalDTO analiseJuizadoEspecialFederal = analiseJEFService.gerarAnaliseJEF(tabelaAlcada, tabelaComum, infoCalculo);
 
         return new CalculadoraResponseDTO(tabelaComum, resumoProcesso, rendimentosAcumuladosIR, analiseJuizadoEspecialFederal);
     }

@@ -15,16 +15,21 @@ public class CalculoIndiceReajusteService {
 
     private final IndiceReajusteRepository indiceReajusteRepository;
 
-
+    //TODO: Refatorar
     public BigDecimal calcularIndiceReajusteAnual(LocalDate dataCalculo, LocalDate dib, LocalDate dibAnterior){
-        if (dataCalculo.getMonthValue() != 1){
-            return BigDecimal.ONE;
+        if (isDataDeReajuste(dataCalculo, dib)){
+            if (isPrimeiroReajuste(dataCalculo, dib)){
+                return dibAnterior != null ? calcularPrimeiroReajusteComDibAnterior(dib, dibAnterior) : calcularPrimeiroReajusteSemDibAnterior(dib);
+            }else {
+                return indiceReajusteRepository.findFirstByDataReajuste(dataCalculo.withDayOfMonth(1)).getValor();
+            }
         }
 
-        if (isPrimeiroReajuste(dataCalculo, dib)){
-            return dibAnterior != null ? calcularPrimeiroReajusteComDibAnterior(dib, dibAnterior) : calcularPrimeiroReajusteSemDibAnterior(dib);
-        }
-        return indiceReajusteRepository.findFirstByDataReajuste(dataCalculo.withDayOfMonth(1)).getValor();
+        return BigDecimal.ONE;
+    }
+
+    private boolean isDataDeReajuste(LocalDate dataCalculo, LocalDate dib){
+        return dataCalculo.getMonthValue() == 1 && dataCalculo.getYear() >= dib.plusYears(1L).getYear();
     }
 
     private boolean isPrimeiroReajuste(LocalDate dataCalculo, LocalDate dib){
