@@ -26,32 +26,32 @@ public class DecimoTerceiroService {
         int anoDecimoTerceiro = Integer.parseInt(decimoTerceiro.split("/")[2]);
         if (anoDecimoTerceiro == dataInicio.getYear()) {
             return calcularMesesTrabalhadosPrimeiroAno(dataInicio);
-        }else {
+        } else {
             return calcularMesesTrabalhadosUltimoAno(fimCalculo);
         }
     }
 
-        private int calcularMesesTrabalhadosPrimeiroAno(LocalDate dataInicio){
-            if (dataInicio.getDayOfMonth() < 17) {
-                return 13 - dataInicio.getMonthValue();
-            } else {
-                return 12 - dataInicio.getMonthValue();
-            }
-        }
-
-        private int calcularMesesTrabalhadosUltimoAno(LocalDate fimCalculo){
-            if (fimCalculo.getDayOfMonth() > 17) {
-                return fimCalculo.getMonthValue();
-            } else {
-                return fimCalculo.getMonthValue() - 1;
-            }
-        }
-
-        private boolean isDecimoTerceiroParcial (String decimoTerceiro, LocalDate dataInicio, LocalDate dataFim){
-            int anoDecimoTerceiro = Integer.parseInt(decimoTerceiro.split("/")[2]);
-            return anoDecimoTerceiro == dataInicio.getYear() ||
-                    anoDecimoTerceiro == dataFim.getYear();
+    private int calcularMesesTrabalhadosPrimeiroAno(LocalDate dataInicio) {
+        if (dataInicio.getDayOfMonth() < 17) {
+            return 13 - dataInicio.getMonthValue();
+        } else {
+            return 12 - dataInicio.getMonthValue();
         }
     }
+
+    private int calcularMesesTrabalhadosUltimoAno(LocalDate fimCalculo) {
+        if (fimCalculo.getDayOfMonth() > 17) {
+            return fimCalculo.getMonthValue();
+        } else {
+            return fimCalculo.getMonthValue() - 1;
+        }
+    }
+
+    private boolean isDecimoTerceiroParcial(String decimoTerceiro, LocalDate dataInicio, LocalDate dataFim) {
+        int anoDecimoTerceiro = Integer.parseInt(decimoTerceiro.split("/")[2]);
+        return anoDecimoTerceiro == dataInicio.getYear() ||
+                anoDecimoTerceiro == dataFim.getYear();
+    }
 }
+
 
