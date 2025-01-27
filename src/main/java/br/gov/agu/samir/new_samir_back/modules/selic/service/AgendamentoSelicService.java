@@ -19,7 +19,6 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class AgendamentoSelicService {
 
-    private final RestTemplate restTemplate;
     private final WebClient webClient;
     private final SelicRepository selicRepository;
     private final SelicMapper selicMapper;
