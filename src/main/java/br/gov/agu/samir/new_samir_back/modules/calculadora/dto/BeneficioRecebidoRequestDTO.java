@@ -1,4 +1,4 @@
-package br.gov.agu.samir.new_samir_back.modules.beneficio.dto;
+package br.gov.agu.samir.new_samir_back.modules.calculadora.dto;
 
 import br.gov.agu.samir.new_samir_back.modules.beneficio.enums.BeneficiosEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BeneficioAcumuladoRequestDTO {
+public class BeneficioRecebidoRequestDTO {
 
     private BeneficiosEnum beneficioAcumulado;
 
