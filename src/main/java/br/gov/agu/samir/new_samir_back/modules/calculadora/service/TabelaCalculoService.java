@@ -65,7 +65,7 @@ public class TabelaCalculoService {
 
         BigDecimal indiceReajuste;
 
-        HashSet<FiltroRecebido> listaDeCalculoRecebido = gerarListaDeCalculoParaRecebido(filtrarBeneficiosInacumulaveis(infoCalculo));
+        HashSet<FiltroRecebido> listaDeCalculoRecebido = gerarListaDeCalculoParaRecebido(infoCalculo.getBeneficioAcumulados());
 
         for (String data : listaDeDatasParaCalculo) {
             LinhaTabelaDTO linhaTabela = new LinhaTabelaDTO();
@@ -240,16 +240,6 @@ public class TabelaCalculoService {
         return dataCalculo.getMonthValue() == 1 && dataCalculo.getYear() >= inicioCalculo.plusYears(1L).getYear();
     }
 
-    private List<BeneficioAcumuladoRequestDTO> filtrarBeneficiosInacumulaveis(CalculadoraRequestDTO infoCalculo) {
 
-        List<BeneficioInacumulavelModel> beneficiosInacumulaveisDoBeneficioVigente = beneficioRepository
-                .findByNome(infoCalculo.getBeneficio().getNome())
-                .getBeneficiosInacumulaveis();
-
-        return infoCalculo.getBeneficioAcumulados().stream()
-                .filter(beneficioAcumulado -> beneficiosInacumulaveisDoBeneficioVigente.stream()
-                        .anyMatch(inacumulavel -> inacumulavel.getNome().equals(beneficioAcumulado.getBeneficioAcumulado().getNome())))
-                .toList();
-    }
 
 }

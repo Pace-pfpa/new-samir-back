@@ -96,12 +96,5 @@ public class CalculadoraRequestDTO {
         return rmi.multiply(BigDecimal.valueOf(this.porcentagemRmi)).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
     }
 
-    public List<BeneficioAcumuladoRequestDTO> getBeneficioInacumulaveisParaCalculo(List<BeneficioInacumulavelModel> beneficiosInacumulaveis){
-        return beneficioAcumulados != null ? beneficioAcumulados.stream()
-                .filter(beneficioAcumulado -> beneficiosInacumulaveis.stream()
-                        .anyMatch(inacumulavel -> inacumulavel.getNome().equals(beneficioAcumulado.getBeneficioAcumulado().getNome())))
-                            .toList() : null;
-    }
-
 
 }
