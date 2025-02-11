@@ -83,7 +83,8 @@ public class AnaliseJEFService {
     private BigDecimal calcularValor12ParcelasVicendas(List<LinhaTabelaDTO> tabelaAlcada, CalculadoraRequestDTO infoRequestDTO) {
         int ultimoIndex = tabelaAlcada.size() - 1;
         BigDecimal valorParcela = tabelaAlcada.get(ultimoIndex).getSoma();
-        if (isBeneficioQueRecebe12ParcelasVicendas(infoRequestDTO.getBeneficio())) {
+        BeneficiosEnum beneficio = BeneficiosEnum.getByNome(infoRequestDTO.getBeneficio());
+        if (isBeneficioQueRecebe12ParcelasVicendas(beneficio)) {
             return valorParcela.multiply(BigDecimal.valueOf(12));
         } else {
             return BigDecimal.ZERO;
