@@ -2,8 +2,6 @@ package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
 import br.gov.agu.samir.new_samir_back.modules.beneficio.dto.BeneficioAcumuladoRequestDTO;
 import br.gov.agu.samir.new_samir_back.modules.beneficio.enums.BeneficiosEnum;
-import br.gov.agu.samir.new_samir_back.modules.beneficio.model.BeneficioInacumulavelModel;
-import br.gov.agu.samir.new_samir_back.modules.beneficio.repository.BeneficioRepository;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculadoraRequestDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.LinhaTabelaDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.enums.TipoCorrecaoMonetaria;
@@ -23,7 +21,6 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 public class TabelaCalculoService {
-    private final BeneficioRepository beneficioRepository;
 
     private final RmiService rmiService;
     private final DecimoTerceiroService decimoTerceiroService;
@@ -55,7 +52,7 @@ public class TabelaCalculoService {
 
         rmi = retornaSalarioMinimoSeRmiForInferior(rmi, dib, beneficioVigente);
 
-        TipoCorrecaoMonetaria tipoCorrecao = infoCalculo.getTipoCorrecao();
+        TipoCorrecaoMonetaria tipoCorrecao = TipoCorrecaoMonetaria.getTipoCorrecaoMonetaria(infoCalculo.getTipoCorrecao());
 
         boolean decimoTerceiroFinalCalculo = infoCalculo.isDecimoTerceiroFinalCalculo();
 
@@ -223,7 +220,7 @@ public class TabelaCalculoService {
     }
 
     private BigDecimal calcularCorrecaoMonetariaPorTipo(TipoCorrecaoMonetaria tipoCorrecao, LocalDate dataCalculo, LocalDate atualizarAte) {
-        return correcaoMonetariaFactory.getCalculo(tipoCorrecao).calcularIndexadorCorrecaoMonetaria(dataCalculo, atualizarAte);
+        return correcaoMonetariaFactory.getCalculoCorrecaoMonetaria(tipoCorrecao).calcularIndexadorCorrecaoMonetaria(dataCalculo, atualizarAte);
     }
 
 

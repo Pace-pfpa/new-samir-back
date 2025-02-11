@@ -68,11 +68,11 @@ public class CalculadoraRequestDTO {
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "O tipo de juros é um componente obrigatório")
-    private TipoJuros tipoJuros;
+    private int tipoJuros;
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "O tipo de correção monetária é um componente obrigatório")
-    private TipoCorrecaoMonetaria tipoCorrecao;
+    private int tipoCorrecao;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     @NotNull(message = "A data de atualização é um componente obrigatório")
