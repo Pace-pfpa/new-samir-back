@@ -36,7 +36,7 @@ public class TabelaCalculoService {
 
 
     public List<LinhaTabelaDTO> gerarTabelaCalculo(CalculadoraRequestDTO infoCalculo) {
-        BeneficiosEnum beneficioVigente = infoCalculo.getBeneficio();
+        BeneficiosEnum beneficioVigente = BeneficiosEnum.getByNome(infoCalculo.getBeneficio());
 
         LocalDate dib = infoCalculo.getDib();
 
@@ -118,7 +118,7 @@ public class TabelaCalculoService {
 
         for (BeneficioAcumuladoRequestDTO beneficioInacumulavel : beneficiosInaculaveis) {
 
-            BeneficiosEnum beneficio = beneficioInacumulavel.getBeneficioAcumulado();
+            BeneficiosEnum beneficio = BeneficiosEnum.getByNome(beneficioInacumulavel.getBeneficio());
 
             LocalDate dib = beneficioInacumulavel.getDib();
 

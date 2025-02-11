@@ -79,7 +79,7 @@ public class CalculadoraRequestDTO {
     private LocalDate atualizarAte;
 
     @NotNull(message = "O benefício é um componente obrigatório")
-    private BeneficiosEnum beneficio;
+    private String beneficio;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     @NotNull(message = "A data de inicio do benefício é um componente obrigatório")
