@@ -16,7 +16,7 @@ public class CalculoJurosFactory {
     private final JUROSeSELICimpl jurosESelic;
 
     public CalculoJuros getCalculo(TipoJuros tipo) {
-        if (Objects.requireNonNull(tipo) == TipoJuros.TIPO2) {
+        if (Objects.requireNonNull(tipo) == TipoJuros.TIPO1) {
             return jurosESelic;
         }
         throw new IllegalArgumentException("Tipo de juros inválido");

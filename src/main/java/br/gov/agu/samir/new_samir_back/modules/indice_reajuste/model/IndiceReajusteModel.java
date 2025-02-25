@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +36,7 @@ public class IndiceReajusteModel {
     @Column(precision = 30, scale = 4, nullable = false)
     private BigDecimal valor;
 
-    @Column(nullable = false)
-    private LocalDate dataReajuste;
+    @ManyToOne
+    @JoinColumn(name = "data_reajuste_id", nullable = false)
+    private DataReajusteModel dataReajuste;
 }

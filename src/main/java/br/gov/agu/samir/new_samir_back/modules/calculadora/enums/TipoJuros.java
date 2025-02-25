@@ -8,9 +8,19 @@ import lombok.Getter;
 @Getter
 public enum TipoJuros {
 
-    TIPO2("JUROS + SELIC");
+    TIPO1(1,"JUROS + SELIC" );
+
+    private  int tipo;
 
     private String descricao;
 
+    public static TipoJuros getByTipo(int tipo) {
+        for (TipoJuros tipoJuros : TipoJuros.values()) {
+            if (tipoJuros.getTipo() == tipo) {
+                return tipoJuros;
+            }
+        }
+        return null;
+    }
 
 }

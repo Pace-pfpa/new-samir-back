@@ -13,6 +13,7 @@ import org.mapstruct.ReportingPolicy;
 public interface IndiceReajusteMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(source = "dataReajuste", target = "dataReajuste.data")
     IndiceReajusteModel mapToModel(IndiceReajusteRequestDTO requestDTO);
 
     IndiceReajusteResponseDTO mapToResponseDTO(IndiceReajusteModel model);

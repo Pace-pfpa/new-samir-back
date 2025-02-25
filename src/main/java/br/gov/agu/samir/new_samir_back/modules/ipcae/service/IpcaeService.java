@@ -31,7 +31,7 @@ public class IpcaeService {
 
     public List<IpcaeResponseDTO> buscarTodasIpcae() {
         List<IpcaeModel> listModel = repository.findAll();
-        return listModel.stream().map(IpcaeModel -> mapper.mapModelToResponseDTO(IpcaeModel)).toList();
+        return listModel.stream().map(mapper::mapModelToResponseDTO).toList();
     }
 
     public IpcaeResponseDTO buscarPorId(Long id) {
@@ -41,7 +41,7 @@ public class IpcaeService {
 
     public List<IpcaeResponseDTO> buscarPorDataIntervalo(LocalDate dataInicio, LocalDate dataFim) {
         List<IpcaeModel> listModel = repository.findAllByDataBetween(dataInicio, dataFim);
-        return listModel.stream().map(IpcaeModel -> mapper.mapModelToResponseDTO(IpcaeModel)).toList();
+        return listModel.stream().map(mapper::mapModelToResponseDTO).toList();
     }
 
     public IpcaeResponseDTO atualizarIpcae(Long id, IpcaeRequestDTO requestDTO) {
@@ -68,7 +68,7 @@ public class IpcaeService {
 
 
     public String importarDadosIpcae(List<IpcaeRequestDTO> listResquestDTO) {
-        List<IpcaeModel> listModel = listResquestDTO.stream().map(IpcaeRequestDTO -> mapper.mapToModel(IpcaeRequestDTO)).toList();
+        List<IpcaeModel> listModel = listResquestDTO.stream().map(mapper::mapToModel).toList();
         repository.saveAll(listModel);
         return "dados importados com sucesso";
     }

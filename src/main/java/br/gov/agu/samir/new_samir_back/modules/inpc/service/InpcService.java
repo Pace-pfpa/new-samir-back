@@ -31,7 +31,7 @@ public class InpcService {
 
     public List<InpcResponseDTO> buscarTodasInpc() {
         List<InpcModel> listModel = repository.findAll();
-        return listModel.stream().map(InpcModel -> mapper.mapModelToResponseDTO(InpcModel)).toList();
+        return listModel.stream().map(mapper::mapModelToResponseDTO).toList();
     }
 
     public InpcResponseDTO buscarPorId(Long id) {
@@ -41,7 +41,7 @@ public class InpcService {
 
     public List<InpcResponseDTO> buscarPorDataIntervalo(LocalDate dataInicio, LocalDate dataFim) {
         List<InpcModel> listModel = repository.findAllByDataBetween(dataInicio, dataFim);
-        return listModel.stream().map(InpcModel -> mapper.mapModelToResponseDTO(InpcModel)).toList();
+        return listModel.stream().map(mapper::mapModelToResponseDTO).toList();
     }
 
     public InpcResponseDTO atualizarInpc(Long id, InpcRequestDTO requestDTO) {
@@ -68,7 +68,7 @@ public class InpcService {
 
 
     public String importarDadosInpc(List<InpcRequestDTO> listResquestDTO) {
-        List<InpcModel> listModel = listResquestDTO.stream().map(InpcRequestDTO -> mapper.mapToModel(InpcRequestDTO)).toList();
+        List<InpcModel> listModel = listResquestDTO.stream().map(mapper::mapToModel).toList();
         repository.saveAll(listModel);
         return "dados importados com sucesso";
     }
