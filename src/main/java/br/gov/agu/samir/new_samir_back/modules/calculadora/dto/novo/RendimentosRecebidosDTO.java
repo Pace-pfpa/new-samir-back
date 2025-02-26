@@ -4,13 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor @NoArgsConstructor
-public class ResumoProcessoDTO {
+public class RendimentosRecebidosDTO{
 
-    private ValoresOriginaisDTO valoresOriginais;
+    private List<DiscriminacaoDTO> discriminacao;
 
-    private ValoresCorrigidosDTO valoresCorrigidos;
 }
