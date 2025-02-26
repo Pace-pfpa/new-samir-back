@@ -2,6 +2,12 @@ package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.*;
 
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.CalculoResponseDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.PlanilhaDeCalculoDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.ProcessoDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.mapper.ProcessoMapper;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.service.novo.PlanilhaCalculoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +24,10 @@ public class CalculadoraService {
     private final CalculoAlcadaService calculoAlcadaService;
     private final RendimentosAcumuladosIRService rendimentosAcumuladosIRService;
     private final TabelaCalculoService tabelaCalculoService;
+    private final PlanilhaCalculoService planilhaCalculoService;
 
+
+    private final ProcessoMapper processoMapper;
 
 
     public CalculadoraResponseDTO calcularProcesso(CalculadoraRequestDTO infoCalculo) {
@@ -49,6 +58,19 @@ public class CalculadoraService {
         responseDTO.setRendimentosAcumuladosIR(rendimentosAcumuladosIR);
 
         return responseDTO;
+
+    }
+
+    public CalculoResponseDTO calculoProcesso(CalculoRequestDTO requestDTO){
+
+        ProcessoDTO processo = processoMapper.gerarProcessoDTO(requestDTO);
+
+        List<PlanilhaDeCalculoDTO> planilhasCalculo = planilhaCalculoService.getPlanilhasCalculo(requestDTO);
+
+
+
+
+
 
     }
 

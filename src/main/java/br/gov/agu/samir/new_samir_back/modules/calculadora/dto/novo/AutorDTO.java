@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor @NoArgsConstructor
 public class AutorDTO {
 
-    private String nome;
+    private String parteAutora;
 
     private String cpf;
 

@@ -12,12 +12,12 @@ public class CalculoResponseDTO {
 
     private ProcessoDTO processo;
 
-    private ResumoProcessoDTO resumoProcesso;
-
     private List<PlanilhaDeCalculoDTO> planilhasCalculo;
 
     private CorrecaoMonetariaDTO correcaoMonetaria;
 
     private JurosDTO jurosMoratorios;
+
+    private ResumoProcessoDTO resumoProcesso;
 
 }

@@ -4,6 +4,7 @@ package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculadoraRequestDTO;
 import br.gov.agu.samir.new_samir_back.modules.beneficio.enums.BeneficiosEnum;
 
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.DevidoRequestDTO;
 import br.gov.agu.samir.new_samir_back.modules.indice_reajuste.model.IndiceReajusteModel;
 import br.gov.agu.samir.new_samir_back.modules.indice_reajuste.repository.IndiceReajusteRepository;
 import br.gov.agu.samir.new_samir_back.modules.salario_minimo.service.SalarioMinimoService;
@@ -35,14 +36,14 @@ public class RmiService {
     );
 
     //TODO REFATORAR
-    public BigDecimal reajustarRmi(CalculadoraRequestDTO infoCalculo){
+    public BigDecimal reajustarRmi( DevidoRequestDTO devido){
 
-       if (isReajusteNecessario(infoCalculo)){
-           LocalDate dataCalculo = infoCalculo.getDib().plusYears(1L).withDayOfMonth(1);
+       if (isReajusteNecessario(devido)){
+           LocalDate dataCalculo = devido.getDib().plusYears(1L).withDayOfMonth(1);
            List<BigDecimal> indicesParaReajuste = new ArrayList<>();
-           indicesParaReajuste.add(retornaPrimeiroReajuste(infoCalculo.getDib(), infoCalculo.getDibAnterior()));
+           indicesParaReajuste.add(retornaPrimeiroReajuste(devido.getDib(), devido.getNbAnterior()));
            int anoCalculo = dataCalculo.getYear();
-           int anoFim = infoCalculo.getDataInicio().getYear();
+           int anoFim = devido.getDataInicial().getYear();
 
            while (anoCalculo < anoFim){
                IndiceReajusteModel indiceReajuste = indiceReajusteRepository.findByData(dataCalculo.withDayOfMonth(1)).orElseThrow();
@@ -52,10 +53,10 @@ public class RmiService {
                anoCalculo++;
            }
 
-           return indicesParaReajuste.stream().reduce(infoCalculo.getRmi(),BigDecimal::multiply);
+           return indicesParaReajuste.stream().reduce(devido.getRmi(),BigDecimal::multiply);
        }
 
-       return infoCalculo.getRmi();
+       return devido.getRmi();
     }
 
 
@@ -96,9 +97,9 @@ public class RmiService {
         return inicioCalculo.getMonth().equals(fimCalculo.getMonth()) && inicioCalculo.getYear() == fimCalculo.getYear();
     }
 
-    private boolean isReajusteNecessario(CalculadoraRequestDTO infoCalculo){
-        LocalDate dataInicio = infoCalculo.getDataInicio();
-        LocalDate dib = infoCalculo.getDib();
+    private boolean isReajusteNecessario(DevidoRequestDTO devido){
+        LocalDate dataInicio = devido.getDataInicial();
+        LocalDate dib = devido.getDib();
         return dataInicio.isAfter(dib) && dataInicio.getYear() != dib.getYear();
     }
 

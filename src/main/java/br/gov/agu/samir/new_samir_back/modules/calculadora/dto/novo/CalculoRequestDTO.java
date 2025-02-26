@@ -13,9 +13,11 @@ import java.util.List;
 @NoArgsConstructor
 public class CalculoRequestDTO {
 
+    private String cpf;
+
     private String parteAutora;
 
-    private String processoJudicial;
+    private String numeroProcessoJudicial;
 
     @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate ajuizamento;
@@ -37,7 +39,7 @@ public class CalculoRequestDTO {
     private Integer tipoCorrecao;
 
     @JsonFormat(pattern = "MM/yyyy", shape = JsonFormat.Shape.STRING)
-    private LocalDate atualizarAte;
+    private LocalDate calculadoPara;
 
     private boolean alcada;
 

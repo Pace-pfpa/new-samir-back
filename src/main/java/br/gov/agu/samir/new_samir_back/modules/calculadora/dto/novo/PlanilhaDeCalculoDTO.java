@@ -1,5 +1,6 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo;
 
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.RendimentosAcumuladosIRDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,6 @@ public class PlanilhaDeCalculoDTO {
 
     private List<CompetenciaDTO> competencias;
 
-    private RendimentosRecebidos rendimentosRecebidos;
+    private RendimentosAcumuladosIRDTO rendimentosRecebidos;
 
 }

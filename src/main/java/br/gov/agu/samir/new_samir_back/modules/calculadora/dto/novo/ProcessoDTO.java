@@ -24,7 +24,7 @@ public class ProcessoDTO {
     @JsonFormat(pattern = "MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate calculadoraPara;
 
-    private Integer honorariosAdvocaticiosPercentual;
+    private Integer percentualHonorarios;
 
 
 }

@@ -8,7 +8,9 @@ import java.math.BigDecimal;
 
 @Data
 @AllArgsConstructor @NoArgsConstructor
-public class ValoresOriginaisDTO {
+public class ValoresResumoDTO {
+
+    private String descricao;
 
     private BigDecimal somaPrincipal;
 
