@@ -38,7 +38,7 @@ public class CalculoRequestDTO {
 
     private Integer tipoCorrecao;
 
-    @JsonFormat(pattern = "MM/yyyy", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate calculadoPara;
 
     private boolean alcada;

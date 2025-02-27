@@ -5,7 +5,7 @@ import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.ProcessoDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface ProcessoMapper {
 
     @Mapping(target = "autor.parteAutora", source = "parteAutora")

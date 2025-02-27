@@ -4,6 +4,7 @@ import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.CalculoReque
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.DevidoRequestDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.PlanilhaDeCalculoDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.service.CompetenciaService;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.service.RendimentosAcumuladosIRService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,8 @@ import java.util.List;
 public class PlanilhaCalculoService {
 
     private final CompetenciaService competenciaService;
+    private final RendimentosAcumuladosIRService rendimentosAcumuladosIRService;
+
 
     public List<PlanilhaDeCalculoDTO> getPlanilhasCalculo(CalculoRequestDTO requestDTO) {
         List<PlanilhaDeCalculoDTO> planilhas = new ArrayList<>();
@@ -23,6 +26,7 @@ public class PlanilhaCalculoService {
         for (DevidoRequestDTO devido : requestDTO.getDevidos()) {
             PlanilhaDeCalculoDTO planilha = gerarDetalhesDevido(devido);
             planilha.setCompetencias(competenciaService.gerarCompetencias(requestDTO,devido));
+            planilha.setRendimentosRecebidos(rendimentosAcumuladosIRService.getRendimentosAcumuladosIR(planilha.getCompetencias(),requestDTO.getAcordo()));
             planilhas.add(planilha);
         }
 

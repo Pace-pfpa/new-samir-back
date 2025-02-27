@@ -3,6 +3,7 @@ package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.DescricaoValorIRDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.LinhaTabelaDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.RendimentosAcumuladosIRDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.CompetenciaDTO;
 import br.gov.agu.samir.new_samir_back.util.DinheiroFormatador;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public class RendimentosAcumuladosIRService {
 
-    public RendimentosAcumuladosIRDTO getRendimentosAcumuladosIR(List<LinhaTabelaDTO> tabela, int acordo) {
+    public RendimentosAcumuladosIRDTO getRendimentosAcumuladosIR(List<CompetenciaDTO> tabela, int acordo) {
 
         RendimentosAcumuladosIRDTO rendimentosAcumuladosIR = new RendimentosAcumuladosIRDTO();
 
@@ -44,11 +45,11 @@ public class RendimentosAcumuladosIRService {
 
     }
 
-    private Map<BigDecimal, Integer> calcularTotalAnoPagamentoECompetencias(List<LinhaTabelaDTO> tabela) {
+    private Map<BigDecimal, Integer> calcularTotalAnoPagamentoECompetencias(List<CompetenciaDTO> tabela) {
         AtomicInteger competencias = new AtomicInteger();
         BigDecimal somaAnoPagamento = tabela.stream()
                 .filter(linha -> linha.getData().contains(String.valueOf(LocalDate.now().getYear())))
-                .map(LinhaTabelaDTO::getSoma)
+                .map(CompetenciaDTO::getSoma)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         tabela.stream().filter(linha -> linha.getData().contains(String.valueOf(LocalDate.now().getYear()))).forEach(linha -> competencias.getAndIncrement());
@@ -58,12 +59,12 @@ public class RendimentosAcumuladosIRService {
         }};
     }
 
-    private Map<BigDecimal, Integer> calcularTotalPagamentoAnosAnteriores(List<LinhaTabelaDTO> tabela) {
+    private Map<BigDecimal, Integer> calcularTotalPagamentoAnosAnteriores(List<CompetenciaDTO> tabela) {
         AtomicInteger competencias = new AtomicInteger();
         BigDecimal somaAnosAnteriores = tabela.stream()
                 .filter(linha -> !linha.getData().contains(String.valueOf(LocalDate.now().getYear())))
                 .peek(linha -> competencias.getAndIncrement()) //
-                .map(LinhaTabelaDTO::getSoma) //
+                .map(CompetenciaDTO::getSoma) //
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return new HashMap<BigDecimal, Integer>() {{
