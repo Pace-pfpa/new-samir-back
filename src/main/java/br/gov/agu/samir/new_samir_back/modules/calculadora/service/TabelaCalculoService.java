@@ -36,79 +36,7 @@ public class TabelaCalculoService {
 
 
     public List<LinhaTabelaDTO> gerarTabelaCalculo(CalculadoraRequestDTO infoCalculo) {
-        BeneficiosEnum beneficioVigente = BeneficiosEnum.getByNome(infoCalculo.getBeneficio());
-
-        LocalDate dib = infoCalculo.getDib();
-
-        LocalDate inicioCalculo = infoCalculo.getDataInicio();
-
-        LocalDate fimCalculo = infoCalculo.getDataFim();
-
-        LocalDate dibAnterior = infoCalculo.getDibAnterior();
-
-        LocalDate atualizarAte = infoCalculo.getAtualizarAte();
-
-        BigDecimal rmi = rmiService.reajustarRmi(infoCalculo);
-
-        rmi = retornaSalarioMinimoSeRmiForInferior(rmi, dib, beneficioVigente);
-
-        TipoCorrecaoMonetaria tipoCorrecao = TipoCorrecaoMonetaria.getTipoCorrecaoMonetaria(infoCalculo.getTipoCorrecao());
-
-        boolean decimoTerceiroFinalCalculo = infoCalculo.isDecimoTerceiroFinalCalculo();
-
-        List<LinhaTabelaDTO> tabelaCalculo = new ArrayList<>();
-
-        List<String> listaDeDatasParaCalculo = gerarDatasPorBeneficioEPeriodo(beneficioVigente,decimoTerceiroFinalCalculo, inicioCalculo, fimCalculo);
-
-        BigDecimal indiceReajuste;
-
-        HashSet<FiltroRecebido> listaDeCalculoRecebido = gerarListaDeCalculoParaRecebido(infoCalculo.getBeneficioAcumulados());
-
-        for (String data : listaDeDatasParaCalculo) {
-            LinhaTabelaDTO linhaTabela = new LinhaTabelaDTO();
-            linhaTabela.setData(data);
-            //Converter a data para LocalDate
-            LocalDate dataCalculo = dateUtils.mapStringToLocalDate(data);
-
-            if (isDataDeReajuste(dataCalculo, inicioCalculo)) {
-                indiceReajuste = retornaIndiceReajuste(dataCalculo, dib, dibAnterior);
-                rmi = rmi.multiply(indiceReajuste).setScale(2, RoundingMode.HALF_UP);
-            }
-
-            BigDecimal indiceReajusteDevido = retornaIndiceReajuste(dataCalculo, dib, dibAnterior);
-            linhaTabela.setIndiceReajusteDevido(indiceReajusteDevido.setScale(4, RoundingMode.HALF_UP));
-
-            BigDecimal devido = isDecimoTerceiro(data) ? retornaValorDecimoTerceiro(data, inicioCalculo,fimCalculo, rmi) : calcularValorDevido(dataCalculo,inicioCalculo,fimCalculo, rmi);
-            linhaTabela.setDevido(devido.setScale(2, RoundingMode.HALF_UP));
-
-            BigDecimal indiceReajusteRecebido = retornaIndiceReajusteRecebido(data, listaDeCalculoRecebido);
-            linhaTabela.setIndiceReajusteRecebido(indiceReajusteRecebido.setScale(4, RoundingMode.HALF_UP));
-
-            BigDecimal recebido = calcularDesconto(data, listaDeCalculoRecebido);
-            linhaTabela.setRecebido(recebido.setScale(2, RoundingMode.HALF_UP));
-
-            BigDecimal diferenca = linhaTabela.getDevido().subtract(linhaTabela.getRecebido());
-            linhaTabela.setDiferenca(diferenca.setScale(2, RoundingMode.HALF_UP));
-
-            BigDecimal correcaoMonetaria = calcularCorrecaoMonetariaPorTipo(tipoCorrecao, dataCalculo, atualizarAte);
-            linhaTabela.setIndiceCorrecaoMonetaria(correcaoMonetaria.setScale(4, RoundingMode.HALF_UP));
-
-            BigDecimal salarioCorrigido = linhaTabela.getDiferenca().multiply(linhaTabela.getIndiceCorrecaoMonetaria());
-            linhaTabela.setSalarioCorrigido(salarioCorrigido.setScale(2, RoundingMode.HALF_UP));
-
-            BigDecimal jurosPorcentagem = retornaCalculoJurosPorTipo(dataCalculo, infoCalculo);
-            linhaTabela.setPorcentagemJuros(jurosPorcentagem.setScale(4, RoundingMode.HALF_UP));
-
-            BigDecimal juros = jurosPorcentagem.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
-            juros = juros.multiply(linhaTabela.getSalarioCorrigido());
-            linhaTabela.setJuros(juros.setScale(2, RoundingMode.HALF_UP));
-
-            BigDecimal soma = linhaTabela.getSalarioCorrigido().add(linhaTabela.getJuros());
-            linhaTabela.setSoma(soma.setScale(2, RoundingMode.HALF_UP));
-
-            tabelaCalculo.add(linhaTabela);
-        }
-        return tabelaCalculo;
+        return null;
     }
 
 
@@ -212,7 +140,7 @@ public class TabelaCalculoService {
     }
 
     private BigDecimal retornaCalculoJurosPorTipo(LocalDate dataCalculo, CalculadoraRequestDTO infoCalculo) {
-        return calculoJurosService.calcularJuros(dataCalculo, infoCalculo);
+        return null;
     }
 
     private BigDecimal retornaIndiceReajuste(LocalDate dataCalculo, LocalDate dataDib, LocalDate dataDibAnterior) {

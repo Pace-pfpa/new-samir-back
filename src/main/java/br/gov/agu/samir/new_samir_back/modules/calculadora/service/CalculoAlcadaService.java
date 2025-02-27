@@ -5,7 +5,6 @@ import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculadoraReques
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculadoraResponseDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.LinhaTabelaDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.RendimentosAcumuladosIRDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.ResumoProcessoDTO;
 import br.gov.agu.samir.new_samir_back.util.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,13 +33,14 @@ public class CalculoAlcadaService {
 
         List<LinhaTabelaDTO> tabelaAlcada = tabelaCalculoService.gerarTabelaCalculo(infoCalculo);
 
-        ResumoProcessoDTO resumoProcesso = resumoProcessoService.gerarResumoProcesso(tabelaAlcada, infoCalculo.getAcordo(), BigDecimal.ZERO);
+        //ResumoProcessoDTO resumoProcesso = resumoProcessoService.gerarResumoProcesso(tabelaAlcada, infoCalculo.getAcordo(), BigDecimal.ZERO);
 
         RendimentosAcumuladosIRDTO rendimentosAcumuladosIR = rendimentosAcumuladosIRService.getRendimentosAcumuladosIR(tabelaComum, infoCalculo.getAcordo());
 
         AnaliseJuizadoEspecialFederalDTO analiseJuizadoEspecialFederal = analiseJEFService.gerarAnaliseJEF(tabelaAlcada, tabelaComum, infoCalculo);
 
-        return new CalculadoraResponseDTO(tabelaComum, resumoProcesso, rendimentosAcumuladosIR, analiseJuizadoEspecialFederal);
+        //return new CalculadoraResponseDTO(tabelaComum, resumoProcesso, rendimentosAcumuladosIR, analiseJuizadoEspecialFederal);
+        return null;
     }
 
 

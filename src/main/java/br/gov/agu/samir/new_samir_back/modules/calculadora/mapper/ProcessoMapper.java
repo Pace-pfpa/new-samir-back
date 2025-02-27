@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper
 public interface ProcessoMapper {
 
-    @Mapping(target = "autor.nome", source = "parteAutora")
+    @Mapping(target = "autor.parteAutora", source = "parteAutora")
     @Mapping(target = "autor.cpf", source = "cpf")
     ProcessoDTO gerarProcessoDTO(CalculoRequestDTO requestDTO);
 

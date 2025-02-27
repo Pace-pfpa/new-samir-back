@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class DescricaoValorDTO {
     private String descricao;
-    private String totalPeriodoCalculo;
-    private String calculoParaExecucao;
+    private BigDecimal totalPeriodoCalculo;
+    private BigDecimal calculoParaExecucao;
 }

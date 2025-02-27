@@ -23,9 +23,10 @@ public class PlanilhaCalculoService {
         for (DevidoRequestDTO devido : requestDTO.getDevidos()) {
             PlanilhaDeCalculoDTO planilha = gerarDetalhesDevido(devido);
             planilha.setCompetencias(competenciaService.gerarCompetencias(requestDTO,devido));
+            planilhas.add(planilha);
         }
 
-        return null;
+        return planilhas;
     }
 
 

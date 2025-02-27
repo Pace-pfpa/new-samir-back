@@ -1,105 +1,99 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.DescricaoValorDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.LinhaTabelaDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.ResumoProcessoDTO;
-import br.gov.agu.samir.new_samir_back.util.DinheiroFormatador;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.*;
+import br.gov.agu.samir.new_samir_back.modules.salario_minimo.service.SalarioMinimoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ResumoProcessoService {
 
-
-    public ResumoProcessoDTO gerarResumoProcesso(List<LinhaTabelaDTO> tabela, int acordo, BigDecimal valorHonorarios) {
-        BigDecimal valorSomaPrincipal = calcularSomaDoPrincipal(tabela);
-        BigDecimal valorJurosDeMora = calcularJurosDeMora(tabela);
-        BigDecimal devidoAoReclamante = valorSomaPrincipal.add(valorJurosDeMora);
-        BigDecimal valorTotalProcesso = devidoAoReclamante.add(valorHonorarios);
+    private final SalarioMinimoService salarioMinimoService;
+    private final HonorariosAdvocaticiosService honorariosAdvocaticiosService;
 
 
-        return new ResumoProcessoDTO(
-                List.of(
-                        gerarPorcentagem(acordo),
-                        gerarSomaDoPrincipal(valorSomaPrincipal, acordo),
-                        gerarJurosDeMora(valorJurosDeMora, acordo),
-                        gerarDevidoAoReclamante(devidoAoReclamante, acordo),
-                        gerarHonorariosAdvocaticios(valorHonorarios, acordo),
-                        gerarTotalDoProcesso(valorTotalProcesso, acordo)
-                )
+    public ResumoProcessoDTO gerarResumoProcesso(List<PlanilhaDeCalculoDTO> planilhasCalculo, CalculoRequestDTO requestDTO) {
+
+        BigDecimal somaPrincipal = calcularSomaPrincipal(planilhasCalculo);
+        BigDecimal somaPrincipalComAcordo = calcularSomaPrincipalComAcordo(somaPrincipal, requestDTO);
+
+        BigDecimal jurosMora = calcularJurosMora(planilhasCalculo, requestDTO);
+        BigDecimal jurosMoraComAcordo = calcularJurosMoraComAcordo(jurosMora, requestDTO);
+
+        BigDecimal devidoReclamante = somaPrincipalComAcordo.add(jurosMoraComAcordo);
+        BigDecimal devidoReclamanteComAcordo = calcularDevidoReclamanteComAcordo(devidoReclamante, requestDTO);
+
+        BigDecimal honorarios = honorariosAdvocaticiosService.calcularHonorarios(requestDTO);
+        BigDecimal honorariosComAcordo = calcularHonorariosComAcordo(honorarios, requestDTO);
+
+        BigDecimal totalProcesso = devidoReclamante.add(honorarios);
+        BigDecimal totalProcessoComAcordo = devidoReclamanteComAcordo.add(honorariosComAcordo);
+
+        ValoresResumoDTO valoresOriginais = new ValoresResumoDTO(
+                "100%",somaPrincipal,jurosMora,devidoReclamante,honorarios,totalProcesso
         );
+
+        ValoresResumoDTO valoresComAcordo = new ValoresResumoDTO(
+                requestDTO.getAcordo() + "%",somaPrincipalComAcordo,jurosMoraComAcordo,devidoReclamanteComAcordo,honorariosComAcordo,totalProcessoComAcordo
+        );
+
+        return new ResumoProcessoDTO(List.of(valoresOriginais,valoresComAcordo));
     }
 
-    private BigDecimal calcularSomaDoPrincipal(List<LinhaTabelaDTO> tabela) {
-        return tabela.stream().map(LinhaTabelaDTO::getSoma).reduce(BigDecimal.ZERO, BigDecimal::add);
+    private BigDecimal calcularHonorariosComAcordo(BigDecimal honorarios, CalculoRequestDTO requestDTO) {
+        return honorarios.multiply(BigDecimal.valueOf(requestDTO.getAcordo())
+                .divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP));
     }
 
-    private BigDecimal calcularJurosDeMora(List<LinhaTabelaDTO> tabela) {
-        return tabela.stream().map(LinhaTabelaDTO::getJuros).reduce(BigDecimal.ZERO, BigDecimal::add);
+    private BigDecimal calcularDevidoReclamanteComAcordo(BigDecimal devidoReclamante, CalculoRequestDTO requestDTO) {
+        return devidoReclamante.multiply(BigDecimal.valueOf(requestDTO.getAcordo())
+                .divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP));
     }
 
 
-    private DescricaoValorDTO gerarPorcentagem(int acordo) {
-        DescricaoValorDTO porcentagem = new DescricaoValorDTO();
-        porcentagem.setDescricao("Porcentagem:");
-        porcentagem.setTotalPeriodoCalculo("100%");
-        porcentagem.setCalculoParaExecucao(acordo + "%");
-        return porcentagem;
+    private BigDecimal calcularJurosMoraComAcordo(BigDecimal jurosMora, CalculoRequestDTO requestDTO) {
+        return jurosMora.multiply(BigDecimal.valueOf(requestDTO.getAcordo())
+                .divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP));
     }
 
-    private DescricaoValorDTO gerarSomaDoPrincipal(BigDecimal somaPrincial, int acordo) {
-        DescricaoValorDTO descricaoSomaPrincipal = new DescricaoValorDTO();
-        descricaoSomaPrincipal.setDescricao("Soma do Principal:");
-        descricaoSomaPrincipal.setTotalPeriodoCalculo(DinheiroFormatador.formatarParaReal(somaPrincial));
-        BigDecimal somaPrincipalComAcordo = somaPrincial.multiply(BigDecimal.valueOf(acordo)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-        descricaoSomaPrincipal.setCalculoParaExecucao(DinheiroFormatador.formatarParaReal(somaPrincipalComAcordo));
-
-        return descricaoSomaPrincipal;
+    private BigDecimal calcularJurosMora(List<PlanilhaDeCalculoDTO> planilhasCalculo, CalculoRequestDTO requestDTO) {
+        return planilhasCalculo.stream()
+                .flatMap(planilha -> planilha.getCompetencias().stream())
+                .map(CompetenciaDTO::getJuros)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private DescricaoValorDTO gerarJurosDeMora(BigDecimal jurosDeMora, int acordo) {
-        DescricaoValorDTO descricaoJurosDeMora = new DescricaoValorDTO();
-        descricaoJurosDeMora.setDescricao("Juros de Mora:");
-        descricaoJurosDeMora.setTotalPeriodoCalculo(DinheiroFormatador.formatarParaReal(jurosDeMora));
-        BigDecimal jurosDeMoraComAcordo = jurosDeMora.multiply(BigDecimal.valueOf(acordo)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-        descricaoJurosDeMora.setCalculoParaExecucao(DinheiroFormatador.formatarParaReal(jurosDeMoraComAcordo));
 
-        return descricaoJurosDeMora;
+    private BigDecimal calcularSomaPrincipalComAcordo(BigDecimal somaPrincipal, CalculoRequestDTO requestDTO) {
+        BigDecimal somaPrincipalCorrigida = somaPrincipal.multiply(BigDecimal.valueOf(requestDTO.getAcordo())
+                .divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP));
+
+        if (requestDTO.isLimitarAcordo()){
+            BigDecimal limiteAcordo = salarioMinimoService.getSalarioMinimoProximoPorDataNoMesmoAno(LocalDate.now().withDayOfMonth(1)).multiply(BigDecimal.valueOf(60));
+            return isValorAcordadoMaiorQueLimite(somaPrincipalCorrigida, limiteAcordo) ? limiteAcordo : somaPrincipalCorrigida;
+        }
+
+        return somaPrincipalCorrigida;
     }
 
-    private DescricaoValorDTO gerarDevidoAoReclamante(BigDecimal devidoAoReclamante, int acordo) {
-        DescricaoValorDTO devidoAoReclamanteDTO = new DescricaoValorDTO();
-        devidoAoReclamanteDTO.setDescricao("Devido ao Reclamante:");
-        devidoAoReclamanteDTO.setTotalPeriodoCalculo(DinheiroFormatador.formatarParaReal(devidoAoReclamante));
-        BigDecimal devidoAoReclamanteComAcordo = devidoAoReclamante.multiply(BigDecimal.valueOf(acordo)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-        devidoAoReclamanteDTO.setCalculoParaExecucao(DinheiroFormatador.formatarParaReal(devidoAoReclamanteComAcordo));
-        return devidoAoReclamanteDTO;
+    private boolean isValorAcordadoMaiorQueLimite(BigDecimal somaPrincipalCorrigida, BigDecimal limiteAcorodo) {
+        return somaPrincipalCorrigida.compareTo(limiteAcorodo) > 0;
     }
 
-    private DescricaoValorDTO gerarHonorariosAdvocaticios(BigDecimal valorHonorarios, int acordo) {
 
-        DescricaoValorDTO honorarios = new DescricaoValorDTO();
-        honorarios.setDescricao("Honorários Advocatícios:");
-        honorarios.setTotalPeriodoCalculo(DinheiroFormatador.formatarParaReal(valorHonorarios));
-        BigDecimal valorHonorariosComAcordo = valorHonorarios.multiply(BigDecimal.valueOf(acordo)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-        honorarios.setCalculoParaExecucao(DinheiroFormatador.formatarParaReal(valorHonorariosComAcordo));
-        return honorarios;
+    private BigDecimal calcularSomaPrincipal(List<PlanilhaDeCalculoDTO> planilhasCalculo) {
+        return planilhasCalculo.stream()
+                .flatMap(planilha -> planilha.getCompetencias().stream())
+                .map(CompetenciaDTO::getSoma)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private DescricaoValorDTO gerarTotalDoProcesso(BigDecimal totalProcesso, int acordo) {
-        DescricaoValorDTO descricaTotalProcesso = new DescricaoValorDTO();
-        descricaTotalProcesso.setDescricao("Total do Processo:");
-        descricaTotalProcesso.setTotalPeriodoCalculo(DinheiroFormatador.formatarParaReal(totalProcesso));
-        BigDecimal totalProcessoComAcordo = totalProcesso.multiply(BigDecimal.valueOf(acordo)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-        descricaTotalProcesso.setCalculoParaExecucao(DinheiroFormatador.formatarParaReal(totalProcessoComAcordo));
-        return descricaTotalProcesso;
-
-    }
 
 
 }

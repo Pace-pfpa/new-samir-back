@@ -13,7 +13,7 @@ public class CalculadoraResponseDTO {
 
     private List<LinhaTabelaDTO> tabela;
 
-    private ResumoProcessoDTO resumoProcesso;
+   // private ResumoProcessoDTO resumoProcesso;
 
     private RendimentosAcumuladosIRDTO rendimentosAcumuladosIR;
 
