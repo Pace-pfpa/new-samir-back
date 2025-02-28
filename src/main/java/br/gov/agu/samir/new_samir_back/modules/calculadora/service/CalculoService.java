@@ -1,10 +1,9 @@
-package br.gov.agu.samir.new_samir_back.modules.calculadora.service.novo;
+package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.*;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.*;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.enums.TipoCorrecaoMonetaria;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.enums.TipoJuros;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.mapper.ProcessoMapper;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.service.ResumoProcessoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

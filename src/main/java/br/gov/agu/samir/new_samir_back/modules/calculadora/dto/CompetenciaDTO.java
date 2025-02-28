@@ -1,19 +1,15 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class LinhaTabelaDTO {
+
+@Data
+@AllArgsConstructor @NoArgsConstructor
+public class CompetenciaDTO {
 
     private String data;
 
@@ -36,4 +32,6 @@ public class LinhaTabelaDTO {
     private BigDecimal juros;
 
     private BigDecimal soma;
+
+
 }

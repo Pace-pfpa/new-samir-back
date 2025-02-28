@@ -1,13 +1,10 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
-import br.gov.agu.samir.new_samir_back.modules.beneficio.dto.BeneficioAcumuladoRequestDTO;
 import br.gov.agu.samir.new_samir_back.modules.beneficio.enums.BeneficiosEnum;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculadoraRequestDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.LinhaTabelaDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.CalculoRequestDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.CompetenciaDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.DevidoRequestDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.RecebidoRequestDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CompetenciaDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.DevidoRequestDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.RecebidoRequestDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.enums.TipoCorrecaoMonetaria;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.service.factory.CorrecaoMonetariaFactory;
 import br.gov.agu.samir.new_samir_back.util.DateUtils;

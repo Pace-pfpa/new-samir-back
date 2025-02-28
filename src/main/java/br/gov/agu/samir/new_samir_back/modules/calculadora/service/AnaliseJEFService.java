@@ -2,9 +2,9 @@ package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
 import br.gov.agu.samir.new_samir_back.modules.beneficio.enums.BeneficiosEnum;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.AnaliseJuizadoEspecialFederalDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculadoraRequestDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CompetenciaDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.DescricaoAnaliseJEFDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.LinhaTabelaDTO;
 import br.gov.agu.samir.new_samir_back.modules.salario_minimo.service.SalarioMinimoService;
 import br.gov.agu.samir.new_samir_back.util.DinheiroFormatador;
 import lombok.RequiredArgsConstructor;
@@ -36,18 +36,18 @@ public class AnaliseJEFService {
         return BENEFICIOS_QUE_RECEBEM_12_PARCELAS_VICENDAS.contains(beneficio);
     }
 
-    public AnaliseJuizadoEspecialFederalDTO gerarAnaliseJEF(List<LinhaTabelaDTO> tabelaAlcada, List<LinhaTabelaDTO> tabelaNormal, CalculadoraRequestDTO infoRequestDTO) {
+    public AnaliseJuizadoEspecialFederalDTO gerarAnaliseJEF(List<CompetenciaDTO> tabelaAlcada, List<CompetenciaDTO> tabelaNormal, CalculoRequestDTO infoRequestDTO) {
         List<DescricaoAnaliseJEFDTO> analiseJEF = new ArrayList<>();
 
         BigDecimal valorParcelasDevidasAteAjuizamento = calcularValorParcelasDevidasAteAjuizamento(tabelaAlcada);
         BigDecimal valor12ParcelasVicendas = calcularValor12ParcelasVicendas(tabelaAlcada,infoRequestDTO);
         BigDecimal valorCausaNoAjuizamento = valorParcelasDevidasAteAjuizamento.add(valor12ParcelasVicendas);
-        BigDecimal salarioMinimo = salarioMinimoService.getSalarioMinimoProximoPorDataNoMesmoAno(infoRequestDTO.getDataAjuizamento());
+        BigDecimal salarioMinimo = salarioMinimoService.getSalarioMinimoProximoPorDataNoMesmoAno(infoRequestDTO.getAjuizamento());
         BigDecimal limite60SalariosMinimos = calcularLimite60SalariosMinimos(salarioMinimo);
-        BigDecimal valorRenunciaJEFAtualizado = calcularValorAtualizadoRenuncia(tabelaNormal, valorCausaNoAjuizamento, limite60SalariosMinimos, infoRequestDTO.getDataAjuizamento());
+        BigDecimal valorRenunciaJEFAtualizado = calcularValorAtualizadoRenuncia(tabelaNormal, valorCausaNoAjuizamento, limite60SalariosMinimos, infoRequestDTO.getAjuizamento());
 
-        analiseJEF.add(gerarSalarioMinimoAnaliseJEF(salarioMinimo,infoRequestDTO.getDataAjuizamento().getYear()));
-        analiseJEF.add(gerarParcelasDevidasAteAjuizameto(valorParcelasDevidasAteAjuizamento, infoRequestDTO.getDataAjuizamento()));
+        analiseJEF.add(gerarSalarioMinimoAnaliseJEF(salarioMinimo,infoRequestDTO.getAjuizamento().getYear()));
+        analiseJEF.add(gerarParcelasDevidasAteAjuizameto(valorParcelasDevidasAteAjuizamento, infoRequestDTO.getAjuizamento()));
         analiseJEF.add(gerarAnalise12ParcelasVicendas(valor12ParcelasVicendas));
         analiseJEF.add(valorDaCausaNoAjuizamento(valorCausaNoAjuizamento));
         analiseJEF.add(limite60SalariosMinimos(limite60SalariosMinimos));
@@ -62,12 +62,12 @@ public class AnaliseJEFService {
         return descricao;
     }
 
-    private BigDecimal calcularValorAtualizadoRenuncia(List<LinhaTabelaDTO> tabelaNormal, BigDecimal valorCausaAjuizamento, BigDecimal limite60SalariosMinimos, LocalDate dataAjuizamento) {
+    private BigDecimal calcularValorAtualizadoRenuncia(List<CompetenciaDTO> tabelaNormal, BigDecimal valorCausaAjuizamento, BigDecimal limite60SalariosMinimos, LocalDate dataAjuizamento) {
         BigDecimal valorRenunciaJEF = valorCausaAjuizamento.subtract(limite60SalariosMinimos);
         String dataAjuizamentoString = DateTimeFormatter.ofPattern("dd/MM/yyyy").format(dataAjuizamento);
         String mesAnoAjuizamento = dataAjuizamentoString.substring(3);
-        BigDecimal correcaoAjuizamento = tabelaNormal.stream().filter(linha -> linha.getData().contains(mesAnoAjuizamento)).map(LinhaTabelaDTO::getIndiceCorrecaoMonetaria).findFirst().orElse(BigDecimal.ZERO);
-        BigDecimal jurosAjuizamento = tabelaNormal.stream().filter(linha -> linha.getData().contains(mesAnoAjuizamento)).map(LinhaTabelaDTO::getPorcentagemJuros).findFirst().orElse(BigDecimal.ZERO);
+        BigDecimal correcaoAjuizamento = tabelaNormal.stream().filter(linha -> linha.getData().contains(mesAnoAjuizamento)).map(CompetenciaDTO::getIndiceCorrecaoMonetaria).findFirst().orElse(BigDecimal.ZERO);
+        BigDecimal jurosAjuizamento = tabelaNormal.stream().filter(linha -> linha.getData().contains(mesAnoAjuizamento)).map(CompetenciaDTO::getPorcentagemJuros).findFirst().orElse(BigDecimal.ZERO);
         BigDecimal valorAtualizadoRenuncia = valorRenunciaJEF.multiply(correcaoAjuizamento).add(valorRenunciaJEF.multiply(jurosAjuizamento));
         return valorAtualizadoRenuncia;
     }
@@ -76,14 +76,14 @@ public class AnaliseJEFService {
         return salarioMinimo.multiply(BigDecimal.valueOf(60));
     }
 
-    private BigDecimal calcularValorParcelasDevidasAteAjuizamento(List<LinhaTabelaDTO> tabelaAlcada) {
-        return tabelaAlcada.stream().map(LinhaTabelaDTO::getSoma).reduce(BigDecimal.ZERO, BigDecimal::add);
+    private BigDecimal calcularValorParcelasDevidasAteAjuizamento(List<CompetenciaDTO> tabelaAlcada) {
+        return tabelaAlcada.stream().map(CompetenciaDTO::getSoma).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private BigDecimal calcularValor12ParcelasVicendas(List<LinhaTabelaDTO> tabelaAlcada, CalculadoraRequestDTO infoRequestDTO) {
+    private BigDecimal calcularValor12ParcelasVicendas(List<CompetenciaDTO> tabelaAlcada, CalculoRequestDTO infoRequestDTO) {
         int ultimoIndex = tabelaAlcada.size() - 1;
         BigDecimal valorParcela = tabelaAlcada.get(ultimoIndex).getSoma();
-        BeneficiosEnum beneficio = BeneficiosEnum.getByNome(infoRequestDTO.getBeneficio());
+        BeneficiosEnum beneficio = BeneficiosEnum.getByNome(infoRequestDTO.getDevidos().get(0).getEspecie());
         if (isBeneficioQueRecebe12ParcelasVicendas(beneficio)) {
             return valorParcela.multiply(BigDecimal.valueOf(12));
         } else {

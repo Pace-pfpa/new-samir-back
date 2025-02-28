@@ -1,10 +1,8 @@
-package br.gov.agu.samir.new_samir_back.modules.calculadora.service.novo;
+package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.CalculoRequestDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.DevidoRequestDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.PlanilhaDeCalculoDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.service.CompetenciaService;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.service.RendimentosAcumuladosIRService;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.DevidoRequestDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.PlanilhaDeCalculoDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.mapper;
 
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.CalculoRequestDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.ProcessoDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.ProcessoDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

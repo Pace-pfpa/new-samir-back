@@ -4,13 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class DescricaoValorDTO {
+@AllArgsConstructor @NoArgsConstructor
+public class CorrecaoMonetariaDTO {
+
     private String descricao;
-    private BigDecimal totalPeriodoCalculo;
-    private BigDecimal calculoParaExecucao;
+
 }

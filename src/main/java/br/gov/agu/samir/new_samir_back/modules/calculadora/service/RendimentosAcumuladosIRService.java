@@ -1,9 +1,8 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.DescricaoValorIRDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.LinhaTabelaDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.RendimentosAcumuladosIRDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.CompetenciaDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CompetenciaDTO;
 import br.gov.agu.samir.new_samir_back.util.DinheiroFormatador;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

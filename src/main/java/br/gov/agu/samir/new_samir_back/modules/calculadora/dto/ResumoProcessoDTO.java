@@ -1,4 +1,4 @@
-package br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo;
+package br.gov.agu.samir.new_samir_back.modules.calculadora.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,8 +8,8 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor @NoArgsConstructor
-public class RendimentosRecebidosDTO{
+public class ResumoProcessoDTO {
 
-    private List<DiscriminacaoDTO> discriminacao;
+    List<ValoresResumoDTO> valoresResumo;
 
 }

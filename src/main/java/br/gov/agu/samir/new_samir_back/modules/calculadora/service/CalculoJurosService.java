@@ -1,7 +1,6 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculadoraRequestDTO;
-import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo.CalculoRequestDTO;
+import br.gov.agu.samir.new_samir_back.modules.calculadora.dto.CalculoRequestDTO;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.enums.TipoJuros;
 import br.gov.agu.samir.new_samir_back.modules.calculadora.service.factory.CalculoJurosFactory;
 import lombok.AllArgsConstructor;

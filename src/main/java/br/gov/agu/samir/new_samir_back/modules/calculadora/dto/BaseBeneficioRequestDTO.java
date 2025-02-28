@@ -1,4 +1,4 @@
-package br.gov.agu.samir.new_samir_back.modules.calculadora.dto.novo;
+package br.gov.agu.samir.new_samir_back.modules.calculadora.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

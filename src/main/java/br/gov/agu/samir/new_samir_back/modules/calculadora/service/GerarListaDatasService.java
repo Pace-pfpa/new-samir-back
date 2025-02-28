@@ -96,6 +96,11 @@ public class GerarListaDatasService {
         // Pular para o próximo mês
         LocalDate proximaData = inicioCalculo.plusMonths(1).withDayOfMonth(1);
 
+        if (proximaData.getYear() == fimCalculo.getYear() && proximaData.getMonthValue() == fimCalculo.getMonthValue()) {
+            listaDeDatas.add(fimCalculo.format(formatter));
+            return listaDeDatas;
+        }
+
         // Iterar até o mês anterior da data final
         while (proximaData.isBefore(fimCalculo)) {
             // Adiciona a data 01 de cada mês
