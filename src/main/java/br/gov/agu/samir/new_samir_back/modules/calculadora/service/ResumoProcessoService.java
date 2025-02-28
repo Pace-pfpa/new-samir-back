@@ -20,20 +20,20 @@ public class ResumoProcessoService {
 
     public ResumoProcessoDTO gerarResumoProcesso(List<PlanilhaDeCalculoDTO> planilhasCalculo, CalculoRequestDTO requestDTO) {
 
-        BigDecimal somaPrincipal = calcularSomaPrincipal(planilhasCalculo);
-        BigDecimal somaPrincipalComAcordo = calcularSomaPrincipalComAcordo(somaPrincipal, requestDTO);
+        BigDecimal somaPrincipal = calcularSomaPrincipal(planilhasCalculo).setScale(2, RoundingMode.HALF_DOWN);
+        BigDecimal somaPrincipalComAcordo = calcularSomaPrincipalComAcordo(somaPrincipal, requestDTO).setScale(2, RoundingMode.HALF_DOWN);
 
-        BigDecimal jurosMora = calcularJurosMora(planilhasCalculo, requestDTO);
-        BigDecimal jurosMoraComAcordo = calcularJurosMoraComAcordo(jurosMora, requestDTO);
+        BigDecimal jurosMora = calcularJurosMora(planilhasCalculo, requestDTO).setScale(2, RoundingMode.HALF_DOWN);
+        BigDecimal jurosMoraComAcordo = calcularJurosMoraComAcordo(jurosMora, requestDTO).setScale(2, RoundingMode.HALF_DOWN);
 
-        BigDecimal devidoReclamante = somaPrincipalComAcordo.add(jurosMoraComAcordo);
-        BigDecimal devidoReclamanteComAcordo = calcularDevidoReclamanteComAcordo(devidoReclamante, requestDTO);
+        BigDecimal devidoReclamante = somaPrincipalComAcordo.add(jurosMoraComAcordo).setScale(2, RoundingMode.HALF_DOWN);
+        BigDecimal devidoReclamanteComAcordo = calcularDevidoReclamanteComAcordo(devidoReclamante, requestDTO).setScale(2, RoundingMode.HALF_DOWN);
 
-        BigDecimal honorarios = honorariosAdvocaticiosService.calcularHonorarios(requestDTO);
-        BigDecimal honorariosComAcordo = calcularHonorariosComAcordo(honorarios, requestDTO);
+        BigDecimal honorarios = honorariosAdvocaticiosService.calcularHonorarios(requestDTO).setScale(2, RoundingMode.HALF_DOWN);
+        BigDecimal honorariosComAcordo = calcularHonorariosComAcordo(honorarios, requestDTO).setScale(2, RoundingMode.HALF_DOWN);
 
-        BigDecimal totalProcesso = devidoReclamante.add(honorarios);
-        BigDecimal totalProcessoComAcordo = devidoReclamanteComAcordo.add(honorariosComAcordo);
+        BigDecimal totalProcesso = devidoReclamante.add(honorarios).setScale(2, RoundingMode.HALF_DOWN);
+        BigDecimal totalProcessoComAcordo = devidoReclamanteComAcordo.add(honorariosComAcordo).setScale(2, RoundingMode.HALF_DOWN);
 
         ValoresResumoDTO valoresOriginais = new ValoresResumoDTO(
                 "100%",somaPrincipal,jurosMora,devidoReclamante,honorarios,totalProcesso

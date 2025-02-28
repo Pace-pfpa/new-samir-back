@@ -20,7 +20,8 @@ public class GerarListaDatasService {
             BeneficiosEnum.LOAS_DEFICIENTE,
             BeneficiosEnum.LOAS_IDOSO,
             BeneficiosEnum.PENSAO_ESPECIAL_AO_PORTADOR_DE_HANSENIASE,
-            BeneficiosEnum.SEGURO_DEFESO
+            BeneficiosEnum.SEGURO_DEFESO,
+            BeneficiosEnum.SEGURO_DESEMPREGO
     );
 
     public List<String> gerarListaDatasPorBeneficioEperiodo(BeneficiosEnum beneficio,boolean decimoTerceiroFinalCalculo, LocalDate inicioCalculo ,LocalDate fimCalculo) {

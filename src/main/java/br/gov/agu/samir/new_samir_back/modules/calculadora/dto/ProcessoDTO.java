@@ -22,7 +22,7 @@ public class ProcessoDTO {
     private AutorDTO autor;
 
     @JsonFormat(pattern = "MM/yyyy", shape = JsonFormat.Shape.STRING)
-    private LocalDate calculadoraPara;
+    private LocalDate calculadoPara;
 
     private Integer percentualHonorarios;
 

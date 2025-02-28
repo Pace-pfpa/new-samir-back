@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -47,7 +48,7 @@ public class CompetenciaService {
 
         LocalDate dibAnterior = calculoDevido.getNbAnterior();
 
-        LocalDate atualizarAte = requestDTO.getCalculadoPara();
+        LocalDate atualizarAte = LocalDate.of(requestDTO.getCalculadoPara().getYear(), requestDTO.getCalculadoPara().getMonth(), 1 );
 
         BigDecimal rmi = rmiService.reajustarRmi(calculoDevido);
 
