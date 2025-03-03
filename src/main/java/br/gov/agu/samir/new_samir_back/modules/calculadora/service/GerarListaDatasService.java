@@ -1,10 +1,10 @@
 package br.gov.agu.samir.new_samir_back.modules.calculadora.service;
 
 import br.gov.agu.samir.new_samir_back.modules.beneficio.enums.BeneficiosEnum;
-import org.hibernate.query.sql.internal.ParameterRecognizerImpl;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -25,99 +25,79 @@ public class GerarListaDatasService {
     );
 
     public List<String> gerarListaDatasPorBeneficioEperiodo(BeneficiosEnum beneficio,boolean decimoTerceiroFinalCalculo, LocalDate inicioCalculo ,LocalDate fimCalculo) {
-
-        if (isInicioEFimNoMesmoAno(inicioCalculo, fimCalculo)) {
-            return List.of(DateTimeFormatter.ofPattern("dd/MM/yyyy").format(inicioCalculo));
-        }
-
-
         return isBeneficioSemDecimoTerceiro(beneficio) ?
-                gerarListaSemDecimoTerceiro(inicioCalculo, fimCalculo, decimoTerceiroFinalCalculo) :
+                gerarListaSemDecimoTerceiro(inicioCalculo, fimCalculo) :
                 gerarListaComDecimoTerceiro(inicioCalculo, fimCalculo, decimoTerceiroFinalCalculo);
     }
 
-    private boolean isInicioEFimNoMesmoAno(LocalDate inicioCalculo, LocalDate fimCalculo){
-        return inicioCalculo.getYear() == fimCalculo.getYear() && inicioCalculo.getMonthValue() == fimCalculo.getMonthValue();
-    }
 
 
-    private List<String> gerarListaComDecimoTerceiro(LocalDate inicioCalculo, LocalDate fimCalculo, boolean decimoTerceiroFinalCalculo) {
-        List<String> listaDeDatas = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        // Adiciona a data inicial no formato
-        listaDeDatas.add(inicioCalculo.format(formatter));
+    private static List<String> gerarListaComDecimoTerceiro(LocalDate dataIncicio, LocalDate dataFim, boolean decioTerceiroNoFinal){
+        List<String> datas = new ArrayList<>();
+        LocalDate data = dataIncicio;
+        datas.add(data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
-        if (inicioCalculo.getMonthValue() == 12) {
-            listaDeDatas.add("01/13/" + inicioCalculo.getYear());
+        if (YearMonth.from(data).equals(YearMonth.from(dataFim))) {
+            if (decioTerceiroNoFinal) {
+                String dataDecimoTerceiro = "01/13/" + data.getYear();
+                datas.add(dataDecimoTerceiro);
+            }
+
+            return datas;
         }
 
-        LocalDate dataAtual = inicioCalculo.withDayOfMonth(1).plusMonths(1); // Começa no dia 01 do mês da data inicial
+        while (data.isBefore(dataFim)) {
+            data = data.plusMonths(1).withDayOfMonth(1);
+            if (isDataFinal(data, dataFim)) {
+                datas.add(dataFim.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
-        while (dataAtual.isBefore(fimCalculo) || dataAtual.isEqual(fimCalculo)) {
+                if (decioTerceiroNoFinal) {
+                    String dataDecimoTerceiro = "01/13/" + dataFim.getYear();
+                    datas.add(dataDecimoTerceiro);
+                }
 
-            if (dataAtual.isEqual(fimCalculo.withDayOfMonth(1))) {
-                listaDeDatas.add(fimCalculo.format(formatter));
+                return datas;
             }
+            datas.add(data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
-            if (listaDeDatas.contains(fimCalculo.format(formatter))) {
-                break;
-            }
-            listaDeDatas.add(dataAtual.format(formatter));
-
-            // Verifica o "mês 13"
-            if (dataAtual.getMonthValue() == 12) {
-                LocalDate mes13 = dataAtual.plusMonths(1); // Pula para o "mês 13" (janeiro do próximo ano)
-                listaDeDatas.add("01/13/" + dataAtual.getYear());
-                dataAtual = mes13; // Atualiza para o mês de janeiro do próximo ano
-            } else {
-                // Pula para o próximo mês normalmente
-                dataAtual = dataAtual.plusMonths(1);
+            if (data.getMonthValue() == 12){
+                String dataDecimoTerceiro = "01/13/" + data.getYear();
+                datas.add(dataDecimoTerceiro);
             }
         }
 
-        // Adiciona a data final no formato se não estiver na lista
-        if (!listaDeDatas.contains(fimCalculo.format(formatter))) {
-            listaDeDatas.add(fimCalculo.format(formatter));
+        if (decioTerceiroNoFinal) {
+            String dataDecimoTerceiro = "01/13/" + dataFim.getYear();
+            datas.add(dataDecimoTerceiro);
         }
-
-        if (decimoTerceiroFinalCalculo) {
-            listaDeDatas.add("01/13/" + fimCalculo.getYear());
-        }
-        return listaDeDatas;
+        return datas;
     }
 
-    private List<String> gerarListaSemDecimoTerceiro(LocalDate inicioCalculo, LocalDate fimCalculo, boolean decimoTerceiroFinalCalculo) {
-        List<String> listaDeDatas = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static List<String> gerarListaSemDecimoTerceiro(LocalDate dataInicio, LocalDate dataFim) {
+        List<String> datas = new ArrayList<>();
+        LocalDate data = dataInicio;
+        datas.add(data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
-        // Adicionar a data inicial formatada
-        listaDeDatas.add(inicioCalculo.format(formatter));
-
-        // Pular para o próximo mês
-        LocalDate proximaData = inicioCalculo.plusMonths(1).withDayOfMonth(1);
-
-        if (proximaData.getYear() == fimCalculo.getYear() && proximaData.getMonthValue() == fimCalculo.getMonthValue()) {
-            listaDeDatas.add(fimCalculo.format(formatter));
-            return listaDeDatas;
+        if (YearMonth.from(data).equals(YearMonth.from(dataFim))) {
+            return datas;
         }
 
-        // Iterar até o mês anterior da data final
-        while (proximaData.isBefore(fimCalculo)) {
-            // Adiciona a data 01 de cada mês
-            listaDeDatas.add(proximaData.format(formatter));
-            proximaData = proximaData.plusMonths(1);
+        while (data.isBefore(dataFim)) {
+            data = data.plusMonths(1).withDayOfMonth(1);
+            if (isDataFinal(data, dataFim)) {
+                datas.add(dataFim.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                return datas;
+            }
+            datas.add(data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         }
-
-        // Adiciona a data final formatada
-        listaDeDatas.add(fimCalculo.format(formatter));
-
-        if (decimoTerceiroFinalCalculo) {
-            listaDeDatas.add("01/13/" + fimCalculo.getYear());
-        }
-
-        return listaDeDatas;
+        return datas;
     }
+
+    private static boolean isDataFinal(LocalDate data, LocalDate dataFim) {
+        return YearMonth.from(data).equals(YearMonth.from(dataFim));
+    }
+
 
 
     private boolean isBeneficioSemDecimoTerceiro(BeneficiosEnum beneficio) {

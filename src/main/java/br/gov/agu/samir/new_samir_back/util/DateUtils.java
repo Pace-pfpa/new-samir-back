@@ -26,7 +26,4 @@ public class DateUtils {
 
     }
 
-    public String mapLocalDateToString(LocalDate data) {
-        return data.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-    }
 }
